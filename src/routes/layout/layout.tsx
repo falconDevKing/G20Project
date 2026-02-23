@@ -1,0 +1,70 @@
+import { DesktopNavbar, MobileNavbar } from "@/components/Navbar";
+import { SideBar } from "@/components/SideBar";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
+import { logOutUser } from "@/services/auth";
+import { useAppSelector } from "@/redux/hooks";
+import { useEffect } from "react";
+
+const LayoutRoot = () => {
+  const location = useLocation();
+  const isProfilePage = location.pathname === "/profile";
+  const navigate = useNavigate();
+  const auth = useAppSelector((state) => state.auth);
+  const pathname = location?.pathname;
+
+  const permission_type = auth.userDetails.permission_type;
+  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "");
+
+  const userAllowedPaths = [
+    "/",
+    "/profile",
+    "/profile/", // dummy option to prevent redirect
+    "/register",
+    "/login",
+    "/forgot-password",
+    "/verify-email",
+    "/reset-password",
+    "/history",
+    "/dashboard",
+  ];
+
+  useEffect(() => {
+    if (!isAdmin && pathname && !userAllowedPaths.includes(pathname)) {
+      navigate("/history");
+    }
+  }, [isAdmin, pathname]);
+
+  useEffect(() => {
+    if (!auth.authenticated) {
+      const url = pathname && !pathname.includes("/login") ? `/login?redirectTo=${pathname}` : "/login";
+      logOutUser();
+      navigate(url);
+    }
+
+    if (["/remit-partnership", "/remit-partnership/"].includes(pathname) && auth.authenticated) {
+      navigate('/history');
+    }
+  }, [auth.authenticated]);
+
+  return (
+    <main className="h-screen w-full overflow-hidden bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+      <div className="flex h-[calc(100vh-64px)]">
+        {/* adjust 64px to your Navbar height */}
+        {/* Sidebar Fixed on Left */}
+        <aside className="hidden lg:block fixed top-16 left-0 h-[calc(100vh-64px)] w-[312px] border-r z-10">
+          <SideBar />
+        </aside>
+        {/* Main Content */}
+        <section className={`flex-1 ml-0 lg:ml-[312px] overflow-y-auto ${isProfilePage ? "p-0" : "p-2"}`}>
+          <MobileNavbar />
+
+          <DesktopNavbar />
+
+          <Outlet />
+        </section>
+      </div>
+    </main>
+  );
+};
+
+export default LayoutRoot;
