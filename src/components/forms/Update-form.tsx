@@ -7,7 +7,7 @@ import { useState } from "react";
 import { g20UpdateAuthSchema } from "@/lib/schemas";
 import { CardWrapper } from "../Card-wapper";
 import { AuthTextArea } from "@/components/ui/textArea";
-import { G20Categories, G20ForcedToDoSoOpions, } from "@/constants/index";
+import { G20Categories, G20ForcedToDoSoOpions } from "@/constants/index";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 // import { CovenantEntry, GGPCategories, type CurrencyCode } from "../../constants/index";
 import { SelectOptions } from "@/interfaces/register";
@@ -23,14 +23,12 @@ import dayjs from "dayjs";
 import { AuthInput } from "../ui/authInput";
 import { dummyFunction } from "@/interfaces/tools";
 
-
 export const UpdateForm = () => {
   const navigate = useNavigate();
 
   // const appState = useAppSelector((state) => state.app);
   const userDetails = useAppSelector((state) => state.auth.userDetails);
-  const email = (userDetails?.email || '') as string
-
+  const email = (userDetails?.email || "") as string;
 
   // const { locationCurrency, fallbackCurrency } = appState;
 
@@ -75,12 +73,13 @@ export const UpdateForm = () => {
       dummyFunction({
         email,
         married: married,
-        marriage_anniversary: anniversary_month && anniversary_day
-          ? dayjs()
-            .month(parseInt(anniversary_month) - 1)
-            .date(parseInt(anniversary_day))
-            .toISOString()
-          : null,
+        marriage_anniversary:
+          anniversary_month && anniversary_day
+            ? dayjs()
+                .month(parseInt(anniversary_month) - 1)
+                .date(parseInt(anniversary_day))
+                .toISOString()
+            : null,
         g20_category: g20_category,
         amount: String(g20_amount),
         voluntary_participation: voluntary_participation,
@@ -92,11 +91,10 @@ export const UpdateForm = () => {
       setTimeout(() => {
         // navigate(redirectTo || "/history");
         navigate("/dashboard");
-      }, 1500);
+      }, 500);
     } catch (error: any) {
       console.log("g20 update error", error);
       ErrorHandler(error?.message || "Something went wrong");
-
     } finally {
       setIsPending(false);
     }
@@ -111,12 +109,12 @@ export const UpdateForm = () => {
       backButtonLabel=""
       backButtenHref=""
       isRegister
-    // homeHref="/"
-    // homeLable="Go to home page"
-    // slogan="...partnering to spread the Gospel and transform lives on a global scale."
-    // tradeMark="© 2025 GGP"
-    // showSocials
-    // imgLink="/GGP-logo.png"
+      // homeHref="/"
+      // homeLable="Go to home page"
+      // slogan="...partnering to spread the Gospel and transform lives on a global scale."
+      // tradeMark="© 2025 GGP"
+      // showSocials
+      // imgLink="/GGP-logo.png"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 2xl:space-y-3 mx-auto">
@@ -219,12 +217,9 @@ export const UpdateForm = () => {
                     )}
                   />
                 </div>
-              </div>)}
-
+              </div>
+            )}
           </div>
-
-
-
 
           <div className={`lg:grid grid-cols-2   gap-2 space-y-3 md:space-y-0`}>
             <FormField
@@ -282,7 +277,6 @@ export const UpdateForm = () => {
           </div>
 
           <div className={`lg:grid grid-cols-1 gap-2 space-y-3 md:space-y-0`}>
-
             <FormField
               control={form.control}
               name="voluntary_participation"
@@ -312,7 +306,6 @@ export const UpdateForm = () => {
                 </FormItem>
               )}
             />
-
           </div>
 
           <div className=" md:grid grid-cols-1 gap-3 space-y-3 md:space-y-0 mb-4 md:mt-0">
@@ -349,7 +342,7 @@ export const UpdateForm = () => {
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                    // className="mt-1"
+                      // className="mt-1"
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none text-md">
@@ -369,6 +362,6 @@ export const UpdateForm = () => {
           </Button>
         </form>
       </Form>
-    </CardWrapper >
+    </CardWrapper>
   );
 };

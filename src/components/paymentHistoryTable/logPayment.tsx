@@ -4,32 +4,43 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl,  FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import DatePicker from "react-datepicker";
 import { paymentFormSchema } from "@/lib/schemas";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { initialiseOptions, RemissionPeriodsOptions } from "@/lib/utils";
+import { initialiseOptions} from "@/lib/utils";
+// import { initialiseOptions, RemissionPeriodsOptions } from "@/lib/utils";
 import { useAppSelector } from "@/redux/hooks";
 import dayjs from "dayjs";
 import { findChapterDetails, getUserWithUniqueCode, initialPayerData, type PayerDataType, makePayment, findDivisionDetails } from "@/services/payment";
 import { SelectOptions } from "@/interfaces/register";
-import { Switch } from "@/components/ui/switch";
-import { WorldCurrenciesOptions } from "@/constants/currencies";
+// import { Switch } from "@/components/ui/switch";
+// import { WorldCurrenciesOptions } from "@/constants/currencies";
 import FormTooltip from "../FormTooltips";
 import { DummyObject } from "@/interfaces/tools";
 import FetchGBPExchangeRatesValue from "@/lib/fetchGBPExchangeRatesValue";
 import { getCurrencySymbol } from "@/lib/numberUtils";
 import { ErrorHandler, SuccessHandler } from "@/lib/toastHandlers";
+import { FileUpload } from "../FileUpload";
 
-
-type postLogPaymentProcessingType = { user_name: string; currency: string; amount: number; remission_period: string; payment_date: string; chapterName: string; payerDataUser_id: string; userId: string, chapterReps: DummyObject[] }
+type postLogPaymentProcessingType = {
+  user_name: string;
+  currency: string;
+  amount: number;
+  remission_period: string;
+  payment_date: string;
+  chapterName: string;
+  payerDataUser_id: string;
+  userId: string;
+  chapterReps: DummyObject[];
+};
 
 interface LogPaymentProps {
   filterData: () => void;
   forUser?: boolean;
-  postLogPaymentProcessing: (postLogPaymentProcessingData: postLogPaymentProcessingType) => Promise<void>
+  postLogPaymentProcessing: (postLogPaymentProcessingData: postLogPaymentProcessingType) => Promise<void>;
 }
 
 type PaymentFormValues = z.infer<typeof paymentFormSchema>;
@@ -51,6 +62,7 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
 
   const isIndividual = permission_type === "individual";
 
+  console.log('chapterCurrency', chapterCurrency)
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentFormSchema),
     defaultValues: {
@@ -62,16 +74,11 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
       division_id: division_id || "",
       chapter_id: chapter_id || "",
 
-      is_converted: false,
-      conversion_description: "",
-      conversion_amount: 0,
-      conversion_rate: 0,
-      conversion_currency: "",
-      conversion_time: "",
+      proof_of_payment: "",
     },
   });
 
-  const selectedChapterId = form.watch("chapter_id")
+  const selectedChapterId = form.watch("chapter_id");
   const selectedChapterCurrecny = useMemo(() => findChapterDetails(selectedChapterId)?.currency, [selectedChapterId]);
 
   const onSubmit = async (values: PaymentFormValues) => {
@@ -101,13 +108,13 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
 
       const conversionData = is_converted
         ? {
-          is_converted,
-          conversion_description,
-          conversion_amount,
-          conversion_rate,
-          conversion_currency,
-          conversion_time,
-        }
+            is_converted,
+            conversion_description,
+            conversion_amount,
+            conversion_rate,
+            conversion_currency,
+            conversion_time,
+          }
         : {};
 
       const { currency, chapterName, chapterReps } = findChapterDetails(chapter_id);
@@ -139,9 +146,19 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
 
       await makePayment(newEntry, true);
 
-      const combinedReps = [...chapterReps as DummyObject[], ...divisionReps as DummyObject[]]
+      const combinedReps = [...(chapterReps as DummyObject[]), ...(divisionReps as DummyObject[])];
 
-      postLogPaymentProcessing({ user_name, currency, amount, remission_period, payment_date, chapterName, payerDataUser_id: payerData.user_id, userId: user.id, chapterReps: forUser ? combinedReps : divisionReps as DummyObject[] })
+      postLogPaymentProcessing({
+        user_name,
+        currency,
+        amount,
+        remission_period,
+        payment_date,
+        chapterName,
+        payerDataUser_id: payerData.user_id,
+        userId: user.id,
+        chapterReps: forUser ? combinedReps : (divisionReps as DummyObject[]),
+      });
 
       form.reset();
       setOpenDialog(false);
@@ -235,9 +252,11 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
                         </div>
                         <FormControl>
                           <div className="flex gap-1">
-                            {selectedChapterCurrecny && <Button type="button" variant="outline" className="max-w-max h-[44px] border-input dark:border-inputs">
-                              {getCurrencySymbol(selectedChapterCurrecny)}
-                            </Button>}
+                            {selectedChapterCurrecny && (
+                              <Button type="button" variant="outline" className="max-w-max h-[44px] border-input dark:border-inputs">
+                                {getCurrencySymbol(selectedChapterCurrecny)}
+                              </Button>
+                            )}
                             <Input
                               type="number"
                               min={0}
@@ -253,7 +272,7 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
                   />
                 </div>
 
-                <div className=" md:grid grid-cols-1 gap-3 space-y-3 md:space-y-0 mb-4 md:mt-0">
+                <div className=" md:grid grid-cols-2 gap-3 space-y-3 md:space-y-0 mb-4 md:mt-0">
                   <FormField
                     control={form.control}
                     name="description"
@@ -269,6 +288,39 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
                             placeholder="Any useful details about the payment..."
                             maxLength={96}
                           />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="payment_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-1">
+                          <FormLabel className="text-gray-600/90 dark:text-white  font-normal text-base">Payment Date</FormLabel>
+                          <span className="text-red-500 text-base">*</span>
+                          <FormTooltip text={"Day you made the remission"} />
+                        </div>
+                        <FormControl>
+                          <div className="flex rounded-md border border-gray-500/20 items-center px-2">
+                            <img className="mr-2" src="/icons/calendar.svg" height={24} width={24} alt="Calendar" />
+                            <DatePicker
+                              selected={field.value ? new Date(field.value) : null} // Convert string to Date
+                              onChange={(date) => field.onChange(date ? dayjs(date).add(6, "hours").toISOString().split("T")[0] + "T12:00:00.000Z" : "")} // Convert Date back to string
+                              dateFormat="dd/MM/yyyy"
+                              placeholderText="Select the Payment Date"
+                              showMonthDropdown
+                              showYearDropdown
+                              dropdownMode="select"
+                              wrapperClassName="date-picker w-full"
+                              className="border-0 outline-none bg w-full py-4"
+                              minDate={new Date("2010-01-01")}
+                              maxDate={new Date()}
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -338,220 +390,22 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
                   />
                 </div>
 
-                <div className=" md:grid grid-cols-2 gap-3 space-y-3 md:space-y-0 my-8 ">
+                <div className=" md:grid grid-cols-1 gap-3 space-y-3 md:space-y-0 my-8 ">
                   <FormField
                     control={form.control}
-                    name="remission_period"
+                    name="proof_of_payment"
                     render={({ field }) => (
                       <FormItem>
-                        <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90  dark:text-white font-normal text-base">Remission Month</FormLabel>
+                        <FormLabel className=" text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Proof of Payment</FormLabel>
 
-                          <span className="text-red-500 text-base">*</span>
-                        </div>
                         <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                            <SelectTrigger className="shad-select-trigger">
-                              <SelectValue placeholder="Select Payment Period" />
-                            </SelectTrigger>
-                            <SelectContent className="shad-select-content">
-                              {RemissionPeriodsOptions.map((RemissionPeriod: SelectOptions) => (
-                                <SelectItem key={RemissionPeriod.value} value={RemissionPeriod.value as string}>
-                                  <div className="flex items-center cursor-pointer gap-3">
-                                    <p>{RemissionPeriod.name}</p>
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <FileUpload user_id={user.id} filePath={field.value} onChange={field.onChange} size="small" />
                         </FormControl>
+
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
-                  <FormField
-                    control={form.control}
-                    name="payment_date"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90 dark:text-white  font-normal text-base">Payment Date</FormLabel>
-                          <span className="text-red-500 text-base">*</span>
-                          <FormTooltip text={"Day you made the remission"} />
-                        </div>
-                        <FormControl>
-                          <div className="flex rounded-md border border-gray-500/20 items-center px-2">
-                            <img className="mr-2" src="/icons/calendar.svg" height={24} width={24} alt="Calendar" />
-                            <DatePicker
-                              selected={field.value ? new Date(field.value) : null} // Convert string to Date
-                              onChange={(date) => field.onChange(date ? dayjs(date).add(6, "hours").toISOString().split("T")[0] + "T12:00:00.000Z" : "")} // Convert Date back to string
-                              dateFormat="dd/MM/yyyy"
-                              placeholderText="Select the Payment Date"
-                              showMonthDropdown
-                              showYearDropdown
-                              dropdownMode="select"
-                              wrapperClassName="date-picker w-full"
-                              className="border-0 outline-none bg w-full py-4"
-                              minDate={new Date("2010-01-01")}
-                              maxDate={new Date()}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="hidden bg-GGP-lightWight dark:bg-transparent p-3 rounded-md my-1">
-                  <FormField
-                    control={form.control}
-                    name="is_converted"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border py-1 px-3 shadow-sm m-1">
-                        <div className="space-y-0.5">
-                          <FormLabel>Currency Conversion</FormLabel>
-                          <FormDescription>Is the remission made in a different currency?</FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch checked={field.value} onCheckedChange={field.onChange} className=" data-[state=checked]:bg-GGP-darkGold" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  {form.watch("is_converted") && (
-                    <div className=" lg:grid grid-cols-3 gap-2 space-y-3 md:space-y-0">
-                      <FormField
-                        control={form.control}
-                        name="conversion_currency"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Conversion Currency</FormLabel>
-                              <span className="text-red-500 text-base">*</span>
-                            </div>
-
-                            <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="shad-select-trigger bg-white dark:bg-transparent">
-                                  <SelectValue placeholder="Select the Currency" />
-                                </SelectTrigger>
-                                <SelectContent className="shad-select-content">
-                                  {WorldCurrenciesOptions.map((currency) => (
-                                    <SelectItem key={currency.value} value={currency.value}>
-                                      <div className="flex items-center cursor-pointer gap-3">
-                                        <p>{currency.label}</p>
-                                      </div>
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="conversion_amount"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Conversion Amount</FormLabel>
-                              <span className="text-red-500 text-base">*</span>
-                            </div>
-                            <FormControl>
-                              <Input type="number" min={0} className="focus-visible:ring-0 focus-visible:ring-offset-0" {...field} placeholder="e.g 100000" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="conversion_rate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">
-                                Conversion Rate ({form.watch("conversion_currency")}/{chapterCurrency})
-                              </FormLabel>
-                              <span className="text-red-500 text-base">*</span>
-                            </div>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                min={0}
-                                className="focus-visible:ring-0 focus-visible:ring-offset-0"
-                                {...field}
-                                placeholder="e.g 1.25"
-                                step=".001"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="conversion_time"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Conversion Date</FormLabel>
-                              <span className="text-red-500 text-base">*</span>
-                            </div>
-                            <FormControl>
-                              <div className="flex rounded-md border border-gray-500/20 items-center px-2 bg-white dark:bg-transparent">
-                                <img className="mr-2" src="/icons/calendar.svg" height={24} width={24} alt="Calendar" />
-                                <DatePicker
-                                  selected={field.value ? new Date(field.value) : null} // Convert string to Date
-                                  onChange={(date) => field.onChange(date ? dayjs(date).add(6, "hours").toISOString().split("T")[0] + "T12:00:00.000Z" : "")} // Convert Date back to string
-                                  dateFormat="dd/MM/yyyy"
-                                  placeholderText="Select the Conversion Date"
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dropdownMode="select"
-                                  wrapperClassName="date-picker w-full"
-                                  className="border-0 outline-none bg w-full py-4"
-                                  minDate={new Date("2010-01-01")}
-                                  maxDate={new Date()}
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="conversion_description"
-                        render={({ field }) => (
-                          <FormItem className="col-span-2">
-                            <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Conversion Description</FormLabel>
-                            <FormControl>
-                              <Input
-                                className="focus-visible:ring-0 h-12 focus-visible:ring-offset-0"
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(e);
-                                }}
-                                placeholder="Any useful details about the conversion..."
-                                maxLength={96}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
               <Button disabled={isPending} size={"lg"} type="submit" className="w-full mt-4" variant="custom">

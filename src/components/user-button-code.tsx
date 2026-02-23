@@ -21,8 +21,8 @@ export const UserButtonCode = ({ position = "justify-between" }: { position?: st
   const [fileUrlToUse, setFileUrlToUse] = useState<string>("");
 
   const handleMenuSwitch = () => {
-    dispatch(setMenuType({ data: "personal" }))
-  }
+    dispatch(setMenuType({ data: "personal" }));
+  };
 
   useEffect(() => {
     const updateFileUrl = async () => {
@@ -36,17 +36,17 @@ export const UserButtonCode = ({ position = "justify-between" }: { position?: st
   }, [filePath]);
 
   return (
-    <div className={`flex items-center ${position} rounded-md p-2 lg:bg-background`} onClick={handleMenuSwitch}>
+    <div className={`flex items-center ${position} rounded-md p-2 `} onClick={handleMenuSwitch}>
       {/* Avatar */}
       <Link to="/profile">
         <div className="flex items-center gap-3">
-          <Avatar>
+          <Avatar className="h-16 w-16 ">
             <AvatarImage src={fileUrlToUse} alt={user?.first_name} />
-            <AvatarFallback className="font-semibold uppercase bg-GGP-darkGold text-white">{userInitials}</AvatarFallback>
+            <AvatarFallback className="font-semibold uppercase bg-white text-black">{userInitials}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-white md:text-GGP-darkGold font-semibold text-sm">Unique Partner Code:</span>
-            <span className="text-base font-normal tracking-tighter dark:max-sm:text-[#344054] dark:text-white text-[#344054]">{user?.unique_code}</span>
+            <span className="text-white font-semibold text-sm">Unique Partner Code</span>
+            <span className="text-base font-normal tracking-tighter dark:max-sm:text-[#344054] text-[#344054]">{user?.unique_code}</span>
           </div>
         </div>
       </Link>

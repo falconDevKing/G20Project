@@ -41,9 +41,8 @@ export const registerSchema = z
     path: ["confirm_password"],
   });
 
-  export const g20UpdateAuthSchema = z
+export const g20UpdateAuthSchema = z
   .object({
-    
     married: z.enum(["Yes", "No"], { message: "Please select an option" }),
     // marriage_anniversary: z.string().optional(),
 
@@ -69,7 +68,6 @@ export const registerSchema = z
       });
     }
   });
-
 
 export const g20RegisterSchemaBase = z.object({
   last_name: z.string().min(1, { message: "Surname is required" }),
@@ -177,6 +175,7 @@ export const paymentFormSchema = z.object({
   remission_period: z.string().min(1, "Remission Period is required"),
   division_id: z.string().min(1, { message: "You must select a division" }),
   chapter_id: z.string().min(1, { message: "You must select a chapter" }),
+  proof_of_payment: z.string().optional(),
 
   is_converted: z.boolean(),
   conversion_description: z.string(),

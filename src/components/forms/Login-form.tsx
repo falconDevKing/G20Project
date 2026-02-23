@@ -20,7 +20,7 @@ export const LoginForm = () => {
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo");
-  console.log('redirectTo', redirectTo)
+  console.log("redirectTo", redirectTo);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -62,7 +62,7 @@ export const LoginForm = () => {
       setTimeout(() => {
         // navigate(redirectTo || "/history");
         navigate("/update");
-      }, 1500);
+      }, 100);
     } catch (error: any) {
       console.log("login error", error);
       ErrorHandler(error?.message || "Something went wrong");
@@ -91,8 +91,8 @@ export const LoginForm = () => {
       headerLabel="Login to your account"
       backButtonLabel="Don't have an account? Sign up Today"
       backButtenHref="/register"
-    // homeHref="/"
-    // homeLable="Go to home page"
+      // homeHref="/"
+      // homeLable="Go to home page"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 mx-auto">
@@ -157,10 +157,11 @@ export const LoginForm = () => {
           <Button
             disabled={isFormEmpty || isCompleteField || isPending}
             variant={"custom"}
-            className={`w-full text-sm ${isFormEmpty || isCompleteField || isPending
-              ? "cursor-not-allowed opacity-50" // Correct styles when disabled
-              : "cursor-pointer opacity-100"
-              }`}
+            className={`w-full text-sm ${
+              isFormEmpty || isCompleteField || isPending
+                ? "cursor-not-allowed opacity-50" // Correct styles when disabled
+                : "cursor-pointer opacity-100"
+            }`}
             size="lg"
             type="submit"
           >
