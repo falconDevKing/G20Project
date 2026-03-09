@@ -1,13 +1,5 @@
 import SupabaseClient from "@/supabase/supabaseConnection";
-import type {
-  ChapterRowType,
-  DivisionRowType,
-  G20PartnerInsertType,
-  G20PartnerRowType,
-  PartnerInsertType,
-  PartnerRowType,
-  PartnerUpdateType,
-} from "@/supabase/modifiedSupabaseTypes";
+import type { ChapterRowType, DivisionRowType, PartnerInsertType, PartnerRowType, PartnerUpdateType } from "@/supabase/modifiedSupabaseTypes";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { generateUniqueCode } from "@/lib/utils";
 import { getCurrentUser, signIn, signOut } from "aws-amplify/auth";
@@ -75,87 +67,6 @@ export const createUniqueCode = async ({ first_name, last_name }: { first_name: 
     }
 
     throw new Error("First name and last name are required.");
-  } catch (error) {
-    console.log("createUniqueCode failed", error);
-    throw error;
-  }
-};
-
-export const createG20User = async (userData: G20PartnerInsertType): Promise<G20PartnerRowType> => {
-  try {
-    const { data, error }: PostgrestSingleResponse<any[]> = await SupabaseClient.from("g20_partner").insert([userData]).select(); // Return the inserted row(s)
-
-    if (error) {
-      console.log("Supabase g20_partner insert error", error);
-      throw error;
-    }
-
-    if (!data || data.length === 0) {
-      throw new Error("g20_partner User creation failed: No data returned.");
-    }
-
-    return data[0];
-  } catch (error) {
-    console.log("Runtime error", error);
-    throw error;
-  }
-};
-
-export const fetchG20User = async (userId: string): Promise<G20PartnerRowType | null> => {
-  try {
-    const { data: G20Partner, error }: PostgrestSingleResponse<G20PartnerRowType | null> = await SupabaseClient.from("g20_partner")
-      .select()
-      .eq("id", userId)
-      .maybeSingle(); // Return the inserted row(s)
-
-    if (error) {
-      console.log("Supabase g20_partner insert error", error);
-      throw error;
-    }
-
-    return G20Partner;
-  } catch (error) {
-    console.log("Runtime error", error);
-    throw error;
-  }
-};
-
-export const createG20UniqueCode = async ({ first_name, last_name }: { first_name: string; last_name: string }): Promise<string> => {
-  try {
-    let count = 0;
-
-    if (!first_name || !last_name) {
-      throw new Error("First name and last name are required.");
-    }
-
-    const unique_codeCreator = async (): Promise<string> => {
-      count++;
-      const unique_code = "G20-" + generateUniqueCode({ first_name, last_name });
-
-      const { data, error } = await SupabaseClient.from("g20_partner")
-        .select("id") // just check if it exists
-        .eq("unique_code", unique_code)
-        .maybeSingle();
-
-      if (error && error.code !== "PGRST116") {
-        console.log("Error checking unique code:", error);
-        throw error;
-      }
-
-      if (count < 10) {
-        if (data) {
-          // Duplicate found, try again
-          return unique_codeCreator();
-        } else {
-          return unique_code;
-        }
-      } else {
-        throw new Error("Failed to generate a unique code after multiple attempts.");
-      }
-    };
-
-    const unique_code = await unique_codeCreator();
-    return unique_code;
   } catch (error) {
     console.log("createUniqueCode failed", error);
     throw error;
@@ -241,7 +152,7 @@ export const updateUser = async (userData: PartnerUpdateType) => {
   }
 };
 
-export const logInuser = async (email: string, password: string) => {
+export const logInuser = async (email: string, password: string): Promise<PartnerRowType | null> => {
   try {
     const { nextStep } = await signIn({
       username: email,
@@ -253,10 +164,29 @@ export const logInuser = async (email: string, password: string) => {
 
       return loggedIn;
     }
+    return null;
   } catch (error) {
     console.log("auth login error", error);
     throw error;
   }
+};
+
+const fetchPartnerByIdentity = async ({ cognito_user_id, email }: { cognito_user_id?: string; email?: string }): Promise<PartnerRowType | null> => {
+  if (cognito_user_id) {
+    const { data, error } = await SupabaseClient.from("partner").select("*").eq("cognito_user_id", cognito_user_id).maybeSingle();
+    if (!error && data) {
+      return data;
+    }
+  }
+
+  if (email) {
+    const { data, error } = await SupabaseClient.from("partner").select("*").ilike("email", email).maybeSingle();
+    if (!error && data) {
+      return data;
+    }
+  }
+
+  return null;
 };
 
 export const getLoggedInUser = async (email?: string) => {
@@ -265,25 +195,19 @@ export const getLoggedInUser = async (email?: string) => {
 
     store.dispatch(setAuthData({ user_name, cognito_user_id, signInDetails, authenticated: true }));
 
-    if (email) {
-      const { data: userDetails, error } = await SupabaseClient.from("partner") // Replace with actual table name
-        .select("*")
-        .ilike("email", email)
-        .maybeSingle();
+    const userDetails = await fetchPartnerByIdentity({ cognito_user_id, email: email || user_name });
 
-      if (error) {
-        console.log("Error fetching user by email:", error);
-      } else if (userDetails) {
-        store.dispatch(setUserDetails({ userDetails }));
-        fetchAdminData(userDetails);
-      }
+    if (userDetails) {
+      store.dispatch(setUserDetails({ userDetails }));
+      fetchAdminData(userDetails);
+      return userDetails;
     }
 
-    return true;
+    return null;
   } catch (error) {
     console.log("auth check error", error);
     store.dispatch(setAuthenticated({ authenticated: false }));
-    return false;
+    return null;
   }
 };
 
@@ -385,4 +309,20 @@ export const resolveEmailFromIdentifier = async (identifier: string): Promise<st
 
   // Should not happen if you validate with loginSchema first
   throw new Error("Invalid identifier. Enter a valid email or partner code.");
+};
+
+export const resolvePostAuthRoute = (user: PartnerRowType | DummyObject | null): string => {
+  if (!user || !user.id) {
+    return "/login";
+  }
+
+  if (!user.g20_active) {
+    return "/update";
+  }
+
+  if (!user.proposed_payment_scheduled) {
+    return "/proposed-schedule";
+  }
+
+  return "/dashboard";
 };

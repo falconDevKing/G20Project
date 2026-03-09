@@ -18,11 +18,24 @@ export default {
 			},
 			colors: {
 				G20: {
-					blue: "#01a9f0",
-					darkGold: "#cc9e35",
-					lightGold: "#f0e783",
-					dark: "#160807",
-					lightWight: "#FAF5EC",
+					// Legacy keys (kept for backward compatibility)
+					blue: "#17253f",
+					darkGold: "#c39a41",
+					lightGold: "#f0cf86",
+					dark: "#0a0f1a",
+					lightWight: "#f8f1e3",
+
+					// Main landing theme tokens (solid navy + warm gold)
+					pageBg: "#0a0f1a",
+					headerBg: "#0f1728",
+					surface: "#111c31",
+					surfaceAlt: "#1b2842",
+					border: "#29334a",
+					titleText: "#f8f1e3",
+					bodyText: "#c8d3e9",
+					mutedText: "#b9c8e7",
+					accent: "#d4b062",
+					accentStrong: "#f0cf86",
 				},
 
 				// Optional: aliases so you can do text-gold-*, bg-gold-* if you prefer

@@ -8,8 +8,8 @@ import PhoneInput from "react-phone-number-input";
 import { useEffect, useState } from "react";
 import { profileFormSchema, profilePasswordSchema } from "@/lib/schemas";
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "./../../../components/ui/select";
-import { GGPCategories, Countries, CurrencyCode, CovenantEntry } from "../../../constants/index";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./../../../components/ui/select";
+import { Countries, G20Categories } from "../../../constants/index";
 import { Button } from "@/components/ui/button";
 import { ProfileCardWrapper } from "./ProfileCard-wapper";
 import { FileUpload } from "@/components/FileUpload";
@@ -17,7 +17,6 @@ import { FileUpload } from "@/components/FileUpload";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ArrowLeft, Edit, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
-import { camelCaseToNormal } from "@/lib/textUtils";
 import { updatePassword } from "aws-amplify/auth";
 
 import { useAppSelector } from "@/redux/hooks";
@@ -28,7 +27,7 @@ import { getFileUrl } from "@/services/storage";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
 import { PartnerRowType } from "@/supabase/modifiedSupabaseTypes";
 import dayjs from "dayjs";
-import DashboardHeader from "@/components/dashboard/dashboardHeader";
+import { G20DashboardHeader } from "@/components/dashboard/g20DashboardHeader";
 
 export const ProfileForm = () => {
   const user = useAppSelector((state) => state.auth.userDetails);
@@ -62,7 +61,12 @@ export const ProfileForm = () => {
       email: userProfile?.email || "",
       division_id: userProfile?.division_id || "",
       chapter_id: userProfile?.chapter_id || "",
-      ggp_category: userProfile?.ggp_category || "",
+      g20_category: userProfile?.g20_category || "",
+      g20_amount: userProfile?.g20_amount || 0,
+      married: userProfile?.married ? "Yes" : "No",
+      anniversary_day: userProfile?.marriage_anniversary ? dayjs(userProfile?.marriage_anniversary).format("DD") : "",
+      anniversary_month: userProfile?.marriage_anniversary ? dayjs(userProfile?.marriage_anniversary).format("MM") : "",
+      motivation: userProfile?.motivation || "",
     },
   });
 
@@ -79,7 +83,23 @@ export const ProfileForm = () => {
     try {
       setIsPending(false);
 
-      const { last_name, first_name, phone_number, address, gender, image_url, nationality, birth_day, birth_month } = values;
+      const {
+        last_name,
+        first_name,
+        phone_number,
+        address,
+        gender,
+        image_url,
+        nationality,
+        birth_day,
+        birth_month,
+        g20_category,
+        g20_amount,
+        married,
+        anniversary_day,
+        anniversary_month,
+        motivation,
+      } = values;
 
       const userData = {
         id: userProfile.id,
@@ -90,6 +110,17 @@ export const ProfileForm = () => {
         gender,
         image_url,
         nationality,
+        g20_category: g20_category || null,
+        g20_amount: Number(g20_amount || 0),
+        married: married === "Yes",
+        marriage_anniversary:
+          married === "Yes" && anniversary_month && anniversary_day
+            ? dayjs()
+                .month(parseInt(anniversary_month) - 1)
+                .date(parseInt(anniversary_day))
+                .format("YYYY-MM-DD")
+            : null,
+        motivation: motivation || null,
         date_of_birth:
           birth_month && birth_day
             ? dayjs()
@@ -152,15 +183,18 @@ export const ProfileForm = () => {
 
   return (
     <>
-      <DashboardHeader />
+      <G20DashboardHeader page="profile" />
 
       <ProfileCardWrapper>
         {/* Edit Profile Button */}
 
         <div className=" flex justify-end md:justify-between items-center mb-4 -mt-2">
-          <Link to={"/history"} className="max-w-fit gap-1 hidden md:flex items-center text-sm font-normal my-4 bg-GGP-lightWight text-GGP-dark p-2 rounded-md">
+          <Link
+            to={"/dashboard"}
+            className="max-w-fit gap-1 hidden md:flex items-center text-sm font-normal my-4 bg-GGP-lightWight text-GGP-dark p-2 rounded-md"
+          >
             <ArrowLeft className=" h-4 w-4" />
-            Payment History
+            Dashboard
           </Link>
           <Dialog open={isOpenProfile} onOpenChange={setIsOpenProfile}>
             <DialogTrigger asChild>
@@ -280,35 +314,139 @@ export const ProfileForm = () => {
 
                     <FormField
                       control={profileFormInstance.control}
-                      name="ggp_category"
+                      name="g20_category"
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex items-center gap-1">
-                            <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">GGP Category</FormLabel>
-                            <span className="text-red-500 text-base">*</span>
+                            <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">G20 Category</FormLabel>
                           </div>
                           <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                               <SelectTrigger className="shad-select-trigger">
-                                <SelectValue placeholder="Select your GGP Category" />
+                                <SelectValue placeholder="Select your G20 Category" />
                               </SelectTrigger>
                               <SelectContent className="shad-select-content">
-                                {Object.entries(
-                                  GGPCategories[(ChapterOptions.find((chapter) => chapter.value === user?.chapter_id)?.currency || "GBP") as CurrencyCode],
-                                ).map(([label, options]: [string, CovenantEntry[]]) => {
-                                  return (
-                                    <SelectGroup key={label}>
-                                      <SelectLabel>{camelCaseToNormal(label)}</SelectLabel>
-                                      {options.map((groupOption) => (
-                                        <SelectItem key={groupOption.rank} value={groupOption.rank}>
-                                          <div className="flex items-center cursor-pointer gap-2 pl-4">{`${groupOption.rank} (${groupOption.amount})`}</div>
-                                        </SelectItem>
-                                      ))}
-                                    </SelectGroup>
-                                  );
-                                })}
+                                {G20Categories.map((option) => (
+                                  <SelectItem key={option.value} value={String(option.value)}>
+                                    {option.name}
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="lg:grid grid-cols-3 gap-2 space-y-3 md:space-y-0">
+                    <FormField
+                      control={profileFormInstance.control}
+                      name="g20_amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">G20 Amount</FormLabel>
+                          <FormControl>
+                            <Input type="number" min={0} step={1} className="focus-visible:ring-0 focus-visible:ring-offset-0" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={profileFormInstance.control}
+                      name="married"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Married</FormLabel>
+                          <FormControl>
+                            <Select value={field.value} onValueChange={field.onChange}>
+                              <SelectTrigger className="shad-select-trigger">
+                                <SelectValue placeholder="Select an option" />
+                              </SelectTrigger>
+                              <SelectContent className="shad-select-content">
+                                <SelectItem value="Yes">Yes</SelectItem>
+                                <SelectItem value="No">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div>
+                      <div className="flex items-center gap-1 pb-2">
+                        <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Marriage Anniversary</FormLabel>
+                      </div>
+                      <div className="flex gap-x-1">
+                        <FormField
+                          control={profileFormInstance.control}
+                          name="anniversary_month"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
+                                  <SelectTrigger className="w-28 h-12 dark:border-white" allowDark={false} enforceWhite>
+                                    <SelectValue placeholder="Month" />
+                                  </SelectTrigger>
+                                  <SelectContent className="shad-select-content">
+                                    {monthsOfTheYearOptions.map((month: any) => (
+                                      <SelectItem key={month.value} value={month.value}>
+                                        {month.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={profileFormInstance.control}
+                          name="anniversary_day"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                  <SelectTrigger className="w-20 h-12 dark:border-white" allowDark={false} enforceWhite>
+                                    <SelectValue placeholder="Day" />
+                                  </SelectTrigger>
+                                  <SelectContent className="shad-select-content">
+                                    {RemissionDayOptions.map((dayOption: string) => (
+                                      <SelectItem key={dayOption} value={dayOption}>
+                                        {dayOption}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="lg:grid grid-cols-1 gap-2 space-y-3 md:space-y-0">
+                    <FormField
+                      control={profileFormInstance.control}
+                      name="motivation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Motivation</FormLabel>
+                          <FormControl>
+                            <Input
+                              disabled={isPending}
+                              type="text"
+                              placeholder="Your conviction about giving"
+                              className="focus-visible:ring-0 focus-visible:ring-offset-0"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -655,12 +793,44 @@ export const ProfileForm = () => {
                   </FormItem>
 
                   <div className=" space-y-2">
-                    <FormLabel className=" text-gray-700/90 dark:text-gray-300/90 font-normal text-base">GGP Category</FormLabel>
+                    <FormLabel className=" text-gray-700/90 dark:text-gray-300/90 font-normal text-base">G20 Category</FormLabel>
                     <Input
                       readOnly
-                      value={user.ggp_category || ""}
+                      value={user.g20_category || ""}
                       className="focus-visible:ring-0 cursor-not-allowed focus-visible:ring-offset-0"
-                      placeholder="GGP Category"
+                      placeholder="G20 Category"
+                    />
+                  </div>
+                </div>
+
+                <div className=" lg:grid grid-cols-3 gap-2 space-y-3 md:space-y-0">
+                  <div className=" space-y-2">
+                    <FormLabel className=" text-gray-700/90 dark:text-gray-300/90 font-normal text-base">G20 Amount</FormLabel>
+                    <Input
+                      readOnly
+                      value={user.g20_amount || 0}
+                      className="focus-visible:ring-0 cursor-not-allowed focus-visible:ring-offset-0"
+                      placeholder="G20 Amount"
+                    />
+                  </div>
+
+                  <div className=" space-y-2">
+                    <FormLabel className=" text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Married</FormLabel>
+                    <Input
+                      readOnly
+                      value={user.married ? "Yes" : "No"}
+                      className="focus-visible:ring-0 cursor-not-allowed focus-visible:ring-offset-0"
+                      placeholder="Married"
+                    />
+                  </div>
+
+                  <div className=" space-y-2">
+                    <FormLabel className=" text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Marriage Anniversary</FormLabel>
+                    <Input
+                      readOnly
+                      value={user.marriage_anniversary ? dayjs(user.marriage_anniversary).format("DD MMMM") : ""}
+                      className="focus-visible:ring-0 cursor-not-allowed focus-visible:ring-offset-0"
+                      placeholder="Marriage Anniversary"
                     />
                   </div>
                 </div>
@@ -673,6 +843,18 @@ export const ProfileForm = () => {
                       value={user.address || ""}
                       className="focus-visible:ring-0 cursor-not-allowed focus-visible:ring-offset-0"
                       placeholder="Address"
+                    />
+                  </div>
+                </div>
+
+                <div className=" lg:grid grid-cols-1 gap-2 space-y-3 md:space-y-0">
+                  <div className=" space-y-2">
+                    <FormLabel className=" text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Motivation</FormLabel>
+                    <Input
+                      readOnly
+                      value={user.motivation || ""}
+                      className="focus-visible:ring-0 cursor-not-allowed focus-visible:ring-offset-0"
+                      placeholder="Motivation"
                     />
                   </div>
                 </div>

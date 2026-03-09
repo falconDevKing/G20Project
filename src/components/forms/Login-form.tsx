@@ -7,8 +7,8 @@ import "react-phone-number-input/style.css";
 import { useEffect, useState } from "react";
 import { loginSchema } from "@/lib/schemas";
 import { CardWrapper } from "../Card-wapper";
-import { Link, useNavigate, useSearchParams } from "react-router";
-import { getLoggedInUser, logInuser, resolveEmailFromIdentifier } from "@/services/auth";
+import { Link, useNavigate } from "react-router";
+import { getLoggedInUser, logInuser, resolveEmailFromIdentifier, resolvePostAuthRoute } from "@/services/auth";
 import { Eye, EyeOff } from "lucide-react";
 import { ErrorHandler, SuccessHandler } from "@/lib/toastHandlers";
 import { DoNothing } from "@/lib/utils";
@@ -17,10 +17,6 @@ import { AuthInput } from "../ui/authInput";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
-
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo");
-  console.log("redirectTo", redirectTo);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -51,17 +47,16 @@ export const LoginForm = () => {
       setIsCompleteField(true); // Disable button while processing
 
       const email = await resolveEmailFromIdentifier(identifier);
-      const loggedIn = await logInuser(email, password);
+      const userDetails = await logInuser(email, password);
 
-      if (!loggedIn) {
+      if (!userDetails) {
         throw new Error("No logged in");
       } else {
         SuccessHandler("Logged In successfully");
       }
 
       setTimeout(() => {
-        // navigate(redirectTo || "/history");
-        navigate("/update");
+        navigate(resolvePostAuthRoute(userDetails));
       }, 100);
     } catch (error: any) {
       console.log("login error", error);
@@ -77,7 +72,7 @@ export const LoginForm = () => {
       const isLoggedIn = await getLoggedInUser();
 
       if (isLoggedIn) {
-        navigate("/dashboard");
+        navigate(resolvePostAuthRoute(isLoggedIn));
       }
     };
 

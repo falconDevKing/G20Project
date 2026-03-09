@@ -93,6 +93,15 @@ export type ChapterUpdateType = {
 };
 
 export type PartnerRowType = {
+  g20_active: boolean | null;
+  proposed_payment_scheduled: boolean | null;
+  married: boolean | null;
+  voluntary_participation: boolean | null;
+  attestation: boolean | null;
+  marriage_anniversary: string | null;
+  g20_category: string | null;
+  g20_amount: number | null;
+  motivation: string | null;
   address: string | null;
   birth_day_mmdd: string | null;
   chapter_id: string | null;
@@ -127,6 +136,11 @@ export type PartnerRowType = {
   remission_start_date: string | null;
   status: string | null;
   stripe_customer_id: string | null;
+  g20_subscription_ids: Record<string, any>[] | null;
+  g20_paystack_customer_code: string | null;
+  g20_paystack_customer_id: string | null;
+  g20_paystack_authorization_code: string | null;
+  g20_paystack_authorization_details: Record<string, any> | null;
   subscription_ids: string[] | null;
   unique_code: string | null;
   updated_at: string | null;
@@ -134,6 +148,15 @@ export type PartnerRowType = {
   assistant: boolean;
 };
 export type PartnerInsertType = {
+  g20_active?: boolean | null;
+  proposed_payment_scheduled?: boolean | null;
+  married?: boolean | null;
+  voluntary_participation?: boolean | null;
+  attestation?: boolean | null;
+  marriage_anniversary?: string | null;
+  g20_category?: string | null;
+  g20_amount?: number | null;
+  motivation?: string | null;
   address?: string | null;
   birth_day_mmdd?: string | null;
   chapter_id?: string | null;
@@ -168,6 +191,11 @@ export type PartnerInsertType = {
   remission_start_date?: string | null;
   status?: string | null;
   stripe_customer_id?: string | null;
+  g20_subscription_ids?: Record<string, any>[] | null;
+  g20_paystack_customer_code?: string | null;
+  g20_paystack_customer_id?: string | null;
+  g20_paystack_authorization_code?: string | null;
+  g20_paystack_authorization_details?: Record<string, any> | null;
   subscription_ids?: string[] | null;
   unique_code?: string | null;
   updated_at?: string | null;
@@ -175,6 +203,15 @@ export type PartnerInsertType = {
   assistant?: boolean;
 };
 export type PartnerUpdateType = {
+  g20_active?: boolean | null;
+  proposed_payment_scheduled?: boolean | null;
+  married?: boolean | null;
+  voluntary_participation?: boolean | null;
+  attestation?: boolean | null;
+  marriage_anniversary?: string | null;
+  g20_category?: string | null;
+  g20_amount?: number | null;
+  motivation?: string | null;
   address?: string | null;
   birth_day_mmdd?: string | null;
   chapter_id?: string | null;
@@ -209,6 +246,11 @@ export type PartnerUpdateType = {
   remission_start_date?: string | null;
   status?: string | null;
   stripe_customer_id?: string | null;
+  g20_subscription_ids?: Record<string, any>[] | null;
+  g20_paystack_customer_code?: string | null;
+  g20_paystack_customer_id?: string | null;
+  g20_paystack_authorization_code?: string | null;
+  g20_paystack_authorization_details?: Record<string, any> | null;
   subscription_ids?: string[] | null;
   unique_code?: string | null;
   updated_at?: string | null;
@@ -310,6 +352,96 @@ export type PaymentUpdateType = {
   updated_at?: string | null;
   user_id?: string | null;
   user_name?: string | null;
+};
+
+export type G20PaymentRowType = {
+  id: string;
+  created_at: string | null;
+  updated_at: string | null;
+  user_id: string;
+  organisation_id: string | null;
+  division_id: string | null;
+  chapter_id: string | null;
+  unique_code: string | null;
+  email: string;
+  first_name: string;
+  last_name: string;
+  payment_date: string;
+  amount: number;
+  currency: string;
+  status: string;
+  payment_channel: string | null;
+  payment_method: string | null;
+  payment_reference: string | null;
+  receipt_url: string | null;
+  proof_file_path: string | null;
+  description: string | null;
+  metadata: Record<string, any> | null;
+  approved_by: string | null;
+  approved_by_id: string | null;
+  approved_by_image: string | null;
+  recorded_by: string | null;
+  recorded_by_id: string | null;
+};
+
+export type G20PaymentInsertType = {
+  id?: string;
+  created_at?: string | null;
+  updated_at?: string | null;
+  user_id: string;
+  organisation_id?: string | null;
+  division_id?: string | null;
+  chapter_id?: string | null;
+  unique_code?: string | null;
+  email: string;
+  first_name: string;
+  last_name: string;
+  payment_date: string;
+  amount: number;
+  currency?: string;
+  status?: string;
+  payment_channel?: string | null;
+  payment_method?: string | null;
+  payment_reference?: string | null;
+  receipt_url?: string | null;
+  proof_file_path?: string | null;
+  description?: string | null;
+  metadata?: Record<string, any> | null;
+  approved_by?: string | null;
+  approved_by_id?: string | null;
+  approved_by_image?: string | null;
+  recorded_by?: string | null;
+  recorded_by_id?: string | null;
+};
+
+export type G20PaymentUpdateType = {
+  id?: string;
+  created_at?: string | null;
+  updated_at?: string | null;
+  user_id?: string;
+  organisation_id?: string | null;
+  division_id?: string | null;
+  chapter_id?: string | null;
+  unique_code?: string | null;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  payment_date?: string;
+  amount?: number;
+  currency?: string;
+  status?: string;
+  payment_channel?: string | null;
+  payment_method?: string | null;
+  payment_reference?: string | null;
+  receipt_url?: string | null;
+  proof_file_path?: string | null;
+  description?: string | null;
+  metadata?: Record<string, any> | null;
+  approved_by?: string | null;
+  approved_by_id?: string | null;
+  approved_by_image?: string | null;
+  recorded_by?: string | null;
+  recorded_by_id?: string | null;
 };
 
 export type PaystactRecurringPaymentsRowType = {
@@ -437,62 +569,39 @@ export type PaystactPendingPaymentsUpdateType = {
   user_name?: string | null;
 };
 
-export type G20PartnerRowType = {
-  chapter_id: string | null;
-  created_at: string | null;
-  division_id: string | null;
-  email: string;
-  first_name: string;
-  forced: string | null;
+export type ProposedPaymentScheduleRowType = {
   id: string;
-  last_name: string;
-  motivation: string | null;
-  name: string | null;
-  name_code: string | null;
-  organisation_id: string | null;
-  phone_number: string | null;
-  region_id: string | null;
-  remitted: string | null;
+  created_at: string;
+  user_id: string;
+  schedule_year: number;
+  schedule_index: number;
+  proposed_amount: number;
+  proposed_date: string;
   unique_code: string | null;
-  g20_category: string | null;
-  amount: string | null;
-  updated_at: string | null;
-};
-export type G20PartnerInsertType = {
-  chapter_id?: string | null;
-  created_at?: string | null;
-  division_id?: string | null;
+  organisation_id: string | null;
+  division_id: string | null;
+  chapter_id: string | null;
   email: string;
   first_name: string;
-  forced?: string | null;
-  id?: string;
   last_name: string;
-  motivation?: string | null;
-  name?: string | null;
-  name_code?: string | null;
-  organisation_id?: string | null;
-  phone_number?: string | null;
-  region_id?: string | null;
-  remitted?: string | null;
-  unique_code?: string | null;
-  updated_at?: string | null;
+  status: "pending" | "missed" | "cleared";
 };
-export type G20PartnerUpdateType = {
-  chapter_id?: string | null;
-  created_at?: string | null;
-  division_id?: string | null;
-  email?: string;
-  first_name?: string;
-  forced?: string | null;
+
+export type ProposedPaymentScheduleInsertType = {
   id?: string;
-  last_name?: string;
-  motivation?: string | null;
-  name?: string | null;
-  name_code?: string | null;
-  organisation_id?: string | null;
-  phone_number?: string | null;
-  region_id?: string | null;
-  remitted?: string | null;
+  created_at?: string;
+  user_id: string;
+  schedule_year: number;
+  schedule_index: number;
+  proposed_amount: number;
+  proposed_date: string;
   unique_code?: string | null;
-  updated_at?: string | null;
+  organisation_id?: string | null;
+  division_id?: string | null;
+  chapter_id?: string | null;
+  email: string;
+  first_name: string;
+  last_name: string;
+  status?: "pending" | "missed" | "cleared";
 };
+

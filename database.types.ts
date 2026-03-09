@@ -110,91 +110,50 @@ export type Database = {
           },
         ]
       }
-      g20_partner: {
+      mailing_media: {
         Row: {
-          chapter_id: string | null
-          created_at: string | null
+          created_at: string
           division_id: string | null
-          email: string
-          first_name: string
-          forced: string | null
           id: string
-          last_name: string
-          motivation: string | null
-          name: string | null
-          name_code: string | null
-          organisation_id: string | null
-          phone_number: string | null
-          region_id: string | null
-          remitted: string | null
-          unique_code: string | null
+          media_name: string | null
+          media_url: string | null
           updated_at: string | null
+          uploader_id: string | null
+          uploader_name: string | null
         }
         Insert: {
-          chapter_id?: string | null
-          created_at?: string | null
+          created_at?: string
           division_id?: string | null
-          email: string
-          first_name: string
-          forced?: string | null
           id?: string
-          last_name: string
-          motivation?: string | null
-          name?: string | null
-          name_code?: string | null
-          organisation_id?: string | null
-          phone_number?: string | null
-          region_id?: string | null
-          remitted?: string | null
-          unique_code?: string | null
+          media_name?: string | null
+          media_url?: string | null
           updated_at?: string | null
+          uploader_id?: string | null
+          uploader_name?: string | null
         }
         Update: {
-          chapter_id?: string | null
-          created_at?: string | null
+          created_at?: string
           division_id?: string | null
-          email?: string
-          first_name?: string
-          forced?: string | null
           id?: string
-          last_name?: string
-          motivation?: string | null
-          name?: string | null
-          name_code?: string | null
-          organisation_id?: string | null
-          phone_number?: string | null
-          region_id?: string | null
-          remitted?: string | null
-          unique_code?: string | null
+          media_name?: string | null
+          media_url?: string | null
           updated_at?: string | null
+          uploader_id?: string | null
+          uploader_name?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "g20partner_chapter_id_fkey"
-            columns: ["chapter_id"]
-            isOneToOne: false
-            referencedRelation: "chapter"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "g20partner_division_id_fkey"
+            foreignKeyName: "mailing_media_division_id_fkey"
             columns: ["division_id"]
             isOneToOne: false
             referencedRelation: "division"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "g20partner_organisation_id_fkey"
-            columns: ["organisation_id"]
+            foreignKeyName: "mailing_media_uploader_id_fkey"
+            columns: ["uploader_id"]
             isOneToOne: false
-            referencedRelation: "organisation"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "g20partner_region_id_fkey"
-            columns: ["region_id"]
-            isOneToOne: false
-            referencedRelation: "region"
+            referencedRelation: "partner"
             referencedColumns: ["id"]
           },
         ]
@@ -225,7 +184,9 @@ export type Database = {
       }
       partner: {
         Row: {
+          active_recurring_remission: boolean | null
           address: string | null
+          assistant: boolean | null
           birth_day_mmdd: string | null
           chapter_id: string | null
           cognito_user_id: string | null
@@ -235,6 +196,7 @@ export type Database = {
           email: string
           first_name: string
           gender: string | null
+          ggp_amount: number | null
           ggp_category: string
           id: string
           image_url: string | null
@@ -255,6 +217,7 @@ export type Database = {
           permission_access: string[] | null
           permission_type: string | null
           phone_number: string | null
+          preferred_remission_day: number | null
           region_id: string | null
           remission_start_date: string | null
           status: string | null
@@ -265,7 +228,9 @@ export type Database = {
           verified: boolean
         }
         Insert: {
+          active_recurring_remission?: boolean | null
           address?: string | null
+          assistant?: boolean | null
           birth_day_mmdd?: string | null
           chapter_id?: string | null
           cognito_user_id?: string | null
@@ -275,6 +240,7 @@ export type Database = {
           email: string
           first_name: string
           gender?: string | null
+          ggp_amount?: number | null
           ggp_category: string
           id?: string
           image_url?: string | null
@@ -295,6 +261,7 @@ export type Database = {
           permission_access?: string[] | null
           permission_type?: string | null
           phone_number?: string | null
+          preferred_remission_day?: number | null
           region_id?: string | null
           remission_start_date?: string | null
           status?: string | null
@@ -305,7 +272,9 @@ export type Database = {
           verified: boolean
         }
         Update: {
+          active_recurring_remission?: boolean | null
           address?: string | null
+          assistant?: boolean | null
           birth_day_mmdd?: string | null
           chapter_id?: string | null
           cognito_user_id?: string | null
@@ -315,6 +284,7 @@ export type Database = {
           email?: string
           first_name?: string
           gender?: string | null
+          ggp_amount?: number | null
           ggp_category?: string
           id?: string
           image_url?: string | null
@@ -335,6 +305,7 @@ export type Database = {
           permission_access?: string[] | null
           permission_type?: string | null
           phone_number?: string | null
+          preferred_remission_day?: number | null
           region_id?: string | null
           remission_start_date?: string | null
           status?: string | null
@@ -394,6 +365,7 @@ export type Database = {
           gbp_equivalent: number | null
           id: string
           is_converted: boolean | null
+          name_code: string | null
           organisation_id: string | null
           payment_date: string | null
           recurring_id: string | null
@@ -425,6 +397,7 @@ export type Database = {
           gbp_equivalent?: number | null
           id?: string
           is_converted?: boolean | null
+          name_code?: string | null
           organisation_id?: string | null
           payment_date?: string | null
           recurring_id?: string | null
@@ -456,6 +429,7 @@ export type Database = {
           gbp_equivalent?: number | null
           id?: string
           is_converted?: boolean | null
+          name_code?: string | null
           organisation_id?: string | null
           payment_date?: string | null
           recurring_id?: string | null
@@ -740,10 +714,49 @@ export type Database = {
         Args: { input_chapter_id?: string; input_division_id?: string }
         Returns: Json
       }
+      get_partnership_totals: {
+        Args: { p_chapter_id?: string; p_division_id?: string }
+        Returns: {
+          currency: string
+          total_value: number
+        }[]
+      }
       get_remission_metrics_filtered: {
         Args: { input_chapter_id?: string; input_division_id?: string }
         Returns: Json
       }
+      get_remission_totals_by_period:
+        | {
+            Args: {
+              p_chapter_id?: string
+              p_division_id?: string
+              p_remission_month: string
+              p_remission_year: string
+            }
+            Returns: {
+              currency: string
+              offline_value: number
+              online_count: number
+              online_value: number
+              total_count: number
+              total_value: number
+            }[]
+          }
+        | {
+            Args: {
+              p_chapter_id?: string
+              p_division_id?: string
+              p_remission_period: string
+            }
+            Returns: {
+              currency: string
+              offline_value: number
+              online_count: number
+              online_value: number
+              total_count: number
+              total_value: number
+            }[]
+          }
     }
     Enums: {
       [_ in never]: never

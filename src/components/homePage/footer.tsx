@@ -12,7 +12,7 @@ const contacts: ContactCard[] = [
   },
   {
     title: "Phone",
-    lines: [], //["+44 7840 303 710", "+44 7727 683 097"],
+    lines: [],
     hrefs: [
       { label: "Call +44 7840 303 710", href: "tel:+447840303710" },
       { label: "Call +44 7727 683 097", href: "tel:+447727683097" },
@@ -22,38 +22,34 @@ const contacts: ContactCard[] = [
 
 const Footer = () => {
   return (
-    <div>
-      {" "}
-      {/* FOOTER CONTACT (matches your simple black footer) */}
-      <footer id="contact" className="border-t border-white/10 bg-black px-24">
-        <div className="mx-auto  px-4 py-14 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
-            {contacts.map((c) => (
-              <div key={c.title}>
-                <p className="text-lg font-semibold text-white">{c.title}</p>
-                <div className="mt-4 space-y-2 text-sm text-white/70">
-                  {c?.lines.map((line) => (
-                    <p key={line}>{line}</p>
+    <footer id="contact" className="border-t border-[#29334a] bg-[#0f1728] px-24">
+      <div className="mx-auto px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
+          {contacts.map((c) => (
+            <div key={c.title} className="rounded-2xl border border-[#2e3a55] bg-[#111c31] p-5">
+              <p className="text-lg font-semibold text-[#f8f1e3]">{c.title}</p>
+              <div className="mt-4 space-y-2 text-sm text-[#c8d5ef]">
+                {c?.lines.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
+
+              {c.hrefs?.length ? (
+                <div className="mt-4 flex flex-col space-y-2">
+                  {c.hrefs.map((h) => (
+                    <a key={h.href} href={h.href} className="inline-flex text-sm font-semibold text-[#f0cf86] hover:text-[#f7deaa]">
+                      {h.label}
+                    </a>
                   ))}
                 </div>
-
-                {c.hrefs?.length ? (
-                  <div className="flex flex-col mt-4 space-y-2">
-                    {c.hrefs.map((h) => (
-                      <a key={h.href} href={h.href} className="inline-flex text-sm font-semibold text-gold-300 hover:text-gold-200">
-                        {h.label}
-                      </a>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 border-t border-white/10 pt-8 text-center text-sm text-white/50">Â© {new Date().getFullYear()}. All rights reserved.</div>
+              ) : null}
+            </div>
+          ))}
         </div>
-      </footer>
-    </div>
+
+        <div className="mt-12 border-t border-[#29334a] pt-8 text-center text-sm text-[#9eb0d2]">© {new Date().getFullYear()}. All rights reserved.</div>
+      </div>
+    </footer>
   );
 };
 

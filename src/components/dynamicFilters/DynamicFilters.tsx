@@ -8,7 +8,7 @@ import SupabaseClient from "@/supabase/supabaseConnection";
 import { Plus, X, SearchX, ListFilterPlus } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { dynamicFilterSchema, DynamicFilterSchema } from "@/lib/schemas";
-import { filterFieldsOptions, filterOperatorsOptionsCreator, FilterType, HoGFilterFieldsOptions, StringRange } from "./filterOptions";
+import { filterFieldsOptions, filterOperatorsOptionsCreator, FilterType, StringRange } from "./filterOptions";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import {
   activeRecurringRemissionFilterOptions,
@@ -32,10 +32,14 @@ import { AltDayPicker } from "./AltDayPicker";
 
 interface DynamicFilterProps {
   name?: string;
-  filterType: "Payment" | "Partner" | "G20_Partner";
+  filterType: "Payment" | "Partner";
   allow: "Individual" | "Admin";
   permission_type?: string;
   paymentType: string;
+  tableName?: string;
+  allowedFieldValues?: string[];
+  sortBy?: { field: string; ascending: boolean }[];
+  customStatusOptions?: { name: string; value: string }[];
   updateTableData: (data: Record<string, any>[]) => void;
   updateTableDataCount: (data: number) => void;
   page: number;
@@ -58,6 +62,10 @@ export const DynamicFilter = ({
   filterType,
   allow,
   permission_type = "individual",
+  tableName,
+  allowedFieldValues,
+  sortBy,
+  customStatusOptions,
   updateTableData,
   updateTableDataCount,
   paymentType = "",
@@ -87,13 +95,21 @@ export const DynamicFilter = ({
     : null;
 
   const filterOperatorsOptions = filterOperatorsOptionsCreator(permission_type);
+  const isPendingRemissions = paymentType === "pendingRemissions";
+  const paymentStatusToUse = isPendingRemissions ? "Pending" : "all";
+  const scheduleYearOptions = Array.from({ length: 10 }, (_, index) => String(2026 - index));
+  const fieldsOptionsToUse = filterFieldsOptions
+    .filter((field) => field.allow.includes(allow) && field.filterType.includes(filterType))
+    .filter((field) => (allowedFieldValues?.length ? allowedFieldValues.includes(field.value) : true));
+  const hasStatusField = fieldsOptionsToUse.some((field) => field.value === "status");
+  const defaultFilterField = (hasStatusField ? "status" : fieldsOptionsToUse[0]?.value || "name_code") as DynamicFilterSchema["filters"][number]["field"];
+  const defaultFilterOperator = (defaultFilterField === "name_code" ? "Contains" : "Equals") as DynamicFilterSchema["filters"][number]["operator"];
+  const defaultFilterValue = (defaultFilterField === "status" ? paymentStatusToUse : "") as filterValue;
   const filteredOptions = [filteredDivision, filteredChapter, filteredStatus].filter((filter) => !!filter);
 
   const appState = useAppSelector((state) => state.app);
   const user = useAppSelector((state) => state.auth.userDetails);
   const { DivisionOptions, ChapterOptions } = initialiseAdminOptions(appState);
-  const isPendingRemissions = paymentType === "pendingRemissions";
-  const paymentStatusToUse = isPendingRemissions ? "Pending" : "all";
 
   const [openDialog, setOpenDialog] = useState(false);
   const [filterPillsData, setFilterPillsData] = useState([{ field: "", operator: "", value: "" as filterValue }]);
@@ -108,7 +124,7 @@ export const DynamicFilter = ({
     resolver: zodResolver(dynamicFilterSchema),
     defaultValues: {
       filters: [
-        filterType === "G20_Partner" ? null : { field: "status", operator: "Equals", value: metricsFilters?.status || (paymentStatusToUse as filterValue) },
+        { field: defaultFilterField, operator: defaultFilterOperator, value: metricsFilters?.status || defaultFilterValue },
         ...(filteredOptions as any),
       ].filter(Boolean),
     },
@@ -184,7 +200,7 @@ export const DynamicFilter = ({
   const resetFilter = () => {
     setFilterPillsData([{ field: "", operator: "", value: "" as filterValue }]);
     reset({
-      filters: filterType === "G20_Partner" ? [] : [{ field: "status", operator: "Equals", value: paymentStatusToUse }],
+      filters: [{ field: defaultFilterField, operator: defaultFilterOperator, value: defaultFilterValue }],
     });
   };
 
@@ -192,11 +208,19 @@ export const DynamicFilter = ({
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
+    const sourceTable = tableName || filterType.toLowerCase();
     const sortField = filterType === "Payment" ? "payment_date" : "created_at";
-    let query = SupabaseClient.from(filterType.toLowerCase())
+    let query = SupabaseClient.from(sourceTable)
       .select("*", { count: "exact" }) // include total count for pagination
-      .order(sortField, { ascending: false })
       .range(from, to);
+
+    if (sortBy && sortBy.length) {
+      for (const sortConfig of sortBy) {
+        query = query.order(sortConfig.field, { ascending: sortConfig.ascending });
+      }
+    } else {
+      query = query.order(sortField, { ascending: false });
+    }
 
     if (permission_type === "individual" && filterType === "Payment") {
       query = query.eq("user_id", user.id);
@@ -226,9 +250,19 @@ export const DynamicFilter = ({
           const r = value as DateRange;
           if (field === "birth_day_mmdd") {
             r.from && query.eq(field, formatDateToMMDD(r.from));
-          } else if (field === "payment_date") {
+          } else if (["payment_date", "proposed_date"].includes(field)) {
             r.from && query.gte(field, new Date(r.from).toISOString().split("T")[0] + "T00:00:00.000Z");
             r.from && query.lte(field, new Date(r.from).toISOString().split("T")[0] + "T23:59:59.999Z");
+          } else if (field === "status" && sourceTable === "proposed_payment_schedule" && typeof value === "string") {
+            const statusValue = value.toLowerCase();
+            const today = new Date().toISOString().split("T")[0];
+            if (statusValue === "due") {
+              query = query.eq("status", "pending").lte("proposed_date", today);
+            } else {
+              query = query.eq(field, statusValue);
+            }
+          } else if (field === "schedule_year") {
+            query = query.eq(field, +value);
           } else if (field === "remission_period") {
             // array of "YYYY-MM" or similar, using your helper
             if (r.from && r.to) {
@@ -255,7 +289,7 @@ export const DynamicFilter = ({
             query = query.eq(field, +value);
           }
 
-          if (typeof value === "string" && !["active_recurring_remission", "online_payment"].includes(field)) {
+          if (typeof value === "string" && !["active_recurring_remission", "online_payment", "schedule_year", "status"].includes(field)) {
             query = query.eq(field, value);
           }
           break;
@@ -272,7 +306,7 @@ export const DynamicFilter = ({
           // date/range fields
           const r = value as DateRange;
 
-          if (field === "payment_date") {
+          if (["payment_date", "proposed_date"].includes(field)) {
             r.from && query.gte(field, new Date(r.from).toISOString().split("T")[0] + "T00:00:00.000Z");
             r.to && query.lte(field, new Date(r.to).toISOString().split("T")[0] + "T23:59:59.999Z");
           } else if (field === "birth_day_mmdd") {
@@ -285,6 +319,10 @@ export const DynamicFilter = ({
               if (months?.length) query = query.in(field, months);
             }
           } else if (field === "preferred_remission_day") {
+            const ss = value as StringRange;
+            ss.from && query.gte(field, +ss.from);
+            ss.to && query.lte(field, +ss.to);
+          } else if (field === "schedule_year") {
             const ss = value as StringRange;
             ss.from && query.gte(field, +ss.from);
             ss.to && query.lte(field, +ss.to);
@@ -331,7 +369,7 @@ export const DynamicFilter = ({
     setOpenDialog(false);
   };
 
-  const statusOptionsToUse = filterType === "Payment" ? PaymentStatusOptions : StatusOptions;
+  const statusOptionsToUse = customStatusOptions || (filterType === "Payment" ? PaymentStatusOptions : StatusOptions);
 
   const filters = watch("filters");
   const name_Code_Value = filters.find((f) => f.field === "name_code")?.value || "";
@@ -526,8 +564,7 @@ export const DynamicFilter = ({
                                 <SelectValue placeholder="Select Field" />
                               </SelectTrigger>
                               <SelectContent>
-                                {filterFieldsOptions
-                                  .filter((field) => field.allow.includes(allow) && field.filterType.includes(filterType))
+                                {fieldsOptionsToUse
                                   .map((f) => (
                                     <SelectItem key={f.value} value={f.value}>
                                       {f.label}
@@ -610,9 +647,8 @@ export const DynamicFilter = ({
                             <SelectValue placeholder="Select Field" />
                           </SelectTrigger>
                           <SelectContent>
-                            {[filterType === "G20_Partner" ? HoGFilterFieldsOptions : filterFieldsOptions]
+                            {[fieldsOptionsToUse]
                               .flat()
-                              .filter((field) => field.allow.includes(allow) && field.filterType.includes(filterType))
                               .filter((field) => (isPendingRemissions ? field.value !== "status" : true))
                               .map((f) => (
                                 <SelectItem key={f.value} value={f.value}>
@@ -645,7 +681,7 @@ export const DynamicFilter = ({
                     />
 
                     {/* Value Input */}
-                    {selectedField === "payment_date" ? (
+                    {["payment_date", "proposed_date"].includes(selectedField) ? (
                       <Controller
                         control={control}
                         name={`filters.${indexToUse}.value`}
@@ -655,7 +691,7 @@ export const DynamicFilter = ({
                             return (
                               <AltDayPicker
                                 value={value?.from as Date}
-                                placeholder="Payment Date"
+                                placeholder={selectedField === "payment_date" ? "Payment Date" : "Proposed Date"}
                                 months={1}
                                 type={selectedField}
                                 onChange={(date) =>
@@ -673,9 +709,82 @@ export const DynamicFilter = ({
                           } else {
                             const value = isRange(field.value) ? field.value : undefined; // coerce safely
                             return (
-                              <RangePicker value={value as DateRange} onChange={field.onChange} placeholder="Payment Date" months={2} type={selectedField} />
+                              <RangePicker
+                                value={value as DateRange}
+                                onChange={field.onChange}
+                                placeholder={selectedField === "payment_date" ? "Payment Date" : "Proposed Date"}
+                                months={2}
+                                type={selectedField}
+                              />
                             );
                           }
+                        }}
+                      />
+                    ) : selectedField === "schedule_year" ? (
+                      <Controller
+                        control={control}
+                        name={`filters.${indexToUse}.value`}
+                        render={({ field }) => {
+                          return isEqualsOperator ? (
+                            <Select onValueChange={field.onChange} value={field.value as string}>
+                              <SelectTrigger className="w-[240px] shad-select-trigger">
+                                <SelectValue placeholder="Select Scheduled Year" />
+                              </SelectTrigger>
+                              <SelectContent className="shad-select-content">
+                                {scheduleYearOptions.map((year) => (
+                                  <SelectItem key={year} value={year}>
+                                    {year}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <div className="flex items-center justify-evenly gap-1">
+                              <Select
+                                value={(field.value as StringRange)?.from || ""}
+                                onValueChange={(value) => {
+                                  setValue(
+                                    `filters.${indexToUse}.value`,
+                                    { ...(watch(`filters.${indexToUse}.value`) as StringRange), from: value } as { from: string; to: string },
+                                    { shouldDirty: true, shouldValidate: true },
+                                  );
+                                }}
+                              >
+                                <SelectTrigger className="w-[120px] shad-select-trigger">
+                                  <SelectValue placeholder="From" />
+                                </SelectTrigger>
+                                <SelectContent className="shad-select-content">
+                                  {scheduleYearOptions.map((year) => (
+                                    <SelectItem key={`from-${year}`} value={year}>
+                                      {year}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              -
+                              <Select
+                                value={(field.value as StringRange)?.to || ""}
+                                onValueChange={(value) => {
+                                  setValue(
+                                    `filters.${indexToUse}.value`,
+                                    { ...(watch(`filters.${indexToUse}.value`) as StringRange), to: value } as { from: string; to: string },
+                                    { shouldDirty: true, shouldValidate: true },
+                                  );
+                                }}
+                              >
+                                <SelectTrigger className="w-[120px] shad-select-trigger">
+                                  <SelectValue placeholder="To" />
+                                </SelectTrigger>
+                                <SelectContent className="shad-select-content">
+                                  {scheduleYearOptions.map((year) => (
+                                    <SelectItem key={`to-${year}`} value={year}>
+                                      {year}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          );
                         }}
                       />
                     ) : selectedField === "birth_day_mmdd" ? (

@@ -1,303 +1,328 @@
-import { useAppSelector, useAppDispatch } from "@/redux/hooks";
-import { AlertCircle, CircleCheckBig } from "lucide-react";
-// import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import type { ColumnDef } from "@tanstack/react-table";
+import { CreditCard, DatabaseBackup, Shield, Sparkles } from "lucide-react";
 import dayjs from "dayjs";
-import { cn, getDashboardSummary, initialiseDataList } from "@/lib/utils";
+
+import { useAppSelector } from "@/redux/hooks";
 import { numberWithCurrencyFormatter } from "@/lib/numberUtils";
-import { findChapterDetails } from "@/services/payment";
-import { MakeOnlineMonthlyPayment } from "../paymentHistoryTable/makeOnlineMonthlyPayment";
-import { getUserPayments } from "@/redux/paymentSlice";
-import { UpdateOnlineMonthlyStripePayment } from "../paymentHistoryTable/updateOnlineMonthlyStripePayment";
-import { UpdateOnlineMonthlyPaystackPayment } from "../paymentHistoryTable/updateOnlineMonthlyPaystackPayment";
-import { Button } from "../ui/button";
-import { Link } from "react-router";
-import DashboardHeader from "./dashboardHeader";
-import DataTable from "../paymentHistoryTable/table";
-import { paymentDetailsOrder, userColumns } from "@/constants";
-import { LogPayment } from "../paymentHistoryTable/logPayment";
-import { useEffect, useRef, useState } from "react";
-import { DynamicFilter } from "../dynamicFilters/DynamicFilters";
-import { CombinedOnlinePayment } from "../paymentHistoryTable/CombinedOnlinePayment";
-import { refreshLoggedInUser } from "@/services/auth";
-import { PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
-// import { useSmartDebounce } from "@/hooks/useSmartDebounce";
-// import SupabaseClient from "@/supabase/supabaseConnection";
-import { DummyObject } from "@/interfaces/tools";
-import PaymentLogNotification from "@/mailTemplates/paymentLogNotificationNew";
-import { sendPaymentLogNotificationMessage } from "@/services/twilioMessaging";
-import { sendEmail } from "@/services/sendMail";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { DynamicFilter } from "@/components/dynamicFilters/DynamicFilters";
+import { CombinedOnlinePayment } from "@/components/paymentHistoryTable/CombinedOnlinePayment";
 
-// const PAGE_SIZE = 10;
+import { G20DashboardHeader } from "./g20DashboardHeader";
+import { SimpleTable } from "./SimpleTable";
+import { UpdateProposedScheduleDrawer } from "./updateProposedScheduleDrawer";
+import { G20LogOfflinePayment } from "./g20LogOfflinePayment";
+import { G20PaymentDetailsDrawer } from "./g20PaymentDetailsDrawer";
+import {
+  fetchG20AutomationState,
+  fetchG20PaymentStats,
+  fetchProposedScheduleRowsByYear,
+  getProposedDisplayStatus,
+  isG20Automated,
+} from "@/services/g20Dashboard";
+import { getNextOct30Window } from "@/services/proposedSchedule";
+import type { G20PaymentRowType, PartnerRowType } from "@/supabase/modifiedSupabaseTypes";
+import { CapitaliseText } from "@/lib/textUtils";
 
-export default function DashboardCom() {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.userDetails);
-  const userPayments = useAppSelector((state) => state.payment.userPayments);
-
-  const userRemissionStartDate = user.remission_start_date;
-  const remissionStartMonth = userRemissionStartDate && dayjs(userRemissionStartDate).year() === dayjs().year() ? dayjs(userRemissionStartDate).month() : 0;
-  const summary = getDashboardSummary(userPayments, remissionStartMonth);
-  const { currency } = findChapterDetails(user.chapter_id);
-  const paystackSub = user?.paystack_monthly_payment_id;
-  const hasSubscription = !![user?.subscription_ids].flat().filter(Boolean).length || !!paystackSub;
-  // const hasSubscription = !!user?.paystack_monthly_payment_id;
-  const latestSubscription = user?.subscription_ids?.[user?.subscription_ids?.length - 1];
-
-  const permission_type = user.permission_type;
-  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "");
-
-  const filterData = () => {
-    dispatch(getUserPayments());
-  };
-
-  const metrics = [
-    {
-      title: "Total Payments Remitted",
-      value: summary.noOfPaymentsMade,
-      icon: <CircleCheckBig size={20} className="text-[#039855]" strokeWidth={2} />,
-    },
-    {
-      title: "Total Payments Missed",
-      value: summary.paymentsMonthsMissed,
-      icon: <AlertCircle className="text-[#D92D20]" size={20} strokeWidth={2} />,
-    },
-    {
-      title: "Total Amount Remitted",
-      value: numberWithCurrencyFormatter(currency || "GBP", summary.totalPaymentAmount),
-      icon: <CircleCheckBig size={20} className="text-[#039855]" strokeWidth={2} />,
-    },
-  ];
-
-  const timeoutRef = useRef<number | null>(null);
-
-  const handleBankPopupClosed = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = window.setTimeout(() => {
-      dispatch(getUserPayments());
-    }, 7_000);
-  };
-
-  const appState = useAppSelector((state) => state.app);
-
-  // const isIndividual = user.permission_type === "individual";
-  // const permission_type = user.permission_type || "";
-
-  const { modifiedChapters } = initialiseDataList(appState);
-
-  const [tableData, setTableData] = useState<PaymentRowType[]>(userPayments);
-  const [tableDataCount, setTableDataCount] = useState<number>(1);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState("10");
-
-  const updateTableData = (data: Record<string, any>[]) => {
-    setTableData(data as PaymentRowType[]);
-  };
-  const updateTableDataCount = (count: number) => {
-    setTableDataCount(count);
-  };
-
-  // const fetchFilteredData = async (page: number) => {
-  //   const from = (page - 1) * PAGE_SIZE;
-  //   const to = from + PAGE_SIZE - 1;
-
-  //   let query = SupabaseClient.from("payment")
-  //     .select("*", { count: "exact" }) // include total count for pagination
-  //     .order("payment_date", { ascending: false })
-  //     .range(from, to)
-  //     .eq("user_id", user.id);
-
-  //   const { data, count, error } = await query;
-
-  //   if (error) throw error;
-
-  //   updateTableData(data);
-  //   updateTableDataCount(count || 1);
-  // };
-
-  // // ADD DEBOUNCE TO FILTER
-  // const debouncedFilter = useSmartDebounce(() => fetchFilteredData(page), 500);
-
-  // const filterTableData = useCallback(() => {
-  //   // listen for changes to run filter
-  //   // setPage(1);
-  //   debouncedFilter();
-  // }, [page]);
-
-  const postLogPaymentProcessing = async ({
-    user_name,
-    currency,
-    amount,
-    remission_period,
-    payment_date,
-    chapterName,
-    payerDataUser_id,
-    userId,
-    chapterReps,
-  }: {
-    user_name: string;
-    currency: string;
-    amount: number;
-    remission_period: string;
-    payment_date: string;
-    chapterName: string;
-    payerDataUser_id: string;
-    userId: string;
-    chapterReps: DummyObject[];
-  }) => {
-    try {
-      filterData();
-
-      // send Mail to client
-      const mailSubject = `Remission Approval Pending — Action Required`;
-      const mailBody = PaymentLogNotification({
-        first_name: user_name,
-        currency,
-        amount: +amount,
-        remission_period,
-        remissionDate: dayjs(payment_date).format("MMMM DD, YYYY"),
-        baseUrl: import.meta.env.VITE_APP_BASE_URL || "",
-        chapterName,
-      });
-
-      const paymentRepsMail = (chapterReps || []).map((rep: DummyObject) => rep?.email || "").filter(Boolean);
-      await sendEmail({ to: paymentRepsMail, mailSubject, mailBody });
-
-      const paymentRepsPhoneMessagePromise = (chapterReps || []).map(async (rep) => {
-        const { phone_number, name } = rep;
-        if (phone_number) {
-          await sendPaymentLogNotificationMessage({
-            to: phone_number,
-            name,
-            remission_period,
-            remission_amount: numberWithCurrencyFormatter(currency, amount),
-            payment_date: dayjs(payment_date).format("MMMM DD, YYYY"),
-            chapter_name: chapterName,
-          });
-        }
-      });
-
-      await Promise.all(paymentRepsPhoneMessagePromise);
-
-      dispatch(getUserPayments());
-
-      if (userId === payerDataUser_id) {
-        await refreshLoggedInUser(userId || "");
-        filterData();
-      }
-    } catch (error: any) {
-      console.log("postLogPaymentProcessing user", error?.message, error);
-    }
-  };
-
-  useEffect(() => {
-    filterData();
-  }, [filterData]);
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+const ApprovedByCell = ({ approvedBy, status }: { approvedBy: string; status: string }) => {
+  const label = approvedBy || status || "-";
+  const initials = label
+    .split(" ")
+    .map((part) => part?.[0] || "")
+    .join("")
+    .toUpperCase();
 
   return (
-    <div>
-      <DashboardHeader />
-      <div className="p-6 lg:px-24">
-        <div className="flex flex-col md:flex-row md:justify-between gap-x-2">
+    <div className="flex items-center gap-2">
+      <Avatar className="h-8 w-8">
+        <AvatarFallback>{initials || "NA"}</AvatarFallback>
+      </Avatar>
+      <span>{label}</span>
+    </div>
+  );
+};
+
+export default function DashboardCom() {
+  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.auth.userDetails) as PartnerRowType;
+
+  const [activeTab, setActiveTab] = useState("actual-payments");
+  const [updateScheduleOpen, setUpdateScheduleOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const [stats, setStats] = useState({ total_count: 0, total_value: 0 });
+  const [automated, setAutomated] = useState(isG20Automated(user));
+
+  const [actualData, setActualData] = useState<Record<string, any>[]>([]);
+  const [actualCount, setActualCount] = useState(1);
+  const [actualPage, setActualPage] = useState(1);
+  const [actualPageSize, setActualPageSize] = useState("10");
+
+  const [proposedData, setProposedData] = useState<Record<string, any>[]>([]);
+  const [proposedCount, setProposedCount] = useState(1);
+  const [proposedPage, setProposedPage] = useState(1);
+  const [proposedPageSize, setProposedPageSize] = useState("10");
+
+  const [selectedPayment, setSelectedPayment] = useState<G20PaymentRowType | null>(null);
+  const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false);
+
+  const permissionType = user.permission_type || "individual";
+  const isAdmin = ["chapter", "division", "organisation"].includes(permissionType);
+
+  const { scheduleYear } = useMemo(() => getNextOct30Window(), []);
+
+  const reloadHeaderStats = useCallback(async () => {
+    if (!user?.id) {
+      return;
+    }
+
+    const [paymentStats, automationState] = await Promise.all([fetchG20PaymentStats(user.id), fetchG20AutomationState(user.id)]);
+
+    setStats(paymentStats);
+    setAutomated(automationState.automated);
+  }, [user?.id]);
+
+  const refreshProposedTableAfterSave = useCallback(async () => {
+    if (!user?.id) {
+      return;
+    }
+
+    const yearRows = await fetchProposedScheduleRowsByYear(user.id, scheduleYear);
+    setProposedCount(yearRows.length);
+
+    setRefreshKey((prev) => prev + 1);
+    await reloadHeaderStats();
+  }, [reloadHeaderStats, scheduleYear, user?.id]);
+
+  useEffect(() => {
+    reloadHeaderStats();
+  }, [reloadHeaderStats, refreshKey]);
+
+  const actualPaymentColumns = useMemo<ColumnDef<Record<string, any>>[]>(
+    () => [
+      {
+        accessorKey: "payment_date",
+        header: "Payment Date",
+        cell: ({ row }) => dayjs(row.original.payment_date).format("MMM DD, YYYY"),
+      },
+      {
+        accessorKey: "amount",
+        header: "Amount",
+        cell: ({ row }) => numberWithCurrencyFormatter(row.original.currency || "NGN", Number(row.original.amount || 0)),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+      },
+      {
+        accessorKey: "payment_method",
+        header: "Channel",
+        cell: ({ row }) => CapitaliseText(row.original.payment_channel || "") || "-",
+      },
+      {
+        accessorKey: "approved_by",
+        header: "Approved By",
+        cell: ({ row }) => <ApprovedByCell approvedBy={row.original.approved_by || ""} status={row.original.status || ""} />,
+      },
+    ],
+    [],
+  );
+
+  const proposedScheduleColumns = useMemo<ColumnDef<Record<string, any>>[]>(
+    () => [
+      {
+        accessorKey: "schedule_year",
+        header: "Scheduled Year",
+      },
+      {
+        accessorKey: "proposed_date",
+        header: "Proposed Date",
+        cell: ({ row }) => dayjs(row.original.proposed_date).format("MMM DD, YYYY"),
+      },
+      {
+        accessorKey: "proposed_amount",
+        header: "Proposed Amount",
+        cell: ({ row }) => numberWithCurrencyFormatter("NGN", Number(row.original.proposed_amount || 0)),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          const status = getProposedDisplayStatus(
+            row.original as {
+              status: "pending" | "missed" | "cleared";
+              proposed_date: string;
+            },
+          );
+          const badgeClass =
+            status === "cleared"
+              ? "bg-green-100 text-green-700 border-green-200"
+              : status === "missed"
+                ? "bg-red-100 text-red-700 border-red-200"
+                : status === "due"
+                  ? "bg-amber-100 text-amber-700 border-amber-200"
+                  : "bg-blue-100 text-blue-700 border-blue-200";
+          return <Badge className={`capitalize ${badgeClass}`}>{status}</Badge>;
+        },
+      },
+      {
+        accessorKey: "schedule_index",
+        header: "Line",
+      },
+    ],
+    [],
+  );
+
+  return (
+    <div className="min-h-screen bg-[#F8F4EA] dark:bg-[#101114]">
+      <G20DashboardHeader />
+
+      <div className="px-4 md:px-12 lg:px-24 py-6 space-y-6">
+        <section className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
           <div>
-            <div className="pt-2 text-2xl lg:text-3xl font-bold dark:text-GGP-darkGold">Welcome, {user.first_name}.</div>
-            <p className="max-w-[530px] mb-4 font-light text-base dark:text-white text-GGP-dark/75">
-              Thank you for your commitment towards your partnership. Below is the summary of your remissions.
-            </p>
+            <h1 className="text-2xl md:text-3xl font-semibold text-[#1E1E1E] dark:text-white">Welcome, {user.first_name || "Partner"}</h1>
+            <p className="text-[#475467] dark:text-gray-300 mt-1 max-w-2xl">Keep track of your commitments, payments, and proposed schedule in one place.</p>
           </div>
 
-          {isAdmin ? (
-            <div className=" flex flex-col md:flex-row md:items-center md:justify-end gap-2">
-              <CombinedOnlinePayment filterData={filterData} forUser handleBankPopupClosed={handleBankPopupClosed} />
-              <LogPayment filterData={filterData} forUser postLogPaymentProcessing={postLogPaymentProcessing} />
+          <div className="flex flex-wrap justify-start xl:justify-end gap-2">
+            <CombinedOnlinePayment filterData={() => setRefreshKey((prev) => prev + 1)} forUser />
+            <G20LogOfflinePayment onSaved={async () => setRefreshKey((prev) => prev + 1)} />
+            <Button variant="custom" size="lg" disabled={!isAdmin}>
+              <Link to="/overview">Access Admin Views</Link>
+            </Button>
+          </div>
+        </section>
 
-              <Button variant={"custom"} size={"lg"} className="w-full md:w-auto mb-6">
-                <Link to="/overview">Access Admin Views</Link>
-              </Button>
+        <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div className="rounded-xl bg-white dark:bg-[#1A1B20] border border-[#D4AF37]/25 dark:border-white/10 p-4">
+            <p className="text-sm text-[#667085] dark:text-gray-300">Total Paid Payments</p>
+            <p className="text-2xl font-bold text-[#1E1E1E] dark:text-white">{stats.total_count}</p>
+          </div>
+
+          <div className="rounded-xl bg-white dark:bg-[#1A1B20] border border-[#D4AF37]/25 dark:border-white/10 p-4">
+            <p className="text-sm text-[#667085] dark:text-gray-300">Total Paid Value</p>
+            <p className="text-2xl font-bold text-[#1E1E1E] dark:text-white">{numberWithCurrencyFormatter("NGN", stats.total_value)}</p>
+          </div>
+
+          <div className="rounded-xl bg-white dark:bg-[#1A1B20] border border-[#D4AF37]/25 dark:border-white/10 p-4 flex flex-col justify-between gap-3">
+            <div className="flex items-center gap-2 text-[#1E1E1E] dark:text-white font-medium">
+              <DatabaseBackup size={18} />
+              Update Proposed Schedule
             </div>
-          ) : (
-            ""
-          )}
-        </div>
+            <Button variant="outline" onClick={() => setUpdateScheduleOpen(true)}>
+              Open Drawer
+            </Button>
+          </div>
 
-        {/* Metrics */}
-        {/* Metrics */}
-        <div className="flex flex-col items-center md:flex-row gap-4 md:pb-9 mb-4 w-full">
-          {metrics.map((metric, idx) => {
-            const isMissed = metric.title === "Total Payments Missed";
+          <div className="rounded-xl bg-white dark:bg-[#1A1B20] border border-[#D4AF37]/25 dark:border-white/10 p-4 flex flex-col justify-between gap-3">
+            <div className="flex items-center gap-2 text-[#1E1E1E] dark:text-white font-medium">
+              {automated ? <Shield size={18} /> : <Sparkles size={18} />}
+              {automated ? "Manage Automated Payments" : "Automate Payments"}
+            </div>
+            <Button variant="outline" onClick={() => navigate("/guides")}>
+              {automated ? "Manage" : "Set Up"}
+            </Button>
+          </div>
+        </section>
 
-            return (
-              <div
-                key={idx + 1}
-                className="border border-[#CCA33D80] dark:bg-[#252525] dark:border-[#EDEDED24] w-full h-[135px] rounded-lg p-3 flex flex-col justify-between"
-              >
-                <div className="flex items-center gap-x-3">
-                  <div className={cn("flex justify-center items-center w-10 h-10 rounded-full", isMissed ? "bg-[#FEE4E2]" : "bg-[#D1FADF]")}>{metric.icon}</div>
-                  <span className="text-sm font-medium">{metric.title}</span>
-                </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid grid-cols-2 w-full md:w-[420px]">
+            <TabsTrigger value="actual-payments" className="flex items-center gap-1">
+              <CreditCard size={16} /> Actual Payments
+            </TabsTrigger>
+            <TabsTrigger value="proposed-schedule" className="flex items-center gap-1">
+              <DatabaseBackup size={16} /> Proposed Schedule
+            </TabsTrigger>
+          </TabsList>
 
-                <div className="text-2xl font-bold self-start md:self-auto">{metric.value}</div>
-              </div>
-            );
-          })}
+          <TabsContent value="actual-payments" className="space-y-4 mt-4">
+            <DynamicFilter
+              name="Filter Payments"
+              filterType="Payment"
+              allow="Individual"
+              permission_type={permissionType}
+              paymentType="G20Payments"
+              tableName="g20_payments"
+              allowedFieldValues={["status", "payment_date"]}
+              sortBy={[{ field: "payment_date", ascending: false }]}
+              updateTableData={setActualData}
+              updateTableDataCount={setActualCount}
+              page={actualPage}
+              pageSize={actualPageSize}
+              setPage={setActualPage}
+              showPills
+              refreshData={refreshKey}
+            />
 
-          {hasSubscription ? (
-            paystackSub ? (
-              <UpdateOnlineMonthlyPaystackPayment filterData={filterData} recurringPaymentId={paystackSub} />
-            ) : (
-              <UpdateOnlineMonthlyStripePayment filterData={filterData} subscriptionId={latestSubscription} />
-            )
-          ) : (
-            <MakeOnlineMonthlyPayment filterData={filterData} handleBankPopupClosed={handleBankPopupClosed} />
-          )}
-        </div>
+            <SimpleTable
+              columns={actualPaymentColumns}
+              data={actualData}
+              count={actualCount}
+              page={actualPage}
+              setPage={setActualPage}
+              pageSize={actualPageSize}
+              setPageSize={setActualPageSize}
+              onRowClick={(row) => {
+                setSelectedPayment(row as G20PaymentRowType);
+                setPaymentDrawerOpen(true);
+              }}
+            />
+          </TabsContent>
 
-        <div>
-          {/* DYNAMIC_FILTERS */}
-          <DynamicFilter
-            filterType={"Payment"}
-            allow={"Individual"}
-            // permission_type={permission_type}
-            updateTableData={updateTableData}
-            updateTableDataCount={updateTableDataCount}
-            paymentType={"Remissions"}
-            page={page}
-            setPage={setPage}
-            pageSize={pageSize}
-          />
+          <TabsContent value="proposed-schedule" className="space-y-4 mt-4">
+            <DynamicFilter
+              name="Filter Proposed"
+              filterType="Payment"
+              allow="Individual"
+              permission_type={permissionType}
+              paymentType="ProposedSchedule"
+              tableName="proposed_payment_schedule"
+              allowedFieldValues={["status", "schedule_year", "proposed_date"]}
+              customStatusOptions={[
+                { name: "All Statuses", value: "all" },
+                { name: "Pending", value: "pending" },
+                { name: "Due", value: "due" },
+                { name: "Missed", value: "missed" },
+                { name: "Cleared", value: "cleared" },
+              ]}
+              sortBy={[
+                { field: "schedule_year", ascending: false },
+                { field: "proposed_date", ascending: true },
+              ]}
+              updateTableData={setProposedData}
+              updateTableDataCount={setProposedCount}
+              page={proposedPage}
+              pageSize={proposedPageSize}
+              setPage={setProposedPage}
+              showPills
+              refreshData={refreshKey}
+            />
 
-          <DataTable
-            count={tableDataCount}
-            // customText="Remission Tracker for"
-            columns={userColumns(modifiedChapters)}
-            data={tableData}
-            tableType="remissionHistoy"
-            page={page}
-            setPage={setPage}
-            pageSize={pageSize}
-            setPageSize={setPageSize}
-            order={paymentDetailsOrder}
-          />
-        </div>
+            <SimpleTable
+              columns={proposedScheduleColumns}
+              data={proposedData}
+              count={proposedCount}
+              page={proposedPage}
+              setPage={setProposedPage}
+              pageSize={proposedPageSize}
+              setPageSize={setProposedPageSize}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
+
+      <UpdateProposedScheduleDrawer open={updateScheduleOpen} setOpen={setUpdateScheduleOpen} user={user} onSaved={refreshProposedTableAfterSave} />
+      <G20PaymentDetailsDrawer
+        open={paymentDrawerOpen}
+        setOpen={setPaymentDrawerOpen}
+        payment={selectedPayment}
+        onPaymentUpdated={async () => setRefreshKey((prev) => prev + 1)}
+      />
     </div>
   );
 }

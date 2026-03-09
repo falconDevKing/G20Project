@@ -59,12 +59,12 @@ export const FileUpload = ({ user_id, filePath, onChange, size = "large" }: File
       {size === "large" ? (
         <div className={`p-2 md:p-3 lg:p-6 w-full bg-GGP-lightWight rounded-lg flex items-center justify-center h-64`}>
           {/* Circle Avatar Inside */}
-          <div className="w-36 h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-[350px] lg:h-[350px] rounded-full bg-white flex items-center justify-center overflow-hidden">
+          <div className="w-36 h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-[260px] lg:h-[260px] rounded-full bg-white flex items-center justify-center overflow-hidden">
             {filePath ? (
               <img
                 src={fileUrl}
                 alt="uploaded"
-                className="w-full h-full object-cover"
+                className="w-full  h-full   object-cover"
                 onError={(e) => (e.currentTarget.src = "")} // Fallback Image
               />
             ) : (

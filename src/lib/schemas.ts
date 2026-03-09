@@ -7,7 +7,6 @@ export const registerSchema = z
     email: z.string().email().min(1, { message: "Email is required" }),
     division_id: z.string().min(1, { message: "You must select a division" }),
     chapter_id: z.string().min(1, { message: "You must select a chapter" }),
-    ggp_category: z.string().min(1, { message: "You must select a GGP Category" }),
     // partner_type: z.string().min(1, { message: "You must select a Partner Type" }),
     birth_day: z.string().min(1, { message: "You must select a birth day" }),
     birth_month: z.string().min(1, { message: "You must select a birth month Type" }),
@@ -50,21 +49,53 @@ export const g20UpdateAuthSchema = z
     anniversary_month: z.string().optional(),
 
     g20_category: z.string().min(1, { message: "You must select a G20 Category" }),
-    g20_amount: z.coerce.number().min(1, "Amount is required"),
+    g20_amount: z.coerce.number().int().positive("Amount is required"),
 
     voluntary_participation: z.enum(["Yes", "No"], { message: "Please select an option" }),
-    motivation: z.string().min(50, { message: "You must put in your motivation statement" }),
+    motivation: z.string().min(50, { message: "You must put in your motivation statement of more thann 50 characters" }),
 
     attestation: z.boolean().refine((val) => val === true, {
       message: "You must acknowledge the attestation",
     }),
   })
   .superRefine((data, ctx) => {
-    if (data.married === "Yes" && data.anniversary_day && data.anniversary_month) {
+    if (data.married === "Yes" && (!data.anniversary_day || !data.anniversary_month)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Marriage anniversary is required",
-        path: ["marriage_anniversary"],
+        path: ["anniversary_day"],
+      });
+    }
+  });
+
+export const proposedScheduleSchema = z
+  .object({
+    breakdown_count: z.coerce.number().int().min(1).max(12),
+    rows: z
+      .array(
+        z.object({
+          proposed_amount: z.coerce.number().int().positive("Amount must be greater than 0"),
+          proposed_date: z.string().min(1, "Proposed date is required"),
+        }),
+      )
+      .min(1),
+    g20_amount: z.coerce.number().int().positive("G20 amount is required"),
+  })
+  .superRefine((data, ctx) => {
+    if (data.rows.length !== data.breakdown_count) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["rows"],
+        message: "Rows count must match selected breakdown.",
+      });
+    }
+
+    const total = data.rows.reduce((sum, row) => sum + row.proposed_amount, 0);
+    if (total !== data.g20_amount) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["rows"],
+        message: "Total proposed amount must equal G20 amount.",
       });
     }
   });
@@ -145,7 +176,12 @@ export const profileFormSchema = z.object({
 
   chapter_id: z.string().min(1, { message: "You must select your chapter" }),
   nationality: z.string().min(1, { message: "You must select your Nationality" }),
-  ggp_category: z.string().min(1, { message: "You must select a GGP Category" }),
+  g20_category: z.string().optional(),
+  g20_amount: z.coerce.number().int().nonnegative().optional(),
+  married: z.enum(["Yes", "No"]).optional(),
+  anniversary_day: z.string().optional(),
+  anniversary_month: z.string().optional(),
+  motivation: z.string().optional(),
   image_url: z.string().optional(),
   phone_number: z.string().refine((phone) => /^\+\d{10,15}$/.test(phone), "Invalid phone number"),
 });
@@ -308,6 +344,8 @@ export const dynamicFilterSchema = z.object({
           "amount",
           "user_name",
           "payment_date",
+          "proposed_date",
+          "schedule_year",
           "remission_period",
           "active_recurring_remission",
           "preferred_remission_day",

@@ -1,7 +1,7 @@
 import { DesktopNavbar, MobileNavbar } from "@/components/Navbar";
 import { SideBar } from "@/components/SideBar";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
-import { logOutUser } from "@/services/auth";
+import { logOutUser, resolvePostAuthRoute } from "@/services/auth";
 import { useAppSelector } from "@/redux/hooks";
 import { useEffect } from "react";
 
@@ -14,6 +14,7 @@ const LayoutRoot = () => {
   const isDashboardPage = location.pathname === "/dashboard";
   const permission_type = auth.userDetails.permission_type;
   const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "");
+  const postAuthRoute = auth.authenticated ? resolvePostAuthRoute(auth.userDetails) : "/login";
 
   const userAllowedPaths = [
     "/",
@@ -41,10 +42,14 @@ const LayoutRoot = () => {
       navigate(url);
     }
 
-    if (["/remit-partnership", "/remit-partnership/"].includes(pathname) && auth.authenticated) {
-      navigate("/history");
+    if (postAuthRoute !== "/dashboard" && pathname !== postAuthRoute) {
+      navigate(postAuthRoute);
     }
-  }, [auth.authenticated]);
+
+    if (["/remit-partnership", "/remit-partnership/"].includes(pathname) && auth.authenticated) {
+      navigate("/dashboard");
+    }
+  }, [auth.authenticated, pathname, postAuthRoute]);
 
   return (
     <main className="h-screen w-full overflow-hidden bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">

@@ -10,7 +10,7 @@ import Footer from "@/components/homePage/footer";
 
 export default function G20LandingPage() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-[#0a0f1a] text-[#f4f7ff]">
       <LandingHeader />
 
       <Hero />

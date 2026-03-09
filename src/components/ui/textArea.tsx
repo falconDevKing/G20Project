@@ -14,7 +14,6 @@ function Textarea({ className, allowDark = true, ...props }: updatedInputProps) 
     location.pathname === "/login" ||
     location.pathname === "/forgot-password" ||
     location.pathname === "/reset-password" ||
-    location.pathname === "/g20-registration" ||
     location.pathname === "/verifyEmail";
   return (
     <textarea

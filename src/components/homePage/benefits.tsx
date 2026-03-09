@@ -29,30 +29,31 @@ const benefits: Feature[] = [
 
 const Benefits = () => {
   return (
-    <div>
-      {" "}
-      {/* BENEFITS */}
-      <SectionShell eyebrow="Benefits" title="Benefits of signing up" subtitle="Partnership should be simple, clear, and well supported." className="bg-black">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {benefits.map((b) => (
-            <div key={b.title} className="rounded-3xl bg-white/5 p-6 ring-1 ring-white/10 backdrop-blur">
-              <div className="flex items-start gap-4">
-                <IconBox>{b.icon ?? <CheckCircle />}</IconBox>
-                <div>
-                  <p className="text-sm font-semibold text-gold-300">{b.title}</p>
-                  <p className="mt-2 text-sm leading-6 text-white/70">{b.body}</p>
-                </div>
+    <SectionShell
+      eyebrow="Benefits"
+      title="Benefits of signing up"
+      subtitle="Partnership should be simple, clear, and well supported."
+      className="bg-[#0a1220]"
+    >
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {benefits.map((b) => (
+          <div key={b.title} className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-6">
+            <div className="flex items-start gap-4">
+              <IconBox>{b.icon ?? <CheckCircle />}</IconBox>
+              <div>
+                <p className="text-sm font-semibold text-[#f0cf86]">{b.title}</p>
+                <p className="mt-2 text-sm leading-6 text-[#d6e2f8]">{b.body}</p>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
 
-        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <PrimaryButton href="/register">Sign up today</PrimaryButton>
-          <GhostButton href="/login">Login</GhostButton>
-        </div>
-      </SectionShell>
-    </div>
+      <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <PrimaryButton href="/register">Sign up today</PrimaryButton>
+        <GhostButton href="/login">Give Now</GhostButton>
+      </div>
+    </SectionShell>
   );
 };
 

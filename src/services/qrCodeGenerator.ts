@@ -1,4 +1,3 @@
-import { G20PartnerRowType } from "@/supabase/modifiedSupabaseTypes";
 import QRCode from "qrcode";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
@@ -24,7 +23,7 @@ export const makeQrPngBlob = async (text: string) => {
   return await res.blob(); // image/png
 };
 
-const uploadQrCodePng = async (userId: string, pngBlob: Blob) => {
+export const uploadQrCodePng = async (userId: string, pngBlob: Blob) => {
   const userStorageKey = `qr/${userId}.png`;
   const putCmd = new PutObjectCommand({
     Bucket,
@@ -41,22 +40,4 @@ const uploadQrCodePng = async (userId: string, pngBlob: Blob) => {
   });
 
   return userStorageKey;
-};
-
-export const createG20UserQRCode = async (userData: G20PartnerRowType): Promise<any> => {
-  try {
-    const userId = userData.id;
-    const baseUrl = import.meta.env.VITE_APP_BASE_URL || "";
-    const url = baseUrl + "/g20-partner/" + userId;
-
-    const pngBlob = await makeQrPngBlob(url);
-    const storageKey = await uploadQrCodePng(userId, pngBlob);
-
-    const QRCodeImageUrl = "https://ohip-public.s3.eu-west-1.amazonaws.com/" + storageKey;
-
-    return QRCodeImageUrl;
-  } catch (error) {
-    console.log("Runtime error", error);
-    throw error;
-  }
 };

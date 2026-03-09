@@ -8,6 +8,11 @@ export const storage = defineStorage({
       allow.authenticated.to(["read", "write"]),
       // allow.entity('identity').to(['read', 'write', 'delete'])
     ],
+    "g20-payment-receipts/*": [
+      allow.guest.to(["read"]),
+      allow.authenticated.to(["read", "write"]),
+      // allow.entity('identity').to(['read', 'write', 'delete'])
+    ],
     // 'picture-submissions/*': [
     //   allow.authenticated.to(['read','write']),
     //   allow.guest.to(['read', 'write'])

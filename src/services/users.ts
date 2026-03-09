@@ -24,25 +24,6 @@ export const updateMember = async (userData: PartnerUpdateType): Promise<Postgre
   }
 };
 
-export const updateG20Member = async (userData: PartnerUpdateType): Promise<PostgrestSingleResponse<PartnerRowType> | boolean> => {
-  try {
-    if (!userData.id) {
-      return false;
-    }
-    const response = await SupabaseClient.from("g20_partner").update(userData).eq("id", userData.id).select().single();
-
-    if (response.error) {
-      console.log("updateMember error", response.error);
-      throw response.error;
-    }
-
-    return response;
-  } catch (error) {
-    console.log("verify user code error", error);
-    throw error;
-  }
-};
-
 export const addRep = async (userData: any, newPermission: string) => {
   try {
     if (newPermission === "individual") {

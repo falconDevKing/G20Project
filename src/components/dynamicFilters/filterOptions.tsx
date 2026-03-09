@@ -24,23 +24,9 @@ export const filterFieldsOptions = [
   { label: "User Name", value: "user_name", filterType: ["Payment"], allow: ["Admin"] },
   { label: "Online Payment", value: "online_payment", filterType: ["Payment"], allow: ["Admin"] },
   { label: "Payment Date", value: "payment_date", filterType: ["Payment"], allow: ["Individual", "Admin"] },
+  { label: "Proposed Date", value: "proposed_date", filterType: ["Payment"], allow: ["Individual", "Admin"] },
+  { label: "Scheduled Year", value: "schedule_year", filterType: ["Payment"], allow: ["Individual", "Admin"] },
   { label: "Remission Period", value: "remission_period", filterType: ["Payment"], allow: ["Individual", "Admin"] },
-];
-
-export const HoGFilterFieldsOptions = [
-  { label: "Name Or Code", value: "name_code", filterType: ["G20_Partner"], allow: ["Individual", "Admin"] },
-  { label: "User Name", value: "name", filterType: ["G20_Partner"], allow: ["Individual", "Admin"] },
-  { label: "Division", value: "division_id", filterType: ["G20_Partner"], allow: ["Individual", "Admin"] },
-  // { label: "Chapter", value: "chapter_id", filterType: ["G20_Partner"], allow: ["Individual", "Admin"] },
-  { label: "GGP Category", value: "ggp_category", filterType: ["G20_Partner"], allow: ["Individual", "Admin"] },
-
-  // { label: "Status", value: "status", filterType: ["Partner", "Payment"], allow: ["Individual", "Admin"] },
-  // { label: "Birthday", value: "birth_day_mmdd", filterType: ["Partner"], allow: ["Admin"] },
-  // { label: "Admin Level", value: "permission_type", filterType: ["Partner"], allow: ["Admin"] },
-
-  // // { label: "Amount", value: "amount" , filterType: ["Payment" , "Partner"] , allow: ["Individual", "Admin"],  },
-  // { label: "Payment Date", value: "payment_date", filterType: ["Payment"], allow: ["Individual", "Admin"] },
-  // { label: "Remission Period", value: "remission_period", filterType: ["Payment"], allow: ["Individual", "Admin"] },
 ];
 
 export const filterPendingRemissionsFieldsOptions = [{ label: "Status", value: "status", filterType: ["Partner", "Payment"], allow: ["Individual", "Admin"] }];
@@ -64,6 +50,8 @@ export const filterOperatorsOptionsCreator = (permission_type: string) => {
     user_name: ["Equals", "Contains"],
     online_payment: ["Equals"],
     payment_date: ["Equals", "Within"],
+    proposed_date: ["Equals", "Within"],
+    schedule_year: ["Equals", "Within"],
     remission_period: ["Equals", "Within"],
     // amount: ["Equals", "Contains", "Within"],
   };
@@ -84,6 +72,8 @@ export const filterFieldsLabels: Record<string, string> = {
   online_payment: "Online Payment",
   user_name: "User Name",
   payment_date: "Payment Date",
+  proposed_date: "Proposed Date",
+  schedule_year: "Scheduled Year",
   remission_period: "Remission Period",
   // amount: "Amount",
 };

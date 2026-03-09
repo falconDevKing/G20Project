@@ -17,7 +17,7 @@ const LandingHeader = () => {
     <div>
       {" "}
       {/* Top nav */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur px-24">
+      <header className="sticky top-0 z-50 border-b border-[#29334a] bg-[#0f1728] px-24">
         <div className="mx-auto flex h-24  items-center justify-between px-4 sm:px-6 lg:px-8">
           <a href="/" className="flex items-center gap-3">
             <div className="grid h-13 w-12 place-items-center rounded-xl">
@@ -27,14 +27,14 @@ const LandingHeader = () => {
               </span>
             </div>
             <div className="leading-tight">
-              <p className="text-md font-semibold">House of Greats</p>
-              <p className="text-sm text-white/60">G20 Partnership Platform</p>
+              <p className="text-md font-semibold text-[#f8f1e3]">House of Greats</p>
+              <p className="text-sm text-[#b8c6e3]">G20 Partnership Platform</p>
             </div>
           </a>
 
-          <nav className="hidden items-center gap-7 text-md text-white/70 md:flex">
+          <nav className="hidden items-center gap-7 text-md text-[#c9d5ef] md:flex">
             {nav.map((n) => (
-              <a key={n.href} href={n.href} className="hover:text-white">
+              <a key={n.href} href={n.href} className="hover:text-[#f6e8c3]">
                 {n.label}
               </a>
             ))}
@@ -42,9 +42,9 @@ const LandingHeader = () => {
 
           <div className="flex items-center gap-2">
             <GhostButton href="/login" className="hidden sm:inline-flex">
-              Login
+              Give now
             </GhostButton>
-            <PrimaryButton href="/register">Sign up</PrimaryButton>
+            <PrimaryButton href="/register">Login</PrimaryButton>
           </div>
         </div>
       </header>

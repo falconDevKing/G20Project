@@ -7,7 +7,7 @@ import { UserButtonCode } from "../user-button-code";
 
 const DashboardHeader = () => {
   return (
-    <div className="px-4 lg:px-24 py-4 bg-GGP-darkGold flex justify-between items-center">
+    <div className="px-4 md:px-12 lg:px-24 py-4 bg-GGP-darkGold flex justify-between items-center">
       <img src={G20Logo} alt="G20 Logo" className="h-20" />
       <div className="flex items-center gap-4">
         <Link to="/profile">

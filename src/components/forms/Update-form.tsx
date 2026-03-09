@@ -3,7 +3,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { g20UpdateAuthSchema } from "@/lib/schemas";
 import { CardWrapper } from "../Card-wapper";
 import { AuthTextArea } from "@/components/ui/textArea";
@@ -16,21 +16,20 @@ import { useNavigate } from "react-router";
 import { useAppSelector } from "@/redux/hooks";
 import { monthsOfTheYearOptions, RemissionDayOptions } from "@/lib/utils";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
+import { updateUser } from "@/services/auth";
 
 import { Checkbox } from "../ui/checkbox";
 import Logo from "../../assets/G20_logo.png";
 import dayjs from "dayjs";
 import { AuthInput } from "../ui/authInput";
-import { dummyFunction } from "@/interfaces/tools";
 
 export const UpdateForm = () => {
   const navigate = useNavigate();
 
-  // const appState = useAppSelector((state) => state.app);
+  const authState = useAppSelector((state) => state.auth);
+  const isAuthenticated = authState.authenticated;
   const userDetails = useAppSelector((state) => state.auth.userDetails);
   const email = (userDetails?.email || "") as string;
-
-  // const { locationCurrency, fallbackCurrency } = appState;
 
   const form = useForm<z.infer<typeof g20UpdateAuthSchema>>({
     resolver: zodResolver(g20UpdateAuthSchema),
@@ -61,36 +60,31 @@ export const UpdateForm = () => {
 
       setIsPending(true);
 
-      // await submitG20Update(email, {
-      //   married: values.married,
-      //   marriage_anniversary: values.marriage_anniversary || null,
-      //   g20_category: values.g20_category,
-      //   amount: String(values.g20_amount),
-      //   voluntary_participation: values.voluntary_participation,
-      //   motivation: values.motivation,
-      //   attestation: values.attestation,
-      // });
-      dummyFunction({
-        email,
-        married: married,
+      const updatedUser = await updateUser({
+        id: userDetails?.id,
+        married: married === "Yes",
         marriage_anniversary:
-          anniversary_month && anniversary_day
+          married === "Yes" && anniversary_month && anniversary_day
             ? dayjs()
                 .month(parseInt(anniversary_month) - 1)
                 .date(parseInt(anniversary_day))
-                .toISOString()
+                .format("YYYY-MM-DD")
             : null,
         g20_category: g20_category,
-        amount: String(g20_amount),
-        voluntary_participation: voluntary_participation,
+        g20_amount: Math.round(g20_amount),
+        voluntary_participation: voluntary_participation === "Yes",
         motivation: motivation,
         attestation: attestation,
+        g20_active: true,
       });
+
+      if (!updatedUser) {
+        throw new Error("Unable to update account");
+      }
 
       SuccessHandler("Updated successfully");
       setTimeout(() => {
-        // navigate(redirectTo || "/history");
-        navigate("/dashboard");
+        navigate("/proposed-schedule");
       }, 500);
     } catch (error: any) {
       console.log("g20 update error", error);
@@ -102,10 +96,37 @@ export const UpdateForm = () => {
 
   const married = form.watch("married");
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login?redirectTo=/update");
+      return;
+    }
+
+    if (userDetails?.g20_active) {
+      if (userDetails?.proposed_payment_scheduled) {
+        navigate("/dashboard");
+      } else {
+        navigate("/proposed-schedule");
+      }
+      return;
+    }
+
+    form.reset({
+      married: userDetails?.married ? "Yes" : "No",
+      anniversary_day: userDetails?.marriage_anniversary ? dayjs(userDetails.marriage_anniversary).format("DD") : "",
+      anniversary_month: userDetails?.marriage_anniversary ? dayjs(userDetails.marriage_anniversary).format("MM") : "",
+      g20_category: userDetails?.g20_category || "",
+      g20_amount: userDetails?.g20_amount || 0,
+      voluntary_participation: userDetails?.voluntary_participation ? "Yes" : "No",
+      motivation: userDetails?.motivation || "",
+      attestation: !!userDetails?.attestation,
+    });
+  }, [isAuthenticated, userDetails?.id, userDetails?.g20_active, userDetails?.proposed_payment_scheduled, form, navigate]);
+
   return (
     <CardWrapper
       titleImg={Logo}
-      headerLabel="Update your account"
+      headerLabel="Update your G20 account"
       backButtonLabel=""
       backButtenHref=""
       isRegister
@@ -258,7 +279,7 @@ export const UpdateForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Amount</FormLabel>
+                    <FormLabel className="text-gray-600/90 font-normal text-base">G20 Amount</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
