@@ -79,7 +79,7 @@ export const VerifyEmailForm = () => {
       headerLabel={`Verify your email for  ${email}`}
       backButtenHref=""
       backButtonLabel=""
-    // showSocials
+      // showSocials
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 mx-auto">
@@ -89,7 +89,7 @@ export const VerifyEmailForm = () => {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center gap-1">
-                  <FormLabel className="text-gray-600/90 font-normal text-base">Code</FormLabel>
+                  <FormLabel className="text-[#111c30] font-normal text-base">Code</FormLabel>
                   <span className="text-red-500 text-base">*</span>
                 </div>
                 <FormControl>

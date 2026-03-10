@@ -1,7 +1,15 @@
 import store from "../redux/store";
-import { setDivisions, setChapters, setUsers, setOrganisation, setUsersLoading, setLocationCurrency } from "@/redux/appSlice";
+import { setDivisions, setChapters, setUsers, setOrganisation, setUsersLoading, setLocationCurrency, setOperationalEntities } from "@/redux/appSlice";
 import SupabaseClient from "../supabase/supabaseConnection";
-import { ChapterRowType, DivisionRowType, OrganisationRowType, PartnerRowType } from "@/supabase/modifiedSupabaseTypes";
+import {
+  ChapterRowType,
+  DivisionRowType,
+  OrganisationRowType,
+  PartnerRowType,
+  HoSRowType,
+  GovernorRowType,
+  PresidentRowType,
+} from "@/supabase/modifiedSupabaseTypes";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 export const fetchBasicData = async () => {
@@ -9,6 +17,9 @@ export const fetchBasicData = async () => {
     const Organisation = await fetchOrganisationData();
     const Divisions = await fetchDivisionsData();
     const Chapters = await fetchChaptersData();
+    const HoSEntities = await fetchHoSEntitiesData();
+    const GovernorEntities = await fetchGovernorEntitiesData();
+    const PresidentEntities = await fetchPresidentEntitiesData();
 
     const { locationCurrency, fallbackCurrency } = await getCurrencyCode();
     store.dispatch(setLocationCurrency({ data: { locationCurrency, fallbackCurrency } }));
@@ -17,6 +28,9 @@ export const fetchBasicData = async () => {
       Organisation,
       Divisions,
       Chapters,
+      HoSEntities,
+      GovernorEntities,
+      PresidentEntities,
     };
   } catch (error) {
     console.log("fetching error", error);
@@ -122,6 +136,123 @@ export const fetchChaptersData = async () => {
     return Chapters;
   } catch (error) {
     console.log("fetching Chapters error", error);
+    throw error;
+  }
+};
+
+export const fetchHoSEntitiesData = async () => {
+  try {
+    const entities: HoSRowType[] = [];
+    const pageSize = 1000;
+
+    const fetchPage = async (from: number, to: number): Promise<void> => {
+      const { data, error }: PostgrestSingleResponse<HoSRowType[]> = await SupabaseClient.from("hos").select("*").range(from, to);
+
+      if (error) {
+        console.log("hos entities error", error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) return;
+      entities.push(...data);
+
+      if (data.length === pageSize) {
+        await fetchPage(to + 1, to + pageSize);
+      }
+    };
+
+    await fetchPage(0, pageSize - 1);
+    const appState = store.getState().app;
+    store.dispatch(
+      setOperationalEntities({
+        data: {
+          hosEntities: entities,
+          governorEntities: appState.governorEntities || [],
+          presidentEntities: appState.presidentEntities || [],
+        },
+      }),
+    );
+    return entities;
+  } catch (error) {
+    console.log("fetching hos entities error", error);
+    throw error;
+  }
+};
+
+export const fetchGovernorEntitiesData = async () => {
+  try {
+    const entities: GovernorRowType[] = [];
+    const pageSize = 1000;
+
+    const fetchPage = async (from: number, to: number): Promise<void> => {
+      const { data, error }: PostgrestSingleResponse<GovernorRowType[]> = await SupabaseClient.from("governor").select("*").range(from, to);
+
+      if (error) {
+        console.log("governor entities error", error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) return;
+      entities.push(...data);
+
+      if (data.length === pageSize) {
+        await fetchPage(to + 1, to + pageSize);
+      }
+    };
+
+    await fetchPage(0, pageSize - 1);
+    const appState = store.getState().app;
+    store.dispatch(
+      setOperationalEntities({
+        data: {
+          hosEntities: appState.hosEntities || [],
+          governorEntities: entities,
+          presidentEntities: appState.presidentEntities || [],
+        },
+      }),
+    );
+    return entities;
+  } catch (error) {
+    console.log("fetching governor entities error", error);
+    throw error;
+  }
+};
+
+export const fetchPresidentEntitiesData = async () => {
+  try {
+    const entities: PresidentRowType[] = [];
+    const pageSize = 1000;
+
+    const fetchPage = async (from: number, to: number): Promise<void> => {
+      const { data, error }: PostgrestSingleResponse<PresidentRowType[]> = await SupabaseClient.from("president").select("*").range(from, to);
+
+      if (error) {
+        console.log("president entities error", error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) return;
+      entities.push(...data);
+
+      if (data.length === pageSize) {
+        await fetchPage(to + 1, to + pageSize);
+      }
+    };
+
+    await fetchPage(0, pageSize - 1);
+    const appState = store.getState().app;
+    store.dispatch(
+      setOperationalEntities({
+        data: {
+          hosEntities: appState.hosEntities || [],
+          governorEntities: appState.governorEntities || [],
+          presidentEntities: entities,
+        },
+      }),
+    );
+    return entities;
+  } catch (error) {
+    console.log("fetching president entities error", error);
     throw error;
   }
 };
@@ -251,8 +382,37 @@ export const fetchUsersByEntity = async () => {
     const userDetails = store.getState().auth.userDetails;
 
     const adminLevel = userDetails.permission_type || "";
+    const opsPermission = (userDetails.ops_permission_type || "").toLowerCase();
     const entityKey = (adminLevel.toLowerCase() + "Id") as keyof Partial<PartnerRowType>;
     const entityId = userDetails[entityKey] as string;
+
+    if (opsPermission === "hos" && userDetails.hos_id) {
+      const { data, error }: PostgrestSingleResponse<PartnerRowType[]> = await SupabaseClient.from("partner").select("*").eq("hos_id", userDetails.hos_id);
+      if (error) throw error;
+      const users = data || [];
+      store.dispatch(setUsers({ data: users }));
+      return users;
+    }
+
+    if (opsPermission === "governor" && userDetails.governor_id) {
+      const { data, error }: PostgrestSingleResponse<PartnerRowType[]> = await SupabaseClient.from("partner")
+        .select("*")
+        .eq("governor_id", userDetails.governor_id);
+      if (error) throw error;
+      const users = data || [];
+      store.dispatch(setUsers({ data: users }));
+      return users;
+    }
+
+    if (opsPermission === "president" && userDetails.president_id) {
+      const { data, error }: PostgrestSingleResponse<PartnerRowType[]> = await SupabaseClient.from("partner")
+        .select("*")
+        .eq("president_id", userDetails.president_id);
+      if (error) throw error;
+      const users = data || [];
+      store.dispatch(setUsers({ data: users }));
+      return users;
+    }
 
     switch (adminLevel) {
       case "organisation": {

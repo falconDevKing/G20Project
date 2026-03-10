@@ -21,7 +21,8 @@ export const NavMobileItems = () => {
   const dispatch = useAppDispatch();
   const menuType = auth.menuType;
   const permission_type = auth.userDetails.permission_type;
-  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "");
+  const opsPermissionType = auth.userDetails.ops_permission_type;
+  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "") || ["hos", "governor", "president"].includes(opsPermissionType || "");
   const isChapterAdmin = permission_type === "chapter";
 
   const SideBarLink = menuType === "admin" ? AdminViews : UserViews;

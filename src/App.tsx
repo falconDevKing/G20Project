@@ -14,6 +14,8 @@ import Users from "./pages/admin/users";
 import MessagePartners from "./pages/admin/message";
 import Entities from "./pages/admin/entities";
 import MediaAssets from "./pages/admin/media-assets";
+import OperationalEntities from "./pages/admin/operationalEntities";
+import OperationalAssignments from "./pages/admin/operationalAssignments";
 import ToolsPage from "./pages/tools";
 import Register from "./pages/auth/register";
 import Login from "./pages/auth/login";
@@ -87,6 +89,8 @@ function App() {
         <Route path="users" element={<Users />} />
         <Route path="message" element={<MessagePartners />} />
         <Route path="entities" element={<Entities />} />
+        <Route path="operational-entities" element={<OperationalEntities />} />
+        <Route path="operational-assignments" element={<OperationalAssignments />} />
         <Route path="tools" element={<ToolsPage />} />
         <Route path="media-assets" element={<MediaAssets />} />
       </Route>

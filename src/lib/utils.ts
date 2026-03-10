@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
-import { ChapterRowType, DivisionRowType, OrganisationRowType, PartnerRowType, PaymentRowType, G20PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
+import { ChapterRowType, DivisionRowType, OrganisationRowType, PartnerRowType, G20PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
 
 export const DoNothing = (_arg: any): void => {
   // no-op
@@ -24,6 +24,7 @@ export const activeRecurringRemissionFilterOptions = [
   { name: "Online Payments", value: "True" },
   { name: "Offline Payments", value: "False" },
 ];
+
 export const activeRecurringRemissionOptions = [
   { name: "Online Payments", value: "True" },
   { name: "Offline Payments", value: "False" },
@@ -86,6 +87,9 @@ export const ToolAccess: Record<string, string[]> = {
   organisation: ["individual", "chapter", "division", "organisation"],
   division: ["individual", "chapter"],
   chapter: [],
+  hos: ["individual", "president", "governor", "hos"],
+  governor: ["individual", "president"],
+  president: [],
   individual: [],
 };
 
@@ -115,9 +119,15 @@ export const allChaptersOption = { value: "all", name: "All Chapters", filt: "al
 export const initialiseAdminOptions = (appState: {
   adminDivisions: DivisionRowType[];
   adminChapters: ChapterRowType[];
+  adminHosEntities?: { id: string; name: string }[];
+  adminGovernorEntities?: { id: string; name: string; hos_id?: string | null }[];
+  adminPresidentEntities?: { id: string; name: string; governor_id?: string | null; hos_id?: string | null }[];
   organisation: OrganisationRowType | Record<string, any>;
 }) => {
   const { adminDivisions: divisions, adminChapters: chapters, organisation } = appState;
+  const hosEntities = appState.adminHosEntities || [];
+  const governorEntities = appState.adminGovernorEntities || [];
+  const presidentEntities = appState.adminPresidentEntities || [];
 
   const DivisionOptions = divisions.map((division) => ({ value: division.id, name: division.name })).sort((a, b) => (a.name < b.name ? -1 : 1));
   const ChapterOptions = chapters
@@ -128,11 +138,21 @@ export const initialiseAdminOptions = (appState: {
       currency: chapter.base_currency as string,
     }))
     .sort((a, b) => (a.name < b.name ? -1 : 1));
+  const HoSOptions = hosEntities.map((hos) => ({ value: hos.id, name: hos.name })).sort((a, b) => (a.name < b.name ? -1 : 1));
+  const GovernorOptions = governorEntities
+    .map((governor) => ({ value: governor.id, name: governor.name, hos_id: governor.hos_id || "" }))
+    .sort((a, b) => (a.name < b.name ? -1 : 1));
+  const PresidentOptions = presidentEntities
+    .map((president) => ({ value: president.id, name: president.name, governor_id: president.governor_id || "", hos_id: president.hos_id || "" }))
+    .sort((a, b) => (a.name < b.name ? -1 : 1));
 
   return {
     AppOrganisationId: organisation?.id || "",
     DivisionOptions: DivisionOptions?.length > 1 ? [allDivisionsOption, ...DivisionOptions] : DivisionOptions,
     ChapterOptions: ChapterOptions?.length > 1 ? [allChaptersOption, ...ChapterOptions] : ChapterOptions,
+    HoSOptions,
+    GovernorOptions,
+    PresidentOptions,
   };
 };
 

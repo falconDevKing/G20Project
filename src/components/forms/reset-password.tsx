@@ -1,4 +1,3 @@
-
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -73,7 +72,7 @@ export const ResetPasswordForm = () => {
       headerLabel="Request Password Reset"
       backButtenHref="/login"
       backButtonLabel="Back to Login"
-    // showSocials
+      // showSocials
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 mx-auto">
@@ -83,7 +82,7 @@ export const ResetPasswordForm = () => {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center gap-1">
-                  <FormLabel className="text-gray-600/90 font-normal text-base">Email</FormLabel>
+                  <FormLabel className="text-[#111c30] font-normal text-base">Email</FormLabel>
                   <span className="text-red-500 text-base">*</span>
                 </div>
                 <FormControl>
@@ -106,7 +105,7 @@ export const ResetPasswordForm = () => {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center gap-1">
-                  <FormLabel className="text-gray-600/90 font-normal text-base">Code</FormLabel>
+                  <FormLabel className="text-[#111c30] font-normal text-base">Code</FormLabel>
                   <span className="text-red-500 text-base">*</span>
                 </div>
                 <FormControl>
@@ -123,7 +122,7 @@ export const ResetPasswordForm = () => {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center gap-1">
-                  <FormLabel className="text-gray-600/90 font-normal text-base">New password</FormLabel>
+                  <FormLabel className="text-[#111c30] font-normal text-base">New password</FormLabel>
                   <span className="text-red-500 text-base">*</span>
                 </div>
                 <FormControl>
@@ -153,7 +152,7 @@ export const ResetPasswordForm = () => {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center gap-1">
-                  <FormLabel className="text-gray-600/90 font-normal text-base">Confirm password</FormLabel>
+                  <FormLabel className="text-[#111c30] font-normal text-base">Confirm password</FormLabel>
                   <span className="text-red-500 text-base">*</span>
                 </div>
                 <FormControl>

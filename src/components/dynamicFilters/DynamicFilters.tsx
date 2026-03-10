@@ -34,7 +34,6 @@ interface DynamicFilterProps {
   name?: string;
   filterType: "Payment" | "Partner" | "Proposed";
   allow: "Individual" | "Admin";
-  permission_type?: string;
   paymentType: string;
   tableName?: string;
   updateTableData: (data: Record<string, any>[]) => void;
@@ -47,6 +46,7 @@ interface DynamicFilterProps {
   expandable?: boolean;
   refreshData?: number;
   showSearch?: boolean;
+  lockedFilters?: FilterType[];
 }
 
 // const PAGE_SIZE = 10;
@@ -58,7 +58,6 @@ export const DynamicFilter = ({
   name,
   filterType,
   allow,
-  permission_type = "individual",
   tableName,
   updateTableData,
   updateTableDataCount,
@@ -71,10 +70,14 @@ export const DynamicFilter = ({
   refreshData,
   showSearch = false,
   expandable = false,
+  lockedFilters = [],
 }: DynamicFilterProps) => {
   dummyFunction(setPage);
 
+  const appState = useAppSelector((state) => state.app);
+  const user = useAppSelector((state) => state.auth.userDetails);
   const { state } = useLocation();
+
   const metricsFilters = state?.metricsFilters;
   const pageSize = +initialPageSize;
 
@@ -88,7 +91,14 @@ export const DynamicFilter = ({
     ? { field: "payment_date", operator: "Within", value: metricsFilters?.payment_date as filterValue }
     : null;
 
-  const filterOperatorsOptions = filterOperatorsOptionsCreator(permission_type);
+  const pstPermission = String(user.permission_type || "").toLowerCase();
+  const opsPermission = String(user.ops_permission_type || "").toLowerCase();
+  const hasPstScope = ["division", "chapter"].includes(opsPermission);
+  const hasOpsScope = ["hos", "governor", "president"].includes(opsPermission);
+  const pstScopeField = pstPermission === "division" ? "division_id" : pstPermission === "chapter" ? "chapter_id" : "";
+  const opsScopeField = opsPermission === "hos" ? "hos_id" : opsPermission === "governor" ? "governor_id" : opsPermission === "president" ? "president_id" : "";
+
+  const filterOperatorsOptions = filterOperatorsOptionsCreator(pstPermission);
   const isPendingRemissions = paymentType === "pendingRemissions";
   const paymentStatusToUse = isPendingRemissions ? "Pending" : "all";
   const scheduleYearOptions = Array.from({ length: 10 }, (_, index) => String(2026 - index));
@@ -99,8 +109,6 @@ export const DynamicFilter = ({
   const defaultFilterValue = (defaultFilterField === "status" ? paymentStatusToUse : "") as filterValue;
   const filteredOptions = [filteredDivision, filteredChapter, filteredStatus].filter((filter) => !!filter);
 
-  const appState = useAppSelector((state) => state.app);
-  const user = useAppSelector((state) => state.auth.userDetails);
   const { DivisionOptions, ChapterOptions } = initialiseAdminOptions(appState);
 
   const [openDialog, setOpenDialog] = useState(false);
@@ -221,21 +229,25 @@ export const DynamicFilter = ({
       query = query.eq("g20_active", true);
     }
 
-    if (permission_type === "individual" && filterType === "Payment") {
+    if (allow === "Individual") {
       query = query.eq("user_id", user.id);
     }
 
-    if (permission_type === "chapter" && filterType === "Payment") {
-      query = query.eq("chapter_id", user.chapter_id);
-    }
-    if (permission_type === "division" && filterType === "Payment") {
-      query = query.eq("division_id", user.division_id);
+    // filter admin scope
+    if (hasPstScope || hasOpsScope) {
+      const scopeFilters = [];
+
+      if (hasPstScope && pstScopeField && user[pstScopeField]) scopeFilters.push(`${pstScopeField}.eq.${user[pstScopeField]}`);
+      if (hasOpsScope && opsScopeField && user[opsScopeField]) scopeFilters.push(`${opsScopeField}.eq.${user[opsScopeField]}`);
+
+      query = query.or(scopeFilters.join(","));
     }
 
     // paymentStatusToUse && query.eq("status", paymentStatusToUse);
 
     // Apply filters dynamically
-    for (const filter of filters) {
+    const combinedFilters = [...lockedFilters, ...filters];
+    for (const filter of combinedFilters) {
       const field = filter.field;
       const resolvedField = field === "status" && sourceTable === "partner" ? "g20_status" : field;
       const operator = filter.operator;
@@ -339,13 +351,7 @@ export const DynamicFilter = ({
       }
     }
 
-    if (permission_type === "chapter") {
-      query = query.eq("chapter_id", user.chapter_id);
-    }
-    if (permission_type === "division") {
-      query = query.eq("division_id", user.division_id);
-    }
-
+    console.log("query", query);
     const { data, count, error } = await query;
 
     if (error) throw error;
@@ -358,9 +364,9 @@ export const DynamicFilter = ({
     const filterObject = watch("filters");
     setFilterPillsData(filterObject);
     await fetchFilteredData(page, filterObject);
-    getFilterData && getFilterData(filterObject);
+    getFilterData && getFilterData([...(lockedFilters || []), ...filterObject]);
     // setFilterPillsData(filterObject);
-  }, [page, pageSize]);
+  }, [page, pageSize, lockedFilters]);
 
   const onSubmit = async (data: DynamicFilterSchema) => {
     dummyFunction(data);
@@ -457,67 +463,72 @@ export const DynamicFilter = ({
                     ))}
                 </SelectContent>
               </Select>
-
-              {isPendingRemissions ? (
+              {paymentType === "PartnerSearchSelect" ? (
                 ""
               ) : (
-                <Select
-                  onValueChange={(value) => {
-                    updateEqualsFilter("status", value);
-                  }}
-                  value={getFilterValue("status") as string}
-                >
-                  <SelectTrigger className="w-[140px] shad-select-trigger">
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent className="shad-select-content">
-                    {statusOptionsToUse.map((status) => (
-                      <SelectItem key={status.value || "all"} value={status.value}>
-                        {status.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
+                <>
+                  {isPendingRemissions ? (
+                    ""
+                  ) : (
+                    <Select
+                      onValueChange={(value) => {
+                        updateEqualsFilter("status", value);
+                      }}
+                      value={getFilterValue("status") as string}
+                    >
+                      <SelectTrigger className="w-[140px] shad-select-trigger">
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                      <SelectContent className="shad-select-content">
+                        {statusOptionsToUse.map((status) => (
+                          <SelectItem key={status.value || "all"} value={status.value}>
+                            {status.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
 
-              {filterType === "Payment" && (
-                <Select
-                  onValueChange={(value) => {
-                    updateEqualsFilter("online_payment", value);
-                  }}
-                  value={getFilterValue("online_payment") as string}
-                >
-                  <SelectTrigger className="w-[140px] shad-select-trigger">
-                    <SelectValue placeholder={"Online Payment"} />
-                  </SelectTrigger>
-                  <SelectContent className="shad-select-content">
-                    {activeRecurringRemissionFilterOptions.map((status) => (
-                      <SelectItem key={status.value} value={status.value}>
-                        {status.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
+                  {filterType === "Payment" && (
+                    <Select
+                      onValueChange={(value) => {
+                        updateEqualsFilter("online_payment", value);
+                      }}
+                      value={getFilterValue("online_payment") as string}
+                    >
+                      <SelectTrigger className="w-[140px] shad-select-trigger">
+                        <SelectValue placeholder={"Online Payment"} />
+                      </SelectTrigger>
+                      <SelectContent className="shad-select-content">
+                        {activeRecurringRemissionFilterOptions.map((status) => (
+                          <SelectItem key={status.value} value={status.value}>
+                            {status.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
 
-              {filterType === "Partner" && (
-                <Select
-                  onValueChange={(value) => {
-                    updateEqualsFilter("g20_active_recurring_remission", value);
-                  }}
-                  value={getFilterValue("g20_active_recurring_remission") as string}
-                >
-                  <SelectTrigger className="w-[140px] shad-select-trigger">
-                    <SelectValue placeholder={"Automated Remissions"} />
-                  </SelectTrigger>
-                  <SelectContent className="shad-select-content">
-                    {activeRecurringRemissionFilterOptions.map((status) => (
-                      <SelectItem key={status.value} value={status.value}>
-                        {status.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  {filterType === "Partner" && (
+                    <Select
+                      onValueChange={(value) => {
+                        updateEqualsFilter("g20_active_recurring_remission", value);
+                      }}
+                      value={getFilterValue("g20_active_recurring_remission") as string}
+                    >
+                      <SelectTrigger className="w-[140px] shad-select-trigger">
+                        <SelectValue placeholder={"Automated Remissions"} />
+                      </SelectTrigger>
+                      <SelectContent className="shad-select-content">
+                        {activeRecurringRemissionFilterOptions.map((status) => (
+                          <SelectItem key={status.value} value={status.value}>
+                            {status.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </>
               )}
             </div>
           )}
@@ -893,7 +904,7 @@ export const DynamicFilter = ({
                                 <SelectValue placeholder="Select the Admin Level" />
                               </SelectTrigger>
                               <SelectContent className="shad-select-content">
-                                {PermissionOptions.filter((option) => option.allow.includes(permission_type)).map((permissionOption) => (
+                                {PermissionOptions.filter((option) => option.allow.includes(pstPermission)).map((permissionOption) => (
                                   <SelectItem key={permissionOption.value} value={permissionOption.value}>
                                     <div className="flex items-center cursor-pointer gap-3">
                                       <p>{permissionOption.name}</p>

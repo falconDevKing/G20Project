@@ -24,7 +24,7 @@ const Banner = () => {
                 Login to Dashboard
               </a>
               <a
-                href="/register"
+                href="/paymentButton"
                 className="inline-flex items-center justify-center rounded-full border border-[#f8f1e3] bg-[#f8f1e3] px-7 py-3 text-sm font-semibold text-[#1e170a] hover:bg-[#fffaf0]"
               >
                 Give Now

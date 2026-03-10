@@ -12,9 +12,10 @@ export const SideBar = () => {
   const location = useLocation();
   const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  const menuType = auth.menuType
+  const menuType = auth.menuType;
   const permission_type = auth.userDetails.permission_type;
-  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "");
+  const opsPermissionType = auth.userDetails.ops_permission_type;
+  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "") || ["hos", "governor", "president"].includes(opsPermissionType || "");
   const isChapterAdmin = permission_type === "chapter";
 
   // const [search, setSearch] = useState("");
@@ -22,14 +23,13 @@ export const SideBar = () => {
   const filteredLinks = SideBarLink.filter((link) => link.name && (isAdmin ? true : !!link?.allowIndividual));
   const filteredAdminLinks = filteredLinks.filter((link) => link.name && (isChapterAdmin ? !!link?.allowChapter : true));
 
-
   const handleMenuSwitch = (menuName: string) => {
     if (menuName === "Admin View") {
-      dispatch(setMenuType({ data: "admin" }))
+      dispatch(setMenuType({ data: "admin" }));
     } else if (menuName === "Personal View") {
-      dispatch(setMenuType({ data: "personal" }))
+      dispatch(setMenuType({ data: "personal" }));
     }
-  }
+  };
 
   return (
     <section className="fixed top-0 left-0 lg:w-[312px] w-full h-screen flex flex-col justify-between bg-[#1E1E1E] px-6 py-2 max-lg:hidden border-r dark border-gray-100/10 z-20">
@@ -61,36 +61,38 @@ export const SideBar = () => {
             <div onClick={() => handleMenuSwitch(link.name)} key={link.name}>
               <Link
                 to={link.route}
-
                 className={cn("flex items-center px-4 py-2 rounded-lg transition-all duration-300 group", {
                   "bg-GGP-darkGold text-white shadow-sm": isActive,
                   "hover:bg-GGP-darkGold/5": !isActive,
                 })}
               >
-                {link.name === "Personal View" ?
+                {link.name === "Personal View" ? (
                   <ChevronLeft className={cn("h-6 w-6 text-GGP-darkGold", { "text-white": isActive })} />
-                  :
+                ) : (
                   <link.icon
                     className={cn("h-6 w-6 text-GGP-darkGold", {
                       "text-white": isActive,
                     })}
-                  />}
-
-
+                  />
+                )}
 
                 {/* Label + Chevron */}
                 <div className="flex flex-1 items-center justify-between ml-4">
                   <p className={cn("truncate max-w-[160px] text-white text-[15px] font-medium", { "text-white": isActive })}>{link.name}</p>
 
-                  {link.name === "Personal View" ? <link.icon
-                    className={cn("h-6 w-6 text-GGP-darkGold ml-4", {
-                      "text-white": isActive,
-                    })}
-                  /> : <ChevronRight
-                    className={cn("h-5 w-5 text-GGP-darkGold", {
-                      "text-white": isActive,
-                    })}
-                  />}
+                  {link.name === "Personal View" ? (
+                    <link.icon
+                      className={cn("h-6 w-6 text-GGP-darkGold ml-4", {
+                        "text-white": isActive,
+                      })}
+                    />
+                  ) : (
+                    <ChevronRight
+                      className={cn("h-5 w-5 text-GGP-darkGold", {
+                        "text-white": isActive,
+                      })}
+                    />
+                  )}
                 </div>
               </Link>
             </div>

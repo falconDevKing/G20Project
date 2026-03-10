@@ -1,7 +1,8 @@
 import { ErrorHandler, SuccessHandler } from "@/lib/toastHandlers";
 import store from "../redux/store";
-import { fetchDivisionsData, fetchChaptersData } from "./appData";
+import { fetchDivisionsData, fetchChaptersData, fetchHoSEntitiesData, fetchGovernorEntitiesData, fetchPresidentEntitiesData } from "./appData";
 import SupabaseClient from "@/supabase/supabaseConnection";
+import { PartnerUpdateType } from "@/supabase/modifiedSupabaseTypes";
 
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
@@ -12,7 +13,7 @@ const client = generateClient<Schema>();
 
 export const createEntity = async (label: string, data: Record<string, string>) => {
   try {
-    const { name, division_id, country, base_currency } = data;
+    const { name, division_id, country, base_currency, hos_id, governor_id, rep_partner_id } = data;
 
     switch (label) {
       case "Division": {
@@ -23,6 +24,15 @@ export const createEntity = async (label: string, data: Record<string, string>) 
       case "Chapter": {
         const createdChapter = await createChapter(name, division_id, country, base_currency);
         return createdChapter;
+      }
+      case "HoS": {
+        return await createHoS(name, rep_partner_id);
+      }
+      case "Governor": {
+        return await createGovernor(name, hos_id, rep_partner_id);
+      }
+      case "President": {
+        return await createPresident(name, hos_id, governor_id, rep_partner_id);
       }
 
       default:
@@ -36,7 +46,7 @@ export const createEntity = async (label: string, data: Record<string, string>) 
 
 export const updateEntity = async (label: string, data: Record<string, string>) => {
   try {
-    const { id, name, division_id, country, base_currency } = data;
+    const { id, name, division_id, country, base_currency, hos_id, governor_id, rep_partner_id } = data;
 
     switch (label) {
       case "Division": {
@@ -47,6 +57,15 @@ export const updateEntity = async (label: string, data: Record<string, string>) 
       case "Chapter": {
         const updatedChapter = await updateChapter(id, name, division_id, country, base_currency);
         return updatedChapter;
+      }
+      case "HoS": {
+        return await updateHoS(id, name, rep_partner_id);
+      }
+      case "Governor": {
+        return await updateGovernor(id, name, hos_id, rep_partner_id);
+      }
+      case "President": {
+        return await updatePresident(id, name, hos_id, governor_id, rep_partner_id);
       }
 
       default:
@@ -155,6 +174,166 @@ export const updateChapter = async (id: string, name: string, division_id: strin
     console.log("updateChapter error", error);
     throw error;
   }
+};
+
+const resolveRepObject = async (repPartnerId: string) => {
+  const { data: rep, error } = await SupabaseClient.from("partner").select("id,first_name,last_name,email,phone_number").eq("id", repPartnerId).maybeSingle();
+  if (error || !rep) {
+    throw error || new Error("Rep not found");
+  }
+  return {
+    id: rep.id,
+    name: `${rep.first_name || ""} ${rep.last_name || ""}`.trim(),
+    email: rep.email || "",
+    phone_number: rep.phone_number || "",
+  };
+};
+
+const setRepOpsPermission = async (repPartnerId: string, payload: PartnerUpdateType) => {
+  const { error } = await SupabaseClient.from("partner").update(payload).eq("id", repPartnerId);
+  if (error) {
+    throw error;
+  }
+};
+
+export const createHoS = async (name: string, rep_partner_id: string) => {
+  const organisation_id = store.getState().app.organisation.id;
+  const rep = await resolveRepObject(rep_partner_id);
+  const { data, error } = await SupabaseClient.from("hos")
+    .insert({ name, organisation_id, rep_partner_id, reps: [rep] } as any)
+    .select()
+    .single();
+  if (error) throw error;
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "hos", hos_id: data.id, governor_id: null, president_id: null });
+  await fetchHoSEntitiesData();
+  return data;
+};
+
+export const updateHoS = async (id: string, name: string, rep_partner_id: string) => {
+  const rep = await resolveRepObject(rep_partner_id);
+  const { data, error } = await SupabaseClient.from("hos")
+    .update({ name, rep_partner_id, reps: [rep] } as any)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "hos", hos_id: id, governor_id: null, president_id: null });
+  await fetchHoSEntitiesData();
+  return data;
+};
+
+export const createGovernor = async (name: string, hos_id: string, rep_partner_id: string) => {
+  const organisation_id = store.getState().app.organisation.id;
+  const rep = await resolveRepObject(rep_partner_id);
+  const { data, error } = await SupabaseClient.from("governor")
+    .insert({ name, organisation_id, hos_id, rep_partner_id, reps: [rep] } as any)
+    .select()
+    .single();
+  if (error) throw error;
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "governor", hos_id, governor_id: data.id, president_id: null });
+  await fetchGovernorEntitiesData();
+  return data;
+};
+
+export const updateGovernor = async (id: string, name: string, hos_id: string, rep_partner_id: string) => {
+  const rep = await resolveRepObject(rep_partner_id);
+  const { data, error } = await SupabaseClient.from("governor")
+    .update({ name, hos_id, rep_partner_id, reps: [rep] } as any)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "governor", hos_id, governor_id: id, president_id: null });
+  await fetchGovernorEntitiesData();
+  return data;
+};
+
+export const createPresident = async (name: string, hos_id: string, governor_id: string, rep_partner_id: string) => {
+  const organisation_id = store.getState().app.organisation.id;
+  const rep = await resolveRepObject(rep_partner_id);
+  const { data, error } = await SupabaseClient.from("president")
+    .insert({ name, organisation_id, hos_id, governor_id, rep_partner_id, reps: [rep] } as any)
+    .select()
+    .single();
+  if (error) throw error;
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "president", hos_id, governor_id, president_id: data.id });
+  await fetchPresidentEntitiesData();
+  return data;
+};
+
+export const updatePresident = async (id: string, name: string, hos_id: string, governor_id: string, rep_partner_id: string) => {
+  const rep = await resolveRepObject(rep_partner_id);
+  const { data, error } = await SupabaseClient.from("president")
+    .update({ name, hos_id, governor_id, rep_partner_id, reps: [rep] } as any)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "president", hos_id, governor_id, president_id: id });
+  await fetchPresidentEntitiesData();
+  return data;
+};
+
+export const assignPartnersToOperationalHierarchy = async ({
+  partnerIds,
+  hos_id,
+  governor_id,
+  president_id,
+}: {
+  partnerIds: string[];
+  hos_id: string;
+  governor_id?: string;
+  president_id?: string;
+}) => {
+  if (!partnerIds.length) {
+    return [];
+  }
+
+  const payload: PartnerUpdateType = {
+    hos_id,
+    governor_id: governor_id || null,
+    president_id: president_id || null,
+  };
+
+  const { data, error } = await SupabaseClient.from("partner").update(payload).in("id", partnerIds).select("id");
+  if (error) {
+    throw error;
+  }
+  return data || [];
+};
+
+type AssignmentFilter = {
+  field: string;
+  operator: string;
+  value: any;
+};
+
+export const fetchFilteredPartnerIds = async (filters: AssignmentFilter[]) => {
+  let query = SupabaseClient.from("partner").select("id");
+
+  for (const filter of filters || []) {
+    const field = filter.field;
+    const operator = filter.operator;
+    const value = filter.value;
+
+    if (!value || value === "all") continue;
+
+    if (operator === "Contains" && typeof value === "string") {
+      query = query.ilike(field, `%${value}%`);
+    } else if (operator === "Equals" && typeof value === "string") {
+      query = query.eq(field === "status" ? "g20_status" : field, value);
+    } else if (operator === "Not Equals" && typeof value === "string") {
+      query = query.neq(field === "status" ? "g20_status" : field, value);
+    } else if (operator === "Within" && value?.from && value?.to && typeof value.from === "string" && typeof value.to === "string") {
+      query = query.gte(field, value.from).lte(field, value.to);
+    }
+  }
+
+  const { data, error } = await query;
+  if (error) {
+    throw error;
+  }
+  return (data || []).map((item: any) => item.id).filter(Boolean);
 };
 
 export const sendMessageRequesthandler = async (messageRequest: {

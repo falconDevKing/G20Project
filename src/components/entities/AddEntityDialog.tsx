@@ -17,7 +17,14 @@ import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { createDivisionSchema, createChapterSchema, genericToolsSchema } from "@/lib/toolsSchemas";
+import {
+  createDivisionSchema,
+  createChapterSchema,
+  createGovernorSchema,
+  createHoSSchema,
+  createPresidentSchema,
+  genericToolsSchema,
+} from "@/lib/toolsSchemas";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { SelectOptions } from "@/interfaces/register";
 import { useAppSelector } from "@/redux/hooks";
@@ -28,6 +35,8 @@ import { createEntity } from "@/services/tools";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
 import FormTooltip from "../FormTooltips";
 import { refreshLoggedInUser } from "@/services/auth";
+import { PartnerSearchSelect } from "./PartnerSearchSelect";
+import { fetchUsersByEntity } from "@/services/appData";
 
 type FormValues = z.infer<typeof genericToolsSchema>;
 
@@ -41,7 +50,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
   const appState = useAppSelector((state) => state.app);
   const userId = useAppSelector((state) => state.auth.user_id);
 
-  const { DivisionOptions } = initialiseAdminOptions(appState);
+  const { DivisionOptions, HoSOptions, GovernorOptions } = initialiseAdminOptions(appState);
 
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -49,6 +58,9 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
   const schemaOptions = {
     Chapter: createChapterSchema,
     Division: createDivisionSchema,
+    HoS: createHoSSchema,
+    Governor: createGovernorSchema,
+    President: createPresidentSchema,
   };
 
   const schemaToUse = schemaOptions[label as keyof typeof schemaOptions] || genericToolsSchema;
@@ -58,10 +70,16 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
     defaultValues: {
       name: "",
       division_id: "",
+      hos_id: "",
+      governor_id: "",
       country: "",
       base_currency: "",
+      rep_partner_id: "",
     },
   });
+
+  const selectedHoS = form.watch("hos_id");
+  // const selectedGovernor = form.watch("governor_id");
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -69,6 +87,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
 
       await createEntity(label, values);
       await refreshLoggedInUser(userId);
+      await fetchUsersByEntity();
       form.reset();
       SuccessHandler(`${label} created successfully`);
 
@@ -108,7 +127,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90  dark:text-white font-normal text-base">Name</FormLabel>
+                    <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">Name</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -126,7 +145,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center gap-1">
-                      <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Division</FormLabel>
+                      <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Division</FormLabel>
                       <span className="text-red-500 text-base">*</span>
                     </div>
                     <FormControl>
@@ -151,6 +170,102 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
               />
             )}
 
+            {["Governor", "President"].includes(label) && (
+              <FormField
+                control={form.control}
+                name={"hos_id"}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-1">
+                      <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">House Of Shepherds</FormLabel>
+                      <span className="text-red-500 text-base">*</span>
+                    </div>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          form.setValue("governor_id", "");
+                        }}
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="shad-select-trigger">
+                          <SelectValue placeholder={`Select HoS`} />
+                        </SelectTrigger>
+                        <SelectContent className="shad-select-content">
+                          {HoSOptions.map((hos: SelectOptions) => (
+                            <SelectItem key={hos.value} value={hos.value as string}>
+                              <div className="flex items-center cursor-pointer gap-3">
+                                <p>{hos.name}</p>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {label === "President" && (
+              <FormField
+                control={form.control}
+                name={"governor_id"}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-1">
+                      <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Governor</FormLabel>
+                      <span className="text-red-500 text-base">*</span>
+                    </div>
+                    <FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                        <SelectTrigger className="shad-select-trigger">
+                          <SelectValue placeholder={`Select Governor`} />
+                        </SelectTrigger>
+                        <SelectContent className="shad-select-content">
+                          {GovernorOptions.filter((governor) => (selectedHoS ? governor.hos_id === selectedHoS : true)).map((governor: any) => (
+                            <SelectItem key={governor.value} value={governor.value as string}>
+                              <div className="flex items-center cursor-pointer gap-3">
+                                <p>{governor.name}</p>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {["HoS", "Governor", "President"].includes(label) && (
+              <FormField
+                control={form.control}
+                name={"rep_partner_id"}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-1">
+                      <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">Rep Partner</FormLabel>
+                      <span className="text-red-500 text-base">*</span>
+                    </div>
+                    <FormControl>
+                      <PartnerSearchSelect
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Search and select rep partner"
+                        // hosId={["Governor", "President"].includes(label) ? selectedHoS || "" : ""}
+                        // governorId={label === "President" ? selectedGovernor || "" : ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             {label === "Chapter" && (
               <>
                 <FormField
@@ -159,7 +274,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Country</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Country</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -188,7 +303,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Base Currency</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Base Currency</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                         <FormTooltip text={"Currency to use in the chapter"} />
                       </div>

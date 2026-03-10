@@ -13,14 +13,7 @@ import { initialiseOptions, RemissionPeriodsOptions } from "@/lib/utils";
 import { SelectOptions } from "@/interfaces/register";
 import { useAppSelector } from "@/redux/hooks";
 import dayjs from "dayjs";
-import {
-  findChapterDetails,
-  getUserWithUniqueCode,
-  initialPayerData,
-  type PayerDataType,
-  approvePayment,
-  cancelPayment,
-} from "@/services/payment";
+import { findChapterDetails, getUserWithUniqueCode, initialPayerData, type PayerDataType, approvePayment, cancelPayment } from "@/services/payment";
 import { Switch } from "@/components/ui/switch";
 import { WorldCurrenciesOptions } from "@/constants/currencies";
 
@@ -35,7 +28,6 @@ import { getCurrencySymbol } from "@/lib/numberUtils";
 
 type PaymentFormValues = z.infer<typeof paymentFormSchema>;
 
-
 type postApprovePaymentProcessingType = {
   user_name: string;
   currency: string;
@@ -49,14 +41,14 @@ type postApprovePaymentProcessingType = {
   userId: string;
   payerDataEmail: string;
   payerDataPhone_number: string;
-}
+};
 
 interface ApprovePaymentProps {
   paymentData?: PaymentRowType;
   openDialog: boolean;
   setOpenDialog: Dispatch<SetStateAction<boolean>>;
   setRefreshData?: React.Dispatch<React.SetStateAction<number>>;
-  postApprovePaymentProcessing: (postApprovePaymentProcessingData: postApprovePaymentProcessingType) => Promise<void>
+  postApprovePaymentProcessing: (postApprovePaymentProcessingData: postApprovePaymentProcessingType) => Promise<void>;
 }
 
 export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefreshData, postApprovePaymentProcessing }: ApprovePaymentProps) => {
@@ -90,7 +82,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
     },
   });
 
-  const selectedChapterId = approvalForm.watch("chapter_id")
+  const selectedChapterId = approvalForm.watch("chapter_id");
   const selectedChapterCurrecny = useMemo(() => findChapterDetails(selectedChapterId)?.currency, [selectedChapterId]);
 
   const onSubmit = async () => {
@@ -117,13 +109,13 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
 
       const conversionData = is_converted
         ? {
-          is_converted,
-          conversion_description,
-          conversion_amount,
-          conversion_rate,
-          conversion_currency,
-          conversion_time,
-        }
+            is_converted,
+            conversion_description,
+            conversion_amount,
+            conversion_rate,
+            conversion_currency,
+            conversion_time,
+          }
         : {};
 
       const { currency, chapterName } = findChapterDetails(chapter_id);
@@ -161,8 +153,20 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
 
       await approvePayment(newEntry);
 
-
-      postApprovePaymentProcessing({ user_name, currency, amount, remission_period, payment_date, chapterName, approved_by, payerDataUser_id: payerData.user_id, payerDataRemission_start_date: payerData.remission_start_date, userId: user.id, payerDataEmail: payerData.email, payerDataPhone_number: payerData.phone_number })
+      postApprovePaymentProcessing({
+        user_name,
+        currency,
+        amount,
+        remission_period,
+        payment_date,
+        chapterName,
+        approved_by,
+        payerDataUser_id: payerData.user_id,
+        payerDataRemission_start_date: payerData.remission_start_date,
+        userId: user.id,
+        payerDataEmail: payerData.email,
+        payerDataPhone_number: payerData.phone_number,
+      });
 
       approvalForm.reset();
       SuccessHandler("Approval Successful");
@@ -255,7 +259,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">Personal Code</FormLabel>
+                        <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">Personal Code</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -283,14 +287,16 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">Amount</FormLabel>
+                        <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">Amount</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
                         <div className="flex gap-1">
-                          {selectedChapterCurrecny && <Button type="button" variant="outline" className="max-w-max h-[44px] border-input dark:border-inputs">
-                            {getCurrencySymbol(selectedChapterCurrecny)}
-                          </Button>}
+                          {selectedChapterCurrecny && (
+                            <Button type="button" variant="outline" className="max-w-max h-[44px] border-input dark:border-inputs">
+                              {getCurrencySymbol(selectedChapterCurrecny)}
+                            </Button>
+                          )}
                           <Input
                             type="number"
                             min={0}
@@ -313,7 +319,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">Description</FormLabel>
+                        <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">Description</FormLabel>
                       </div>
                       <FormControl>
                         <Input className="focus-visible:ring-0 focus-visible:ring-offset-0" {...field} placeholder="Any useful details about the payment..." />
@@ -331,7 +337,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">Division</FormLabel>
+                        <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">Division</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -361,7 +367,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">Chapter</FormLabel>
+                        <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">Chapter</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -393,7 +399,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90  dark:text-white font-normal text-base">Remission Month</FormLabel>
+                        <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">Remission Month</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -423,7 +429,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">Payment Date</FormLabel>
+                        <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">Payment Date</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                         <FormTooltip text={"Day the remission was made"} />
                       </div>
@@ -476,7 +482,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex items-center gap-1">
-                            <FormLabel className="text-gray-600/90 font-normal text-base">Conversion Currency</FormLabel>
+                            <FormLabel className="text-[#111c30] font-normal text-base">Conversion Currency</FormLabel>
                             <span className="text-red-500 text-base">*</span>
                           </div>
 
@@ -507,7 +513,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex items-center gap-1">
-                            <FormLabel className="text-gray-600/90 font-normal text-base">Conversion Amount</FormLabel>
+                            <FormLabel className="text-[#111c30] font-normal text-base">Conversion Amount</FormLabel>
                             <span className="text-red-500 text-base">*</span>
                           </div>
                           <FormControl>
@@ -524,7 +530,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex items-center gap-1">
-                            <FormLabel className="text-gray-600/90 font-normal text-base">
+                            <FormLabel className="text-[#111c30] font-normal text-base">
                               Conversion Rate ({approvalForm.watch("conversion_currency")}/{chapterCurrency})
                             </FormLabel>
                             <span className="text-red-500 text-base">*</span>
@@ -550,7 +556,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex items-center gap-1">
-                            <FormLabel className="text-gray-600/90 font-normal text-base">Conversion Date</FormLabel>
+                            <FormLabel className="text-[#111c30] font-normal text-base">Conversion Date</FormLabel>
                             <span className="text-red-500 text-base">*</span>
                           </div>
                           <FormControl>
@@ -581,7 +587,7 @@ export const ApprovePayment = ({ paymentData, openDialog, setOpenDialog, setRefr
                       name="conversion_description"
                       render={({ field }) => (
                         <FormItem className="col-span-2">
-                          <FormLabel className="text-gray-600/90 font-normal text-base">Conversion Description</FormLabel>
+                          <FormLabel className="text-[#111c30] font-normal text-base">Conversion Description</FormLabel>
                           <FormControl>
                             <Input
                               className="focus-visible:ring-0 focus-visible:ring-offset-0"

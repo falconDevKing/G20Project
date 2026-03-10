@@ -110,7 +110,7 @@ export default function MigrateUserDialog({ userData, open, setOpen, setUser, se
               disabled
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="capitalize text-gray-600/90 font-normal dark:text-white text-base">Name</FormLabel>
+                  <FormLabel className="capitalize text-[#111c30] font-normal dark:text-white text-base">Name</FormLabel>
                   <FormControl>
                     <Input className="focus-visible:ring-0 dark:text-white  focus-visible:ring-offset-0" placeholder={`Enter name`} {...field} />
                   </FormControl>
@@ -125,7 +125,7 @@ export default function MigrateUserDialog({ userData, open, setOpen, setUser, se
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal dark:text-white  text-base">Division</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal dark:text-white  text-base">Division</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -155,7 +155,7 @@ export default function MigrateUserDialog({ userData, open, setOpen, setUser, se
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 dark:text-white  font-normal text-base">Chapter</FormLabel>
+                    <FormLabel className="text-[#111c30] dark:text-white  font-normal text-base">Chapter</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -164,7 +164,7 @@ export default function MigrateUserDialog({ userData, open, setOpen, setUser, se
                         <SelectValue placeholder="Select your chapter" />
                       </SelectTrigger>
                       <SelectContent className="shad-select-content">
-                        {ChapterOptions.filter(chapter => chapter.filt === form.watch("division_id")).map((chapter: SelectOptions) => (
+                        {ChapterOptions.filter((chapter) => chapter.filt === form.watch("division_id")).map((chapter: SelectOptions) => (
                           <SelectItem key={chapter.value} value={chapter.value as unknown as string}>
                             <div className="flex items-center cursor-pointer gap-3">
                               <p>{chapter.name}</p>

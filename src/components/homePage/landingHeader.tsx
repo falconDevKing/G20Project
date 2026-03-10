@@ -41,10 +41,10 @@ const LandingHeader = () => {
           </nav>
 
           <div className="flex items-center gap-2">
-            <GhostButton href="/login" className="hidden sm:inline-flex">
+            <GhostButton href="/paymentButton" className="hidden sm:inline-flex">
               Give now
             </GhostButton>
-            <PrimaryButton href="/register">Login</PrimaryButton>
+            <PrimaryButton href="/login">Login</PrimaryButton>
           </div>
         </div>
       </header>

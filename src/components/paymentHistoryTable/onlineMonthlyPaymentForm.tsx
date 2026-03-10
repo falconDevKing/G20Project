@@ -353,7 +353,7 @@ export const MakeOnlineMonthlyPaymentForm = ({
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex items-center gap-1">
-                            <FormLabel className="text-gray-600/90 font-normal text-base">Personal Code</FormLabel>
+                            <FormLabel className="text-[#111c30] font-normal text-base">Personal Code</FormLabel>
                             <span className="text-red-500 text-base">*</span>
                           </div>
                           <FormControl>
@@ -382,7 +382,7 @@ export const MakeOnlineMonthlyPaymentForm = ({
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex items-center gap-1">
-                            <FormLabel className="text-gray-600/90 font-normal text-base">Amount</FormLabel>
+                            <FormLabel className="text-[#111c30] font-normal text-base">Amount</FormLabel>
                             <span className="text-red-500 text-base">*</span>
                           </div>
                           <FormControl>
@@ -415,7 +415,7 @@ export const MakeOnlineMonthlyPaymentForm = ({
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex items-center gap-1">
-                            <FormLabel className="text-gray-600/90 font-normal  text-base">Division</FormLabel>
+                            <FormLabel className="text-[#111c30] font-normal  text-base">Division</FormLabel>
                             <span className="text-red-500 text-base">*</span>
                           </div>
                           <FormControl>
@@ -445,7 +445,7 @@ export const MakeOnlineMonthlyPaymentForm = ({
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex items-center gap-1">
-                            <FormLabel className="text-gray-600/90  font-normal text-base">Chapter</FormLabel>
+                            <FormLabel className="text-[#111c30]  font-normal text-base">Chapter</FormLabel>
                             <span className="text-red-500 text-base">*</span>
                           </div>
                           <FormControl>
@@ -478,7 +478,7 @@ export const MakeOnlineMonthlyPaymentForm = ({
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90  font-normal text-base">Description</FormLabel>
+                              <FormLabel className="text-[#111c30]  font-normal text-base">Description</FormLabel>
                             </div>
                             <FormControl>
                               <Input
@@ -500,7 +500,7 @@ export const MakeOnlineMonthlyPaymentForm = ({
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90  font-normal text-base">Day for subsequent remissions</FormLabel>
+                              <FormLabel className="text-[#111c30]  font-normal text-base">Day for subsequent remissions</FormLabel>
 
                               <span className="text-red-500 text-base">*</span>
                             </div>
@@ -534,7 +534,7 @@ export const MakeOnlineMonthlyPaymentForm = ({
                           render={({ field }) => (
                             <FormItem>
                               <div className="flex items-center gap-1">
-                                <FormLabel className="text-gray-600/90  font-normal text-base">Day for subsequent remissions</FormLabel>
+                                <FormLabel className="text-[#111c30]  font-normal text-base">Day for subsequent remissions</FormLabel>
 
                                 <span className="text-red-500 text-base">*</span>
                               </div>
@@ -572,7 +572,7 @@ export const MakeOnlineMonthlyPaymentForm = ({
                           render={({ field }) => (
                             <FormItem>
                               <div className="flex items-center gap-1">
-                                <FormLabel className="text-gray-600/90  font-normal text-base">Select Date for First Payment</FormLabel>
+                                <FormLabel className="text-[#111c30]  font-normal text-base">Select Date for First Payment</FormLabel>
 
                                 <span className="text-red-500 text-base">*</span>
                               </div>
@@ -605,7 +605,7 @@ export const MakeOnlineMonthlyPaymentForm = ({
                           render={({ field }) => (
                             <FormItem>
                               <div className="flex items-center gap-1">
-                                <FormLabel className="text-gray-600/90  font-normal text-base">Description</FormLabel>
+                                <FormLabel className="text-[#111c30]  font-normal text-base">Description</FormLabel>
                               </div>
                               <FormControl>
                                 <Input

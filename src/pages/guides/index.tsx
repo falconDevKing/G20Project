@@ -12,35 +12,24 @@ export const GuidesHome: React.FC = () => {
 
   const userDetails = useAppSelector((state) => state.auth.userDetails);
   const permission_type = userDetails.permission_type;
-  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "");
+  const opsPermissionType = userDetails.ops_permission_type;
+  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "") || ["hos", "governor", "president"].includes(opsPermissionType || "");
   const divisionAdmin = ["division", "organisation"].includes(permission_type || "");
 
   const adminGuides = divisionAdmin ? [...chapterAdminGuides, ...divisionalAdminGuides] : chapterAdminGuides;
-  const guidesToUse = isAdmin ? [...guides, ...adminGuides] : guides
+  const guidesToUse = isAdmin ? [...guides, ...adminGuides] : guides;
 
   const categories = useMemo(() => {
-    return Array.from(
-      new Set(
-        guidesToUse
-          .map((g) => g.category)
-          .filter((c): c is string => Boolean(c))
-      )
-    );
+    return Array.from(new Set(guidesToUse.map((g) => g.category).filter((c): c is string => Boolean(c))));
   }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
 
     return guidesToUse.filter((g) => {
-      const matchesQuery =
-        !q ||
-        g.title.toLowerCase().includes(q) ||
-        g.intro.toLowerCase().includes(q) ||
-        (g.category ?? "").toLowerCase().includes(q);
+      const matchesQuery = !q || g.title.toLowerCase().includes(q) || g.intro.toLowerCase().includes(q) || (g.category ?? "").toLowerCase().includes(q);
 
-      const matchesCategory =
-        selectedCategories.length === 0 ||
-        (g.category && selectedCategories.includes(g.category));
+      const matchesCategory = selectedCategories.length === 0 || (g.category && selectedCategories.includes(g.category));
 
       return matchesQuery && matchesCategory;
     });
@@ -54,8 +43,7 @@ export const GuidesHome: React.FC = () => {
           <header className="mb-6">
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">GGP Guides</h1>
             <p className="mt-2 max-w-3xl text-sm text-GGP-dark/70 dark:text-white/75 sm:text-base">
-              Welcome to the GGP guide centre. Find a guide related to your concern and follow the steps to complete your
-              task.
+              Welcome to the GGP guide centre. Find a guide related to your concern and follow the steps to complete your task.
             </p>
 
             <div className="mt-4">
@@ -78,14 +66,9 @@ export const GuidesHome: React.FC = () => {
                   dark:focus:ring-GGP-lightGold/25
                 "
                 />
-
               </div>
               <div className="mt-4">
-                <GuideCategoryFilter
-                  categories={categories}
-                  selectedCategories={selectedCategories}
-                  onChange={setSelectedCategories}
-                />
+                <GuideCategoryFilter categories={categories} selectedCategories={selectedCategories} onChange={setSelectedCategories} />
               </div>
             </div>
 
@@ -109,11 +92,7 @@ export const GuidesHome: React.FC = () => {
                       {g.title}
                     </h2>
 
-                    {g.category ? (
-                      <p className="mt-1 text-xs font-medium text-GGP-dark/55 dark:text-white/60">
-                        {g.category}
-                      </p>
-                    ) : null}
+                    {g.category ? <p className="mt-1 text-xs font-medium text-GGP-dark/55 dark:text-white/60">{g.category}</p> : null}
                   </div>
 
                   <span className="mt-1 text-GGP-darkGold dark:text-GGP-lightGold">→</span>

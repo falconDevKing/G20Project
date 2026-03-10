@@ -51,7 +51,7 @@ const Benefits = () => {
 
       <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <PrimaryButton href="/register">Sign up today</PrimaryButton>
-        <GhostButton href="/login">Give Now</GhostButton>
+        <GhostButton href="/paymentButton">Give Now</GhostButton>
       </div>
     </SectionShell>
   );

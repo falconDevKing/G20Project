@@ -130,7 +130,7 @@ export const ProposedScheduleForm = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <FormItem>
-              <FormLabel className="text-gray-600/90 font-normal text-base">G20 Total Amount</FormLabel>
+              <FormLabel className="text-[#111c30] font-normal text-base">G20 Total Amount</FormLabel>
               <FormControl>
                 <AuthInput type="number" disabled value={g20Amount || 0} />
               </FormControl>
@@ -142,7 +142,7 @@ export const ProposedScheduleForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Breakdown your payment into</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">Breakdown your payment into</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>

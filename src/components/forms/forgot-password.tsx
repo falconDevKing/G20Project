@@ -32,7 +32,6 @@ export const ForgotPasswordForm = () => {
     try {
       setIsPending(true);
 
-
       const { email } = values;
       // Additional form input check to avoid spamming
       if (email) {
@@ -61,8 +60,8 @@ export const ForgotPasswordForm = () => {
       headerLabel="Request password reset"
       backButtenHref="/login"
       backButtonLabel="Back to Login"
-    // tradeMark="© 2025 GGP"
-    // showSocials
+      // tradeMark="© 2025 GGP"
+      // showSocials
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 mx-auto">
@@ -72,7 +71,7 @@ export const ForgotPasswordForm = () => {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center gap-1">
-                  <FormLabel className="text-gray-600/90 font-normal text-base">Email</FormLabel>
+                  <FormLabel className="text-[#111c30] font-normal text-base">Email</FormLabel>
                   <span className="text-red-500 text-base">*</span>
                 </div>
                 <FormControl>

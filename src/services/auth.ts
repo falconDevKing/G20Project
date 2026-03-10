@@ -1,5 +1,14 @@
 import SupabaseClient from "@/supabase/supabaseConnection";
-import type { ChapterRowType, DivisionRowType, PartnerInsertType, PartnerRowType, PartnerUpdateType } from "@/supabase/modifiedSupabaseTypes";
+import type {
+  ChapterRowType,
+  DivisionRowType,
+  PartnerInsertType,
+  PartnerRowType,
+  PartnerUpdateType,
+  HoSRowType,
+  GovernorRowType,
+  PresidentRowType,
+} from "@/supabase/modifiedSupabaseTypes";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { generateUniqueCode } from "@/lib/utils";
 import { getCurrentUser, signIn, signOut } from "aws-amplify/auth";
@@ -265,6 +274,14 @@ const filterDataBasedOnPermission = (user: PartnerRowType | DummyObject, divisio
   let filteredDivisions = divisions;
 
   let filteredChapters = chapters;
+  const hosEntities = store.getState().app.hosEntities || ([] as HoSRowType[]);
+  const governorEntities = store.getState().app.governorEntities || ([] as GovernorRowType[]);
+  const presidentEntities = store.getState().app.presidentEntities || ([] as PresidentRowType[]);
+  let filteredHoS = hosEntities;
+  let filteredGovernors = governorEntities;
+  let filteredPresidents = presidentEntities;
+
+  const opsPermission = (user.ops_permission_type || "").toLowerCase();
 
   switch (user.permission_type) {
     case "organisation":
@@ -282,9 +299,28 @@ const filterDataBasedOnPermission = (user: PartnerRowType | DummyObject, divisio
       break;
   }
 
+  if (opsPermission === "hos") {
+    filteredHoS = hosEntities.filter((h) => h.id === user.hos_id);
+    filteredGovernors = governorEntities.filter((g) => g.hos_id === user.hos_id);
+    filteredPresidents = presidentEntities.filter((p) => p.hos_id === user.hos_id);
+  } else if (opsPermission === "governor") {
+    filteredGovernors = governorEntities.filter((g) => g.id === user.governor_id);
+    const governor = filteredGovernors[0];
+    filteredHoS = governor ? hosEntities.filter((h) => h.id === governor.hos_id) : [];
+    filteredPresidents = presidentEntities.filter((p) => p.governor_id === user.governor_id);
+  } else if (opsPermission === "president") {
+    filteredPresidents = presidentEntities.filter((p) => p.id === user.president_id);
+    const president = filteredPresidents[0];
+    filteredGovernors = president ? governorEntities.filter((g) => g.id === president.governor_id) : [];
+    filteredHoS = president ? hosEntities.filter((h) => h.id === president.hos_id) : [];
+  }
+
   return {
     adminDivisions: filteredDivisions,
     adminChapters: filteredChapters,
+    adminHosEntities: filteredHoS,
+    adminGovernorEntities: filteredGovernors,
+    adminPresidentEntities: filteredPresidents,
   };
 };
 

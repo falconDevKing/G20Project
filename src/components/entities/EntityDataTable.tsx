@@ -25,10 +25,10 @@ export default function EntityDataTable<T>({ label, chapters, columns, divisions
   const [entity, setEntity] = useState<Record<string, any>>({});
 
   const [data, setData] = useState<T[]>([]);
-  const isDivision = label === "Division"
+  const isDivision = label === "Division";
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
   const userDetails = useAppSelector((state) => state.auth.userDetails);
-  const { permission_type, division_id } = userDetails
+  const { permission_type, division_id } = userDetails;
 
   const userToolsAccess = ToolAccess[permission_type as string] || [];
   const allowAccess = userToolsAccess.includes(label.toLowerCase());
@@ -52,14 +52,14 @@ export default function EntityDataTable<T>({ label, chapters, columns, divisions
   const DivisionOptions = divisions.map((division: any) => ({
     value: division.id,
     name: division.name,
-  }))
+  }));
 
   useEffect(() => {
     if (isDivision) {
-      setData(divisions)
+      setData(divisions);
     } else {
       const filteredChapters = chapters.filter((chapter: any) => {
-        if (permission_type?.toLowerCase() !== 'organisation') {
+        if (permission_type?.toLowerCase() !== "organisation") {
           return chapter.division_id === division_id;
         }
 
@@ -68,34 +68,37 @@ export default function EntityDataTable<T>({ label, chapters, columns, divisions
         }
 
         return true;
-      })
+      });
 
-      setData(filteredChapters)
+      setData(filteredChapters);
     }
-  }, [isDivision, chapters, divisions, selectedDivisionId, division_id])
+  }, [isDivision, chapters, divisions, selectedDivisionId, division_id]);
 
   return (
     <>
-      {isDivision ? "" : (<div className="mb-4 w-full max-w-sm lg:flex">
-        <div className="flex items-center gap-1 pr-3">
-          <div className="text-gray-600/90 font-normal text-base">Filter By Division: </div>
-        </div>
+      {isDivision ? (
+        ""
+      ) : (
+        <div className="mb-4 w-full max-w-sm lg:flex">
+          <div className="flex items-center gap-1 pr-3">
+            <div className="text-[#111c30] font-normal text-base">Filter By Division: </div>
+          </div>
 
-        <Select defaultValue={selectedDivisionId} value={selectedDivisionId} onValueChange={(value) => setSelectedDivisionId(value)}>
-          <SelectTrigger className=" w-48 h-12">
-            <SelectValue placeholder="Select Division" />
-          </SelectTrigger>
-          <SelectContent className="shad-select-content">
-            {DivisionOptions.map((division: SelectOptions) => (
-              <SelectItem key={division.value} value={division.value as unknown as string}>
-                <div className="flex items-center cursor-pointer gap-3">
-                  <p>{division.name}</p>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          <Select defaultValue={selectedDivisionId} value={selectedDivisionId} onValueChange={(value) => setSelectedDivisionId(value)}>
+            <SelectTrigger className=" w-48 h-12">
+              <SelectValue placeholder="Select Division" />
+            </SelectTrigger>
+            <SelectContent className="shad-select-content">
+              {DivisionOptions.map((division: SelectOptions) => (
+                <SelectItem key={division.value} value={division.value as unknown as string}>
+                  <div className="flex items-center cursor-pointer gap-3">
+                    <p>{division.name}</p>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       )}
 
       <div className=" w-full border border-[#ae9956] dark:bg-[#252525]/35 dark:border-[#EDEDED24] rounded-xl shadow-sm overflow-hidden">
@@ -155,7 +158,6 @@ export default function EntityDataTable<T>({ label, chapters, columns, divisions
           <>
             <hr className="my-2" />
             <div className="flex items-center justify-between px-6 py-4">
-
               <div className="flex items-center gap-2 ">
                 <span className="text-sm">
                   Page {page} of {totalPages}
@@ -177,20 +179,13 @@ export default function EntityDataTable<T>({ label, chapters, columns, divisions
                     </SelectContent>
                   </Select>
                 </div>
-
               </div>
-
 
               <div className="flex gap-2">
                 <Button variant="outline" size="lg2" onClick={() => setPage((prev) => Math.max(prev - 1, 1))} disabled={page === 1}>
                   Previous
                 </Button>
-                <Button
-                  variant="outline"
-                  size="lg2"
-                  onClick={() => setPage((prev) => (prev < totalPages ? prev + 1 : prev))}
-                  disabled={page >= totalPages}
-                >
+                <Button variant="outline" size="lg2" onClick={() => setPage((prev) => (prev < totalPages ? prev + 1 : prev))} disabled={page >= totalPages}>
                   Next
                 </Button>
               </div>

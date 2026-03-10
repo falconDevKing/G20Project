@@ -65,7 +65,7 @@ const HTML_TEMPLATE = `
       <tr>
         <td class="banner-icon">
           <img
-            src="https://ohip-public.s3.eu-west-1.amazonaws.com/GGPLogo.png"
+            src="https://ohip-public.s3.eu-west-1.amazonaws.com/G20_logo.png"
             alt="Logo"
             width="296"
             height="180"
@@ -210,7 +210,7 @@ const HTML_TEMPLATE_DARK = `
       <tr>
         <td class="banner-icon">
           <img
-            src="https://ohip-public.s3.eu-west-1.amazonaws.com/GGPLogo.png"
+            src="https://ohip-public.s3.eu-west-1.amazonaws.com/G20_logo.png"
             alt="Logo"
             width="296"
             height="180"

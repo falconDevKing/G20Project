@@ -92,6 +92,99 @@ export type ChapterUpdateType = {
   updated_at?: string | null;
 };
 
+export type HoSRowType = {
+  created_at: string | null;
+  id: string;
+  name: string;
+  organisation_id: string | null;
+  rep_partner_id: string | null;
+  reps?: Record<string, any>[] | null;
+  updated_at: string | null;
+};
+export type HoSInsertType = {
+  created_at?: string | null;
+  id?: string;
+  name: string;
+  organisation_id?: string | null;
+  rep_partner_id?: string | null;
+  reps?: Record<string, any>[] | null;
+  updated_at?: string | null;
+};
+export type HoSUpdateType = {
+  created_at?: string | null;
+  id?: string;
+  name?: string;
+  organisation_id?: string | null;
+  rep_partner_id?: string | null;
+  reps?: Record<string, any>[] | null;
+  updated_at?: string | null;
+};
+
+export type GovernorRowType = {
+  created_at: string | null;
+  id: string;
+  name: string;
+  organisation_id: string | null;
+  hos_id: string | null;
+  rep_partner_id: string | null;
+  reps?: Record<string, any>[] | null;
+  updated_at: string | null;
+};
+export type GovernorInsertType = {
+  created_at?: string | null;
+  id?: string;
+  name: string;
+  organisation_id?: string | null;
+  hos_id?: string | null;
+  rep_partner_id?: string | null;
+  reps?: Record<string, any>[] | null;
+  updated_at?: string | null;
+};
+export type GovernorUpdateType = {
+  created_at?: string | null;
+  id?: string;
+  name?: string;
+  organisation_id?: string | null;
+  hos_id?: string | null;
+  rep_partner_id?: string | null;
+  reps?: Record<string, any>[] | null;
+  updated_at?: string | null;
+};
+
+export type PresidentRowType = {
+  created_at: string | null;
+  id: string;
+  name: string;
+  organisation_id: string | null;
+  hos_id: string | null;
+  governor_id: string | null;
+  rep_partner_id: string | null;
+  reps?: Record<string, any>[] | null;
+  updated_at: string | null;
+};
+export type PresidentInsertType = {
+  created_at?: string | null;
+  id?: string;
+  name: string;
+  organisation_id?: string | null;
+  hos_id?: string | null;
+  governor_id?: string | null;
+  rep_partner_id?: string | null;
+  reps?: Record<string, any>[] | null;
+  updated_at?: string | null;
+};
+export type PresidentUpdateType = {
+  created_at?: string | null;
+  id?: string;
+  name?: string;
+  organisation_id?: string | null;
+  hos_id?: string | null;
+  governor_id?: string | null;
+  rep_partner_id?: string | null;
+  reps?: Record<string, any>[] | null;
+  updated_at?: string | null;
+};
+
 export type PartnerRowType = {
   g20_status: "consistent" | "active" | "passive" | null;
   g20_active: boolean | null;
@@ -131,6 +224,10 @@ export type PartnerRowType = {
   paystack_monthly_payment_id: string | null;
   permission_access: string[] | null;
   permission_type: string | null;
+  ops_permission_type: "hos" | "governor" | "president" | null;
+  hos_id: string | null;
+  governor_id: string | null;
+  president_id: string | null;
   phone_number: string | null;
   region_id: string | null;
   remission_start_date: string | null;
@@ -186,6 +283,10 @@ export type PartnerInsertType = {
   paystack_monthly_payment_id?: string | null;
   permission_access?: string[] | null;
   permission_type?: string | null;
+  ops_permission_type?: "hos" | "governor" | "president" | null;
+  hos_id?: string | null;
+  governor_id?: string | null;
+  president_id?: string | null;
   phone_number?: string | null;
   region_id?: string | null;
   remission_start_date?: string | null;
@@ -241,6 +342,10 @@ export type PartnerUpdateType = {
   paystack_monthly_payment_id?: string | null;
   permission_access?: string[] | null;
   permission_type?: string | null;
+  ops_permission_type?: "hos" | "governor" | "president" | null;
+  hos_id?: string | null;
+  governor_id?: string | null;
+  president_id?: string | null;
   phone_number?: string | null;
   region_id?: string | null;
   remission_start_date?: string | null;
@@ -362,6 +467,9 @@ export type G20PaymentRowType = {
   organisation_id: string | null;
   division_id: string | null;
   chapter_id: string | null;
+  hos_id: string | null;
+  governor_id: string | null;
+  president_id: string | null;
   unique_code: string | null;
   email: string;
   first_name: string;
@@ -392,6 +500,9 @@ export type G20PaymentInsertType = {
   organisation_id?: string | null;
   division_id?: string | null;
   chapter_id?: string | null;
+  hos_id?: string | null;
+  governor_id?: string | null;
+  president_id?: string | null;
   unique_code?: string | null;
   email: string;
   first_name: string;
@@ -422,6 +533,9 @@ export type G20PaymentUpdateType = {
   organisation_id?: string | null;
   division_id?: string | null;
   chapter_id?: string | null;
+  hos_id?: string | null;
+  governor_id?: string | null;
+  president_id?: string | null;
   unique_code?: string | null;
   email?: string;
   first_name?: string;
@@ -582,6 +696,9 @@ export type ProposedPaymentScheduleRowType = {
   organisation_id: string | null;
   division_id: string | null;
   chapter_id: string | null;
+  hos_id: string | null;
+  governor_id: string | null;
+  president_id: string | null;
   email: string;
   first_name: string;
   last_name: string;
@@ -601,6 +718,9 @@ export type ProposedPaymentScheduleInsertType = {
   organisation_id?: string | null;
   division_id?: string | null;
   chapter_id?: string | null;
+  hos_id?: string | null;
+  governor_id?: string | null;
+  president_id?: string | null;
   email: string;
   first_name: string;
   last_name: string;
@@ -620,6 +740,9 @@ export type ProposedPaymentScheduleUpdateType = {
   organisation_id?: string | null;
   division_id?: string | null;
   chapter_id?: string | null;
+  hos_id?: string | null;
+  governor_id?: string | null;
+  president_id?: string | null;
   email?: string;
   first_name?: string;
   last_name?: string;

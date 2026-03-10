@@ -124,7 +124,7 @@ export default function UploadMediaDialog({ open, onOpenChange, onSuccess }: Upl
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Media Name</FormLabel>
+                    <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Media Name</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -141,7 +141,7 @@ export default function UploadMediaDialog({ open, onOpenChange, onSuccess }: Upl
               render={({ field: { value, onChange, ...field } }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Image File</FormLabel>
+                    <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Image File</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>

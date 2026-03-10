@@ -66,7 +66,7 @@ const About = () => {
 
           <div className="mt-5 gap-4 flex flex-wrap">
             <PrimaryButton href="/register">Sign up</PrimaryButton>
-            <GhostButton href="/login" className="hidden sm:inline-flex">
+            <GhostButton href="/paymentButton" className="hidden sm:inline-flex">
               Give now
             </GhostButton>
           </div>
@@ -77,8 +77,8 @@ const About = () => {
         {quotesDavid.map((q) => (
           <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-6">
             <div className="absolute left-0 top-0 h-full w-1 bg-[#d0aa56]" />
-            <p className="text-sm leading-7 text-[#f0cf86] italic">"{q.text}"</p>
-            <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9]">{q.ref}</p>
+            <p className="text-md leading-7 text-[#f0cf86]">"{q.text}"</p>
+            <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9] italic">{q.ref}</p>
           </div>
         ))}
 
@@ -93,8 +93,8 @@ const About = () => {
         {quotesJesus.map((q) => (
           <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-6">
             <div className="absolute left-0 top-0 h-full w-1 bg-[#d0aa56]" />
-            <p className="text-sm leading-7 text-[#f0cf86] italic">"{q.text}"</p>
-            <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9]">{q.ref}</p>
+            <p className="text-md leading-7 text-[#f0cf86]">"{q.text}"</p>
+            <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9] italic">{q.ref}</p>
           </div>
         ))}
 
@@ -108,8 +108,8 @@ const About = () => {
         {quotesPaul.map((q) => (
           <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-6">
             <div className="absolute left-0 top-0 h-full w-1 bg-[#d0aa56]" />
-            <p className="text-sm leading-7 text-[#f0cf86] italic">"{q.text}"</p>
-            <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9]">{q.ref}</p>
+            <p className="text-md leading-7 text-[#f0cf86] ">"{q.text}"</p>
+            <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9] italic">{q.ref}</p>
           </div>
         ))}
       </div>

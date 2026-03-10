@@ -3,6 +3,8 @@ import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tan
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { SelectOptions } from "@/interfaces/register";
+import { pageSizeOptions } from "@/lib/utils";
 
 type SimpleTableProps<TData extends Record<string, any>> = {
   data: TData[];
@@ -14,8 +16,6 @@ type SimpleTableProps<TData extends Record<string, any>> = {
   setPageSize: React.Dispatch<React.SetStateAction<string>>;
   onRowClick?: (row: TData) => void;
 };
-
-const pageSizeOptions = ["10", "20", "50", "100"];
 
 export const SimpleTable = <TData extends Record<string, any>>({
   data,
@@ -36,13 +36,13 @@ export const SimpleTable = <TData extends Record<string, any>>({
   });
 
   return (
-    <div className="w-full border border-[#D4AF37]/30 rounded-xl overflow-hidden bg-white">
+    <div className="w-full  md:border border-[#ae9956] dark:bg-[#252525]/35 dark:border-[#EDEDED24] rounded-xl shadow-sm overflow-hidden">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="bg-[#FCF6E6]">
+            <TableRow key={headerGroup.id} className="bg-[#FFF8E5] dark:bg-[#CCA33D]">
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="text-[#1E1E1E] font-semibold text-sm md:text-base px-7">
+                <TableHead key={header.id} className="text-[#171721] dark:text-white font-semibold px-7 text-sm md:text-base">
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
@@ -53,9 +53,13 @@ export const SimpleTable = <TData extends Record<string, any>>({
         <TableBody>
           {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} className={`hover:bg-[#FCF9EF]  ${onRowClick ? "cursor-pointer" : ""}`} onClick={() => onRowClick?.(row.original)}>
+              <TableRow
+                key={row.id}
+                className={`hover:bg-[#FCF9EF]  dark:hover:bg-[#252525]/85 ${onRowClick ? "cursor-pointer" : ""}`}
+                onClick={() => onRowClick?.(row.original)}
+              >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="px-7 py-4 text-xs md:text-sm dark:text-black">
+                  <TableCell key={cell.id} className="px-7 py-4 text-xs md:text-sm">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -71,7 +75,46 @@ export const SimpleTable = <TData extends Record<string, any>>({
         </TableBody>
       </Table>
 
-      <div className="flex items-center justify-between px-4 py-3 border-t">
+      {(totalPages > 1 || +pageSize > 10) && (
+        <div>
+          <hr className="my-2 border-t dark:border-[#252525]" />
+          <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex items-center gap-2 ">
+              <span className="text-sm">
+                Page {page} of {totalPages}
+              </span>
+
+              <div>
+                <Select onValueChange={setPageSize} defaultValue={pageSize} value={pageSize}>
+                  <SelectTrigger className="shad-select-trigger">
+                    <SelectValue placeholder="Select your Gender" />
+                  </SelectTrigger>
+                  <SelectContent className="shad-select-content">
+                    {pageSizeOptions.map((pageOptions: SelectOptions) => (
+                      <SelectItem key={pageOptions.value} value={pageOptions.value as string}>
+                        <div className="flex items-center cursor-pointer gap-3">
+                          <p>{pageOptions.name}</p>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button variant="outline" size="lg2" onClick={() => setPage((prev) => Math.max(prev - 1, 1))} disabled={page === 1}>
+                Previous
+              </Button>
+              <Button variant="outline" size="lg2" onClick={() => setPage((prev) => (prev + 1 > totalPages ? prev : prev + 1))} disabled={page >= totalPages}>
+                Next
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* <div className="flex items-center justify-between px-4 py-3 border-t">
         <div className="text-sm text-[#667085]">
           Page {page} of {totalPages}
         </div>
@@ -97,7 +140,7 @@ export const SimpleTable = <TData extends Record<string, any>>({
             Next
           </Button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -43,7 +43,7 @@ const Category = () => {
           <p className="mt-7 text-md text-[#d6e2f8]">Top G20 partners will serve as executives of the House of Greats for the upcoming year.</p>
 
           <div className="mt-7 gap-4 flex flex-wrap">
-            <PrimaryButton href="/register" hideArrow>
+            <PrimaryButton href="/paymentButton" hideArrow>
               Give Now
             </PrimaryButton>
             <GhostButton href="/login" className="hidden sm:inline-flex" showArrow>

@@ -63,7 +63,7 @@ const PostConfirmationTemplate = function (name: string, code: string, hideDefau
       ">
     <tr>
       <td class="banner-icon">
-        <img src="https://ohip-public.s3.eu-west-1.amazonaws.com/GGPLogo.png" alt="Logo" width="296" height="180" style="display: block; padding: 0.5rem 0.75rem; margin: 0 auto" />
+        <img src="https://ohip-public.s3.eu-west-1.amazonaws.com/G20_logo.png" alt="Logo" width="296" height="180" style="display: block; padding: 0.5rem 0.75rem; margin: 0 auto" />
       </td>
     </tr>
     <tr>

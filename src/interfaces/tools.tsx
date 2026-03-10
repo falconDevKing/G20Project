@@ -23,6 +23,30 @@ export type Division = {
   reps?: DummyObject[];
 };
 
+export type HoS = {
+  id?: string;
+  name: string;
+  rep_partner_id?: string | null;
+  reps?: DummyObject[];
+};
+
+export type Governor = {
+  id?: string;
+  name: string;
+  hos_id?: string | null;
+  rep_partner_id?: string | null;
+  reps?: DummyObject[];
+};
+
+export type President = {
+  id?: string;
+  name: string;
+  hos_id?: string | null;
+  governor_id?: string | null;
+  rep_partner_id?: string | null;
+  reps?: DummyObject[];
+};
+
 export type User = {
   name: string;
   ggp_category?: string;
@@ -38,6 +62,12 @@ export const tabItems = [
   { value: "chapter", label: "Chapters" },
   { value: "division", label: "Divisions" },
   // { value: "user", label: "Users" },
+];
+
+export const operationalTabItems = [
+  { value: "hos", label: "HoS" },
+  { value: "governor", label: "Governors" },
+  { value: "president", label: "Presidents" },
 ];
 
 export const overviewItems = [
@@ -129,6 +159,60 @@ export const divisionColumns: ColumnDef<Division>[] = [
   },
 ];
 
+export const hosColumns: ColumnDef<HoS>[] = [
+  { accessorKey: "name", header: "Name" },
+  {
+    accessorKey: "rep_name",
+    header: "Rep",
+    cell: ({ row }) => {
+      const repName = row.original.reps?.[0]?.name || "---";
+      return <div className="capitalize">{repName}</div>;
+    },
+  },
+];
+
+export const governorColumns: (hosEntities: { id: string; name: string }[]) => ColumnDef<Governor>[] = (hosEntities) => [
+  { accessorKey: "name", header: "Name" },
+  {
+    accessorKey: "hos_id",
+    header: "HoS",
+    cell: ({ row }) => <div className="capitalize">{hosEntities.find((hos) => hos.id === row.original.hos_id)?.name || "---"}</div>,
+  },
+  {
+    accessorKey: "rep_name",
+    header: "Rep",
+    cell: ({ row }) => {
+      const repName = row.original.reps?.[0]?.name || "---";
+      return <div className="capitalize">{repName}</div>;
+    },
+  },
+];
+
+export const presidentColumns: (hosEntities: { id: string; name: string }[], governors: { id: string; name: string }[]) => ColumnDef<President>[] = (
+  hosEntities,
+  governors,
+) => [
+  { accessorKey: "name", header: "Name" },
+  {
+    accessorKey: "hos_id",
+    header: "HoS",
+    cell: ({ row }) => <div className="capitalize">{hosEntities.find((hos) => hos.id === row.original.hos_id)?.name || "---"}</div>,
+  },
+  {
+    accessorKey: "governor_id",
+    header: "Governor",
+    cell: ({ row }) => <div className="capitalize">{governors.find((governor) => governor.id === row.original.governor_id)?.name || "---"}</div>,
+  },
+  {
+    accessorKey: "rep_name",
+    header: "Rep",
+    cell: ({ row }) => {
+      const repName = row.original.reps?.[0]?.name || "---";
+      return <div className="capitalize">{repName}</div>;
+    },
+  },
+];
+
 export const dummyFunction = (anyParam: any) => {
   return anyParam;
 };
@@ -177,23 +261,21 @@ export const userColumns: (
     },
     { accessorKey: "phone_number", header: "Phone Number" },
     {
-      accessorKey: "ggp_category", header: "Category",
+      accessorKey: "ggp_category",
+      header: "Category",
       cell: ({ row }) => {
-
-        const { currency } = findChapterDetails(row.getValue("chapter_id"))
+        const { currency } = findChapterDetails(row.getValue("chapter_id"));
         const partnershipDetails = GGPCategories[currency as CurrencyCode] || GGPCategories["USD"];
         const categories = Object.values(partnershipDetails).flat();
-        const GGPCategory = row.getValue("ggp_category")
+        const GGPCategory = row.getValue("ggp_category");
         const categoryRange = categories.find((cat) => cat.rank === GGPCategory)?.amount;
 
-        return <div className="capitalize flex flex-col align-middle">
-          <span>
-            {`${GGPCategory}`}
-          </span>
-          <span className='text-xs'>
-            ({`${categoryRange}`})
-          </span>
-        </div>;
+        return (
+          <div className="capitalize flex flex-col align-middle">
+            <span>{`${GGPCategory}`}</span>
+            <span className="text-xs">({`${categoryRange}`})</span>
+          </div>
+        );
       },
     },
     // {
@@ -207,15 +289,12 @@ export const userColumns: (
       accessorKey: "chapter_id",
       header: "Chapter",
       cell: ({ row }) => {
-        console.log('row', row)
-        return <div className="capitalize flex flex-col align-middle">
-          <span>
-            {chapters.find((chapter) => chapter.id === row.getValue("chapter_id"))?.name || ""}
-          </span>
-          <span className='text-[10px]'>
-            ({divisions.find((division) => division.id === row.original.division_id)?.name || ""})
-          </span>
-        </div>
+        return (
+          <div className="capitalize flex flex-col align-middle">
+            <span>{chapters.find((chapter) => chapter.id === row.getValue("chapter_id"))?.name || ""}</span>
+            <span className="text-[10px]">({divisions.find((division) => division.id === row.original.division_id)?.name || ""})</span>
+          </div>
+        );
       },
     },
     {
@@ -250,7 +329,7 @@ export const userColumns: (
               className="cursor-pointer text-sm"
               variant="secondary"
               onClick={(e) => {
-                e.stopPropagation()
+                e.stopPropagation();
                 openUpdateDialog(row.original);
               }}
             >
@@ -259,7 +338,7 @@ export const userColumns: (
             <Badge
               className="cursor-pointer text-sm"
               onClick={(e) => {
-                e.stopPropagation()
+                e.stopPropagation();
                 openMigrateDialog(row.original);
               }}
             >
@@ -355,7 +434,7 @@ export const HoGUserColumns: (divisions: DivisionsList, openUpdateDialog: (userD
               className="cursor-pointer text-sm"
               variant="secondary"
               onClick={(e) => {
-                e.stopPropagation()
+                e.stopPropagation();
                 openUpdateDialog(row.original);
               }}
             >

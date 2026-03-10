@@ -1,12 +1,57 @@
+import { useEffect, useState } from "react";
+
 import G20Crest from "@/assets/generalAppAssets/G20_logo.png";
-import ProphetMinisteringPicture from "@/assets/generalAppAssets/GGP-hero.png";
+// import HeroBackgroundOne from "@/assets/generalAppAssets/GGP-hero.png";
+import HeroBackgroundTwo from "@/assets/generalAppAssets/Prop2.jpg";
+import HeroBackgroundThree from "@/assets/generalAppAssets/Prop3.jpg";
+import HeroBackgroundFour from "@/assets/generalAppAssets/gp-bg.webp";
+// import HeroBackgroundFive from "@/assets/generalAppAssets/Prop 4.jpg";
+// import HeroBackgroundSix from "@/assets/generalAppAssets/Prop 5.jpg";
+import HeroBackgroundSeven from "@/assets/generalAppAssets/Prop 6.jpg";
+import HeroBackgroundEight from "@/assets/generalAppAssets/Prop 7.jpg";
+import HeroBackgroundNine from "@/assets/generalAppAssets/Prop 8.jpg";
+import HeroBackgroundTen from "@/assets/generalAppAssets/Prop 9.jpg";
 
 import { GhostButton, PrimaryButton } from "../customIcons";
+
+const heroImages = [
+  // HeroBackgroundOne,
+  HeroBackgroundTwo,
+  HeroBackgroundThree,
+  HeroBackgroundFour,
+  // HeroBackgroundFive,
+  // HeroBackgroundSix,
+  HeroBackgroundSeven,
+  HeroBackgroundEight,
+  HeroBackgroundNine,
+  HeroBackgroundTen,
+];
+
 const Hero = () => {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  useEffect(() => {
+    const imageRotationInterval = window.setInterval(() => {
+      setActiveImageIndex((currentIndex) => (currentIndex + 1) % heroImages.length);
+    }, 3000);
+
+    return () => window.clearInterval(imageRotationInterval);
+  }, []);
+
   return (
     <section className="relative overflow-hidden px-6 sm:px-16 lg:px-24">
       <div className="absolute inset-0">
-        <img src={ProphetMinisteringPicture} alt="" className="h-full w-full object-cover" />
+        {heroImages.map((image, index) => (
+          <img
+            key={image}
+            src={image}
+            alt=""
+            aria-hidden="true"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1500ms] ease-in-out ${
+              index === activeImageIndex ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
         <div className="absolute inset-0 bg-[#0b1120]/65" />
       </div>
 
@@ -35,7 +80,7 @@ const Hero = () => {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <PrimaryButton href="/register">Join the G20</PrimaryButton>
-              <GhostButton href="/login" className="hidden sm:inline-flex">
+              <GhostButton href="/paymentButton" className="hidden sm:inline-flex">
                 Give now
               </GhostButton>
             </div>

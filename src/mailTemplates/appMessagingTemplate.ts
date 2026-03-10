@@ -44,7 +44,7 @@ const HTML_TEMPLATE = `
       <tr>
         <td class="banner-icon">
           <img
-            src="https://ohip-public.s3.eu-west-1.amazonaws.com/GGP-logo.png"
+            src="https://ohip-public.s3.eu-west-1.amazonaws.com/G20_logo.png"
             alt="Logo"
             width="180"
             style="height: auto; display: block; padding: 0.5rem 0.75rem; margin:0"
@@ -134,7 +134,7 @@ const HTML_TEMPLATE_DARK = `
       <tr>
         <td class="banner-icon">
           <img
-            src="https://ohip-public.s3.eu-west-1.amazonaws.com/GGP-logo.png"
+            src="https://ohip-public.s3.eu-west-1.amazonaws.com/G20_logo.png"
             alt="Logo"
             width="180"
             style="height: auto; display: block; padding: 0.5rem 0.75rem; margin:0"

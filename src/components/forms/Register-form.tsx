@@ -192,7 +192,7 @@ export const RegisterForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">First Name</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">First Name</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -215,7 +215,7 @@ export const RegisterForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Last Name</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">Last Name</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -234,7 +234,7 @@ export const RegisterForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Email</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">Email</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
 
@@ -258,7 +258,7 @@ export const RegisterForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Phone Number</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">Phone Number</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -283,7 +283,7 @@ export const RegisterForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Division</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">Division</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -334,7 +334,7 @@ export const RegisterForm = () => {
                 return (
                   <FormItem>
                     <div className="flex items-center gap-1">
-                      <FormLabel className="text-gray-600/90 font-normal text-base">Chapter</FormLabel>
+                      <FormLabel className="text-[#111c30] font-normal text-base">Chapter</FormLabel>
                       <span className="text-red-500 text-base">*</span>
                     </div>
                     <FormControl>
@@ -406,7 +406,7 @@ export const RegisterForm = () => {
           <div className="w-full grid grid-cols-1">
             <div className="w-full">
               <div className="flex items-center gap-1 pb-2 w-full">
-                <FormLabel className="text-gray-600/90 font-normal text-base">Birth Day</FormLabel>
+                <FormLabel className="text-[#111c30] font-normal text-base">Birth Day</FormLabel>
                 <span className="text-red-500 text-base">*</span>
               </div>
               <div className="flex gap-x-1 w-full">
@@ -472,7 +472,7 @@ export const RegisterForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Password</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">Password</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -504,7 +504,7 @@ export const RegisterForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Confirm Password</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">Confirm Password</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -545,7 +545,7 @@ export const RegisterForm = () => {
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none text-sm">
-                    <div className="text-gray-600/90 flex flex-col">
+                    <div className="text-[#111c30] flex flex-col">
                       By creating an account, you agree to the Global Gospel Partnership{" "}
                       <span className="">
                         <a href="/terms-and-conditions" className="text-GGP-darkGold underline">

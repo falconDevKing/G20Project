@@ -157,7 +157,7 @@ export const UpdateForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Married</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">Married</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -183,7 +183,7 @@ export const UpdateForm = () => {
             {married === "Yes" && (
               <div className="">
                 <div className="flex items-center gap-1 pb-2">
-                  <FormLabel className="text-gray-600/90 font-normal text-base">Anniversary Day</FormLabel>
+                  <FormLabel className="text-[#111c30] font-normal text-base">Anniversary Day</FormLabel>
                   <span className="text-red-500 text-base">*</span>
                 </div>
                 <div className="flex gap-x-1">
@@ -250,7 +250,7 @@ export const UpdateForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">G20 Category</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">G20 Category</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -280,7 +280,7 @@ export const UpdateForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">G20 Amount</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">G20 Amount</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -305,7 +305,7 @@ export const UpdateForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Are you doing this of your own accord?</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">Are you doing this of your own accord?</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -337,7 +337,7 @@ export const UpdateForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">What is your conviction about giving to advance God's kingsom?</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">What is your conviction about giving to advance God's kingsom?</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
@@ -368,7 +368,7 @@ export const UpdateForm = () => {
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none text-md">
-                    <div className="text-gray-600/90">
+                    <div className="text-[#111c30]">
                       I acknowledge that my giving is an expression of my love for Christ and a commitment to the advancement of the Kingdom of God. I confirm
                       that all seed or offerings given were voluntary, made without any form of coercion, pressure, or manipulation, and given willingly from a
                       heart of faithfulness and devotion to God.

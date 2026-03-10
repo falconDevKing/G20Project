@@ -4,13 +4,13 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl,  FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import DatePicker from "react-datepicker";
 import { paymentFormSchema } from "@/lib/schemas";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { initialiseOptions} from "@/lib/utils";
+import { initialiseOptions } from "@/lib/utils";
 // import { initialiseOptions, RemissionPeriodsOptions } from "@/lib/utils";
 import { useAppSelector } from "@/redux/hooks";
 import dayjs from "dayjs";
@@ -62,7 +62,7 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
 
   const isIndividual = permission_type === "individual";
 
-  console.log('chapterCurrency', chapterCurrency)
+  console.log("chapterCurrency", chapterCurrency);
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentFormSchema),
     defaultValues: {
@@ -219,7 +219,7 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Personal Code</FormLabel>
+                          <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Personal Code</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                         </div>
                         <FormControl>
@@ -247,7 +247,7 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">Amount</FormLabel>
+                          <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">Amount</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                         </div>
                         <FormControl>
@@ -279,7 +279,7 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90 dark:text-white  font-normal text-base">Description</FormLabel>
+                          <FormLabel className="text-[#111c30] dark:text-white  font-normal text-base">Description</FormLabel>
                         </div>
                         <FormControl>
                           <Input
@@ -300,7 +300,7 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90 dark:text-white  font-normal text-base">Payment Date</FormLabel>
+                          <FormLabel className="text-[#111c30] dark:text-white  font-normal text-base">Payment Date</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                           <FormTooltip text={"Day you made the remission"} />
                         </div>
@@ -335,7 +335,7 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90 font-normal  dark:text-white text-base">Division</FormLabel>
+                          <FormLabel className="text-[#111c30] font-normal  dark:text-white text-base">Division</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                         </div>
                         <FormControl>
@@ -365,7 +365,7 @@ export const LogPayment = ({ forUser = false, postLogPaymentProcessing }: LogPay
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90  dark:text-white font-normal text-base">Chapter</FormLabel>
+                          <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">Chapter</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                         </div>
                         <FormControl>

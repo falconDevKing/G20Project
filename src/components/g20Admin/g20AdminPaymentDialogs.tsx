@@ -79,7 +79,7 @@ export const G20AdminPaymentEntryDialog = ({ mode, onSaved }: G20AdminPaymentEnt
       setIsPending(true);
 
       const { data: partner, error: partnerError } = await SupabaseClient.from("partner")
-        .select("id,unique_code,organisation_id,division_id,chapter_id,email,first_name,last_name")
+        .select("id,unique_code,organisation_id,division_id,chapter_id,hos_id,governor_id,president_id,email,first_name,last_name")
         .eq("unique_code", values.unique_code)
         .maybeSingle();
 
@@ -114,6 +114,9 @@ export const G20AdminPaymentEntryDialog = ({ mode, onSaved }: G20AdminPaymentEnt
         organisation_id: partner.organisation_id,
         division_id: partner.division_id,
         chapter_id: partner.chapter_id,
+        hos_id: partner.hos_id,
+        governor_id: partner.governor_id,
+        president_id: partner.president_id,
         unique_code: partner.unique_code,
         email: partner.email,
         first_name: partner.first_name,
@@ -349,7 +352,7 @@ export const G20ApprovePaymentDialog = ({ open, setOpen, payment, onSaved }: G20
       const values = form.getValues();
 
       const { data: partner, error: partnerError } = await SupabaseClient.from("partner")
-        .select("id,unique_code,organisation_id,division_id,chapter_id,email,first_name,last_name")
+        .select("id,unique_code,organisation_id,division_id,chapter_id,hos_id,governor_id,president_id,email,first_name,last_name")
         .eq("unique_code", values.unique_code)
         .maybeSingle();
 
@@ -382,6 +385,9 @@ export const G20ApprovePaymentDialog = ({ open, setOpen, payment, onSaved }: G20
         organisation_id: partner.organisation_id,
         division_id: partner.division_id,
         chapter_id: partner.chapter_id,
+        hos_id: partner.hos_id,
+        governor_id: partner.governor_id,
+        president_id: partner.president_id,
         unique_code: partner.unique_code,
         email: partner.email,
         first_name: partner.first_name,

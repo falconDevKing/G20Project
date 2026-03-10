@@ -5,7 +5,6 @@ import {
   BadgePlus,
   Users,
   Banknote,
-  RefreshCw,
   LayoutDashboard,
   Mails,
   Gauge,
@@ -21,7 +20,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { numberWithCurrencyFormatter } from "@/lib/numberUtils";
 import { ChaptersList } from "@/interfaces/tools";
 import dayjs from "dayjs";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PartnerRowType, G20PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
 import { SelectOptions } from "@/interfaces/register";
 
@@ -39,7 +37,6 @@ export const UserViews = [
 ];
 
 export const AdminViews = [
-  { name: "Personal View", route: "/dashboard", icon: User, allowIndividual: false, allowChapter: true },
   { name: "Metrics", route: "/overview", icon: LayoutDashboard, allowIndividual: false, allowChapter: true },
   { name: "Remission Management", route: "/remissions", icon: WalletMinimal, allowIndividual: false, allowChapter: true },
   { name: "Pending Remissions", route: "/pending-remissions", icon: Banknote, allowIndividual: false, allowChapter: true },

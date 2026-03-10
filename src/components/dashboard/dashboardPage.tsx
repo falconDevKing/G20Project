@@ -73,9 +73,10 @@ export default function DashboardCom() {
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false);
 
   const permissionType = user.permission_type || "individual";
+  const opsPermissionType = user.ops_permission_type || "";
   const chapterId = user.chapter_id || "";
   const chapterCurrency = findChapterDetails(chapterId)?.currency || "NGN";
-  const isAdmin = ["chapter", "division", "organisation"].includes(permissionType);
+  const isAdmin = ["chapter", "division", "organisation"].includes(permissionType) || ["hos", "governor", "president"].includes(opsPermissionType);
 
   const { scheduleYear } = useMemo(() => getNextOct30Window(), []);
 
@@ -195,9 +196,13 @@ export default function DashboardCom() {
           <div className="flex flex-wrap justify-start xl:justify-end gap-2">
             <CombinedOnlinePayment filterData={() => setRefreshKey((prev) => prev + 1)} forUser />
             <G20LogOfflinePayment onSaved={async () => setRefreshKey((prev) => prev + 1)} />
-            <Button variant="custom" size="lg" disabled={!isAdmin}>
-              <Link to="/overview">Access Admin Views</Link>
-            </Button>
+            {isAdmin ? (
+              <Button variant="custom" size="lg" disabled={!isAdmin}>
+                <Link to="/overview">Access Admin Views</Link>
+              </Button>
+            ) : (
+              ""
+            )}
           </div>
         </section>
 
@@ -248,7 +253,6 @@ export default function DashboardCom() {
               name="Filter Payments"
               filterType="Payment"
               allow="Individual"
-              permission_type={permissionType}
               paymentType="Payments"
               tableName="g20_payments"
               updateTableData={setActualData}
@@ -280,7 +284,6 @@ export default function DashboardCom() {
               name="Filter Proposed"
               filterType="Proposed"
               allow="Individual"
-              permission_type={permissionType}
               paymentType="ProposedSchedule"
               tableName="proposed_payment_schedule"
               updateTableData={setProposedData}

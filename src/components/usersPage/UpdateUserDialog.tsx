@@ -46,8 +46,10 @@ export default function UpdateUserDialog({ userData, open, setOpen, setUser, per
 
   const { ChapterOptions } = initialiseOptions(appState);
 
-
-  const filteredPermissionOptions = [...PermissionOptions.filter((option) => option.allow.includes(permission_type)), ...PermissionAssistantOptions.filter(assistant => assistant.value.includes(permission_type))]
+  const filteredPermissionOptions = [
+    ...PermissionOptions.filter((option) => option.allow.includes(permission_type)),
+    ...PermissionAssistantOptions.filter((assistant) => assistant.value.includes(permission_type)),
+  ];
 
   const oldPermissionType = userData.permission_type;
   const oldUserAssistant = !!userData.assistant;
@@ -72,23 +74,26 @@ export default function UpdateUserDialog({ userData, open, setOpen, setUser, per
     try {
       setIsPending(true);
       const { permission_type: new_user_permission_type, ggp_category, custom_remission_start, remission_start_date, preferred_remission_day } = values;
-      const [new_user_permission, assistant] = new_user_permission_type.split(" ")
+      const [new_user_permission, assistant] = new_user_permission_type.split(" ");
 
       const memberData: Record<"preferred_remission_day" | string, any> = {
         id: userData.id,
         permission_type: new_user_permission,
         ggp_category,
         remission_start_date: custom_remission_start && remission_start_date ? remission_start_date : userData?.remission_start_date || "",
-        assistant: assistant === 'assistant',
+        assistant: assistant === "assistant",
       };
 
       if (preferred_remission_day) {
-        memberData.preferred_remission_day = +preferred_remission_day
+        memberData.preferred_remission_day = +preferred_remission_day;
       }
 
-      if (new_user_permission !== oldPermissionType && !isLowerAdminPermission(oldPermissionType, permission_type as PermissionType, oldUserAssistant, oldAdminAssistant)) {
-        ErrorHandler('Cant Update Higher Admin Permission')
-        throw new Error('Cant Update Higher Admin Permission')
+      if (
+        new_user_permission !== oldPermissionType &&
+        !isLowerAdminPermission(oldPermissionType, permission_type as PermissionType, oldUserAssistant, oldAdminAssistant)
+      ) {
+        ErrorHandler("Cant Update Higher Admin Permission");
+        throw new Error("Cant Update Higher Admin Permission");
       }
 
       await updateMember(memberData);
@@ -147,7 +152,7 @@ export default function UpdateUserDialog({ userData, open, setOpen, setUser, per
               disabled
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="capitalize text-gray-600/90 dark:text-white font-normal text-base">Name</FormLabel>
+                  <FormLabel className="capitalize text-[#111c30] dark:text-white font-normal text-base">Name</FormLabel>
                   <FormControl>
                     <Input className="focus-visible:ring-0 dark:text-white focus-visible:ring-offset-0" placeholder={`Enter name`} {...field} />
                   </FormControl>
@@ -161,7 +166,7 @@ export default function UpdateUserDialog({ userData, open, setOpen, setUser, per
               name="chapter_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Chapter</FormLabel>
+                  <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Chapter</FormLabel>
                   <FormControl>
                     <Select disabled onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                       <SelectTrigger className="shad-select-trigger">
@@ -189,7 +194,7 @@ export default function UpdateUserDialog({ userData, open, setOpen, setUser, per
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">GGP Category</FormLabel>
+                    <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">GGP Category</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
 
@@ -229,7 +234,7 @@ export default function UpdateUserDialog({ userData, open, setOpen, setUser, per
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Permission Type</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Permission Type</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -252,20 +257,16 @@ export default function UpdateUserDialog({ userData, open, setOpen, setUser, per
                     </FormItem>
                   )}
                 />
-
               </div>
 
-
               <div className="w-full">
-
-
                 <FormField
                   control={form.control}
                   name="preferred_remission_day"
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Preferred Remission Day</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Preferred Remission Day</FormLabel>
                       </div>
                       <FormControl>
                         <Select onValueChange={field.onChange} value={field.value || ""}>
@@ -314,7 +315,7 @@ export default function UpdateUserDialog({ userData, open, setOpen, setUser, per
                     name="remission_start_date"
                     render={({ field }) => (
                       <FormItem>
-                        {/* <FormLabel className="text-gray-600/90 font-normal text-base">Remission Start Date</FormLabel> */}
+                        {/* <FormLabel className="text-[#111c30] font-normal text-base">Remission Start Date</FormLabel> */}
                         <FormControl>
                           <div className="flex rounded-md border border-gray-500/20 items-center dark:text-white px-2 dark:bg-transparent bg-white">
                             <img className="mr-2" src="/icons/calendar.svg" height={24} width={24} alt="Calendar" />

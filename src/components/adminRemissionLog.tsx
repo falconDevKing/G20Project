@@ -93,7 +93,7 @@ export const AdminRemissionLog = () => {
     <section>
       <ContainerFluid>
         <div className="pt-2 text-2xl lg:text-3xl font-bold">Pending Remission Log</div>
-        <div className="mb-4 text-md text-base dark:text-white text-GGP-dark/75">View, manage and approve remissions seamlessly.</div>
+        <div className="mb-4 text-md text-base dark:text-white text-GGP-dark/75">Streamlined view to review and approve offline remissions seamlessly.</div>
 
         <DynamicFilter
           filterType="Payment"

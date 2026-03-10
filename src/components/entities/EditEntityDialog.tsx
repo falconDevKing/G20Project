@@ -15,7 +15,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { createDivisionSchema, createChapterSchema, genericToolsSchema } from "@/lib/toolsSchemas";
+import {
+  createDivisionSchema,
+  createChapterSchema,
+  createGovernorSchema,
+  createHoSSchema,
+  createPresidentSchema,
+  genericToolsSchema,
+} from "@/lib/toolsSchemas";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { SelectOptions } from "@/interfaces/register";
 import { useAppSelector } from "@/redux/hooks";
@@ -26,6 +33,8 @@ import { updateEntity } from "@/services/tools";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
 import { refreshLoggedInUser } from "@/services/auth";
 import { triggerChapterMembersMigration } from "@/services/triggerChapterMembersMigration";
+import { PartnerSearchSelect } from "./PartnerSearchSelect";
+import { fetchUsersByEntity } from "@/services/appData";
 
 type FormValues = z.infer<typeof genericToolsSchema>;
 
@@ -43,6 +52,8 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
   const userId = useAppSelector((state) => state.auth.user_id);
   const appState = useAppSelector((state) => state.app);
   const { DivisionOptions } = initialiseOptions(appState);
+  const HoSOptions = (appState.hosEntities || []).map((hos) => ({ value: hos.id, name: hos.name }));
+  const GovernorOptions = (appState.governorEntities || []).map((governor) => ({ value: governor.id, name: governor.name, hos_id: governor.hos_id || "" }));
 
   // const [entity, setEntity] = useState<Record<string, any>>({});
   const [isPending, setIsPending] = useState(false);
@@ -51,6 +62,9 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
     Chapter: createChapterSchema,
 
     Division: createDivisionSchema,
+    HoS: createHoSSchema,
+    Governor: createGovernorSchema,
+    President: createPresidentSchema,
   };
 
   const schemaToUse = schemaOptions[label as keyof typeof schemaOptions] || genericToolsSchema;
@@ -61,28 +75,34 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
       id: entityData?.id || "",
       name: entityData?.name || "",
       division_id: entityData?.division_id || "",
+      hos_id: entityData?.hos_id || "",
+      governor_id: entityData?.governor_id || "",
       country: entityData?.country || "",
       base_currency: entityData?.base_currency || "",
+      rep_partner_id: entityData?.rep_partner_id || "",
     },
   });
+  const selectedHoS = form.watch("hos_id");
+  const selectedGovernor = form.watch("governor_id");
 
   const onSubmit = async () => {
     try {
       setIsPending(true);
       const values = form.watch();
-      const { id, division_id } = values
+      const { id, division_id } = values;
       await updateEntity(label, values);
       if (id && division_id && entityData.division_id !== division_id) {
         const params = {
           chapterId: id,
           newDivisionId: division_id,
           loop: true,
-          nextToken: null
-        }
+          nextToken: null,
+        };
 
-        await triggerChapterMembersMigration(params)
+        await triggerChapterMembersMigration(params);
       }
       await refreshLoggedInUser(userId);
+      await fetchUsersByEntity();
       form.reset();
       setEntity({});
 
@@ -157,6 +177,93 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
                           ))}
                         </SelectContent>
                       </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {["Governor", "President"].includes(label) && (
+              <FormField
+                control={form.control}
+                name={"hos_id"}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">House Of Shepherds</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          form.setValue("governor_id", "");
+                        }}
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="shad-select-trigger">
+                          <SelectValue placeholder={`Select HoS`} />
+                        </SelectTrigger>
+                        <SelectContent className="shad-select-content">
+                          {HoSOptions.map((hos: SelectOptions) => (
+                            <SelectItem key={hos.value} value={hos.value as string}>
+                              <div className="flex items-center cursor-pointer gap-3">
+                                <p>{hos.name}</p>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {label === "President" && (
+              <FormField
+                control={form.control}
+                name={"governor_id"}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Governor</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                        <SelectTrigger className="shad-select-trigger">
+                          <SelectValue placeholder={`Select Governor`} />
+                        </SelectTrigger>
+                        <SelectContent className="shad-select-content">
+                          {GovernorOptions.filter((governor) => (selectedHoS ? governor.hos_id === selectedHoS : true)).map((governor: any) => (
+                            <SelectItem key={governor.value} value={governor.value as string}>
+                              <div className="flex items-center cursor-pointer gap-3">
+                                <p>{governor.name}</p>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {["HoS", "Governor", "President"].includes(label) && (
+              <FormField
+                control={form.control}
+                name={"rep_partner_id"}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Rep Partner</FormLabel>
+                    <FormControl>
+                      <PartnerSearchSelect
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Search and select rep partner"
+                        hosId={["Governor", "President"].includes(label) ? selectedHoS || "" : ""}
+                        governorId={label === "President" ? selectedGovernor || "" : ""}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

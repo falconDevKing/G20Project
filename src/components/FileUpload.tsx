@@ -69,7 +69,7 @@ export const FileUpload = ({ user_id, filePath, onChange, size = "large" }: File
               />
             ) : (
               <div className="flex flex-col items-center">
-                <UploadCloud size={35} className="text-gray-600/90" />
+                <UploadCloud size={35} className="text-[#111c30]" />
                 <div className="file-upload_label text-center">
                   <p className="text-[14px]">
                     <span className="text-blue-500">Click to upload</span> or drag and drop
@@ -92,7 +92,7 @@ export const FileUpload = ({ user_id, filePath, onChange, size = "large" }: File
               />
             ) : (
               <div className="flex flex-col items-center">
-                <UploadCloud size={35} className="text-gray-600/90" />
+                <UploadCloud size={35} className="text-[#111c30]" />
                 <div className="file-upload_label text-center">
                   <p className="text-[14px]">
                     <span className="text-blue-500">Click to upload</span> or drag and drop

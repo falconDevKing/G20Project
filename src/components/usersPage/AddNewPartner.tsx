@@ -193,7 +193,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">First Name</FormLabel>
+                        <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">First Name</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -210,7 +210,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">Last Name</FormLabel>
+                        <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">Last Name</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -229,7 +229,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Email</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Email</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
 
@@ -253,7 +253,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">Phone Number</FormLabel>
+                        <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">Phone Number</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -278,7 +278,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Division</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Division</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -308,7 +308,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Chapter</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Chapter</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -338,7 +338,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
               <div className=" lg:grid grid-cols-2 gap-2 space-y-3 md:space-y-0">
                 <div className="w-full">
                   <div className="flex items-center gap-1 pb-2">
-                    <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Birth Day</FormLabel>
+                    <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Birth Day</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <div className="flex gap-x-1 w-full">
@@ -402,7 +402,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Permission Type</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Permission Type</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -434,7 +434,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Gender</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Gender</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -464,7 +464,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Nationality</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Nationality</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>
@@ -496,7 +496,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Address</FormLabel>
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Address</FormLabel>
                         <span className="text-red-500 text-base">*</span>
                       </div>
                       <FormControl>

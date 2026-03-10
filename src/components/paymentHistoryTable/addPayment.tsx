@@ -16,7 +16,6 @@ import { useAppSelector } from "@/redux/hooks";
 import dayjs from "dayjs";
 import { findChapterDetails, getUserWithUniqueCode, initialPayerData, type PayerDataType, makePayment } from "@/services/payment";
 
-
 import { Switch } from "@/components/ui/switch";
 import { WorldCurrenciesOptions } from "@/constants/currencies";
 
@@ -25,9 +24,7 @@ import FormTooltip from "../FormTooltips";
 import FetchGBPExchangeRatesValue from "@/lib/fetchGBPExchangeRatesValue";
 import { getCurrencySymbol } from "@/lib/numberUtils";
 
-
 type PaymentFormValues = z.infer<typeof paymentFormSchema>;
-
 
 type postAddPaymentProcessingType = {
   user_name: string;
@@ -42,12 +39,11 @@ type postAddPaymentProcessingType = {
   userId: string;
   payerDataEmail: string;
   payerDataPhone_number: string;
-}
-
+};
 
 type AddPaymentProps = {
-  postAddPaymentProcessing: (postAddPaymentProcessingData: postAddPaymentProcessingType) => Promise<void>
-}
+  postAddPaymentProcessing: (postAddPaymentProcessingData: postAddPaymentProcessingType) => Promise<void>;
+};
 
 export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
   const appState = useAppSelector((state) => state.app);
@@ -81,7 +77,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
     },
   });
 
-  const selectedChapterId = form.watch("chapter_id")
+  const selectedChapterId = form.watch("chapter_id");
   const selectedChapterCurrecny = useMemo(() => findChapterDetails(selectedChapterId)?.currency, [selectedChapterId]);
 
   const onSubmit = async (values: PaymentFormValues) => {
@@ -106,13 +102,13 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
 
       const conversionData = is_converted
         ? {
-          is_converted,
-          conversion_description,
-          conversion_amount,
-          conversion_rate,
-          conversion_currency,
-          conversion_time,
-        }
+            is_converted,
+            conversion_description,
+            conversion_amount,
+            conversion_rate,
+            conversion_currency,
+            conversion_time,
+          }
         : {};
 
       const { currency, chapterName } = findChapterDetails(chapter_id);
@@ -145,7 +141,20 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
 
       await makePayment(newEntry);
 
-      postAddPaymentProcessing({ user_name, currency, amount, remission_period, payment_date, chapterName, approved_by, payerDataUser_id: payerData.user_id, payerDataRemission_start_date: payerData.remission_start_date, userId: user.id, payerDataEmail: payerData.email, payerDataPhone_number: payerData.phone_number })
+      postAddPaymentProcessing({
+        user_name,
+        currency,
+        amount,
+        remission_period,
+        payment_date,
+        chapterName,
+        approved_by,
+        payerDataUser_id: payerData.user_id,
+        payerDataRemission_start_date: payerData.remission_start_date,
+        userId: user.id,
+        payerDataEmail: payerData.email,
+        payerDataPhone_number: payerData.phone_number,
+      });
 
       form.reset();
       setOpenDialog(false);
@@ -157,9 +166,6 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
       setIsPending(false);
     }
   };
-
-
-
 
   useEffect(() => {
     const fetchPayerData = async (unique_code: string) => {
@@ -178,8 +184,6 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
       fetchPayerData(payerCode);
     }
   }, [form, payerCode]);
-
-
 
   return (
     <div>
@@ -206,7 +210,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90 font-normal  dark:text-white text-base">Personal Code</FormLabel>
+                          <FormLabel className="text-[#111c30] font-normal  dark:text-white text-base">Personal Code</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                         </div>
                         <FormControl>
@@ -234,14 +238,16 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90 font-normal dark:text-white text-base">Amount</FormLabel>
+                          <FormLabel className="text-[#111c30] font-normal dark:text-white text-base">Amount</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                         </div>
                         <FormControl>
                           <div className="flex gap-1">
-                            {selectedChapterCurrecny && <Button type="button" variant="outline" className="max-w-max h-[44px] border-input dark:border-inputs">
-                              {getCurrencySymbol(selectedChapterCurrecny)}
-                            </Button>}
+                            {selectedChapterCurrecny && (
+                              <Button type="button" variant="outline" className="max-w-max h-[44px] border-input dark:border-inputs">
+                                {getCurrencySymbol(selectedChapterCurrecny)}
+                              </Button>
+                            )}
                             <Input
                               type="number"
                               min={0}
@@ -264,7 +270,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90  dark:text-white font-normal text-base">Description</FormLabel>
+                          <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">Description</FormLabel>
                         </div>
                         <FormControl>
                           <Input
@@ -286,7 +292,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90 font-normal  dark:text-white text-base">Division</FormLabel>
+                          <FormLabel className="text-[#111c30] font-normal  dark:text-white text-base">Division</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                         </div>
                         <FormControl>
@@ -316,7 +322,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90  dark:text-white font-normal text-base">Chapter</FormLabel>
+                          <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">Chapter</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                         </div>
                         <FormControl>
@@ -348,7 +354,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90  dark:text-white font-normal text-base">Remission Month</FormLabel>
+                          <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">Remission Month</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                         </div>
                         <FormControl>
@@ -378,7 +384,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-1">
-                          <FormLabel className="text-gray-600/90  dark:text-white font-normal text-base">Payment Date</FormLabel>
+                          <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">Payment Date</FormLabel>
                           <span className="text-red-500 text-base">*</span>
                           <FormTooltip text={"Day the remission was made"} />
                         </div>
@@ -431,7 +437,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 font-normal  dark:text-white text-base">Conversion Currency</FormLabel>
+                              <FormLabel className="text-[#111c30] font-normal  dark:text-white text-base">Conversion Currency</FormLabel>
                               <span className="text-red-500 text-base">*</span>
                             </div>
 
@@ -462,7 +468,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 font-normal  dark:text-white text-base">Conversion Amount</FormLabel>
+                              <FormLabel className="text-[#111c30] font-normal  dark:text-white text-base">Conversion Amount</FormLabel>
                               <span className="text-red-500 text-base">*</span>
                             </div>
                             <FormControl>
@@ -479,7 +485,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90  dark:text-white font-normal text-base">
+                              <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">
                                 Conversion Rate ({form.watch("conversion_currency")}/{chapterCurrency})
                               </FormLabel>
                               <span className="text-red-500 text-base">*</span>
@@ -505,7 +511,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 font-normal  dark:text-white text-base">Conversion Date</FormLabel>
+                              <FormLabel className="text-[#111c30] font-normal  dark:text-white text-base">Conversion Date</FormLabel>
                               <span className="text-red-500 text-base">*</span>
                             </div>
                             <FormControl>
@@ -536,7 +542,7 @@ export const AddPayment = ({ postAddPaymentProcessing }: AddPaymentProps) => {
                         name="conversion_description"
                         render={({ field }) => (
                           <FormItem className="col-span-2">
-                            <FormLabel className="text-gray-600/90  dark:text-white font-normal text-base">Conversion Description</FormLabel>
+                            <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">Conversion Description</FormLabel>
                             <FormControl>
                               <Input
                                 className="focus-visible:ring-0 h-12 focus-visible:ring-offset-0"

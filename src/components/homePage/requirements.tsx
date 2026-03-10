@@ -52,7 +52,7 @@ const Requirements = () => {
 
           <div className="mt-7 flex flex-wrap gap-2">
             <PrimaryButton href="/register">Join now</PrimaryButton>
-            <GhostButton href="/login" className="hidden sm:inline-flex">
+            <GhostButton href="/paymentButton" className="hidden sm:inline-flex">
               Give now
             </GhostButton>
           </div>

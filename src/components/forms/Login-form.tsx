@@ -97,7 +97,7 @@ export const LoginForm = () => {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center gap-1">
-                  <FormLabel className="text-gray-600/90  font-normal text-base">Email or Partner Code</FormLabel>
+                  <FormLabel className="text-[#111c30]  font-normal text-base">Email or Partner Code</FormLabel>
                   <span className="text-red-500 text-base">*</span>
                 </div>
                 <FormControl>
@@ -121,10 +121,10 @@ export const LoginForm = () => {
               <FormItem>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-gray-600/90 font-normal text-base">Password</FormLabel>
+                    <FormLabel className="text-[#111c30] font-normal text-base">Password</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
-                  <Link className="text-gray-600/90 font-normal text-base hover:underline" to={"/forgot-password"}>
+                  <Link className="text-[#111c30] font-normal text-base hover:underline" to={"/forgot-password"}>
                     Forgot password?
                   </Link>
                 </div>

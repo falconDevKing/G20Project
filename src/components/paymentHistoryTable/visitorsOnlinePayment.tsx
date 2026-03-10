@@ -510,7 +510,7 @@ export const VisitorOnlinePayment = ({
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 font-normal text-base">First Name</FormLabel>
+                              <FormLabel className="text-[#111c30] font-normal text-base">First Name</FormLabel>
                               <span className="text-red-500 text-base">*</span>
                             </div>
                             <FormControl>
@@ -527,7 +527,7 @@ export const VisitorOnlinePayment = ({
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 font-normal text-base">Last Name</FormLabel>
+                              <FormLabel className="text-[#111c30] font-normal text-base">Last Name</FormLabel>
                               <span className="text-red-500 text-base">*</span>
                             </div>
                             <FormControl>
@@ -546,7 +546,7 @@ export const VisitorOnlinePayment = ({
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 font-normal text-base">Email</FormLabel>
+                              <FormLabel className="text-[#111c30] font-normal text-base">Email</FormLabel>
                               <span className="text-red-500 text-base">*</span>
                             </div>
 
@@ -570,7 +570,7 @@ export const VisitorOnlinePayment = ({
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 font-normal text-base">Phone Number</FormLabel>
+                              <FormLabel className="text-[#111c30] font-normal text-base">Phone Number</FormLabel>
                               <span className="text-red-500 text-base">*</span>
                             </div>
                             <FormControl>
@@ -595,7 +595,7 @@ export const VisitorOnlinePayment = ({
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 font-normal text-base">Currency</FormLabel>
+                              <FormLabel className="text-[#111c30] font-normal text-base">Currency</FormLabel>
                               <span className="text-red-500 text-base">*</span>
                             </div>
 
@@ -626,7 +626,7 @@ export const VisitorOnlinePayment = ({
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-1">
-                              <FormLabel className="text-gray-600/90 font-normal text-base">Amount</FormLabel>
+                              <FormLabel className="text-[#111c30] font-normal text-base">Amount</FormLabel>
                               <span className="text-red-500 text-base">*</span>
                             </div>
                             <FormControl>
@@ -652,7 +652,7 @@ export const VisitorOnlinePayment = ({
                           render={({ field }) => (
                             <FormItem>
                               <div className="flex items-center gap-1">
-                                <FormLabel className="text-gray-600/90  font-normal text-base">Day for subsequent remissions</FormLabel>
+                                <FormLabel className="text-[#111c30]  font-normal text-base">Day for subsequent remissions</FormLabel>
 
                                 <span className="text-red-500 text-base">*</span>
                               </div>
@@ -691,7 +691,7 @@ export const VisitorOnlinePayment = ({
                             render={({ field }) => (
                               <FormItem>
                                 <div className="flex items-center gap-1">
-                                  <FormLabel className="text-gray-600/90 font-normal text-base">Description</FormLabel>
+                                  <FormLabel className="text-[#111c30] font-normal text-base">Description</FormLabel>
                                 </div>
                                 <FormControl>
                                   <Input
@@ -712,7 +712,7 @@ export const VisitorOnlinePayment = ({
                             render={({ field }) => (
                               <FormItem>
                                 <div className="flex items-center gap-1">
-                                  <FormLabel className="text-gray-600/90  font-normal text-base">Select Date for First Payment</FormLabel>
+                                  <FormLabel className="text-[#111c30]  font-normal text-base">Select Date for First Payment</FormLabel>
 
                                   <span className="text-red-500 text-base">*</span>
                                 </div>
@@ -752,7 +752,7 @@ export const VisitorOnlinePayment = ({
                           render={({ field }) => (
                             <FormItem>
                               <div className="flex items-center gap-1">
-                                <FormLabel className="text-gray-600/90 font-normal text-base">Description</FormLabel>
+                                <FormLabel className="text-[#111c30] font-normal text-base">Description</FormLabel>
                               </div>
                               <FormControl>
                                 <Input

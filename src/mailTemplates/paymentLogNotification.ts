@@ -61,7 +61,7 @@ const PaymentLogNotification = ({
       <tr>
         <td class="banner-icon">
           <img
-            src="https://ohip-public.s3.eu-west-1.amazonaws.com/GGP-logo.png"
+            src="https://ohip-public.s3.eu-west-1.amazonaws.com/G20_logo.png"
            alt="Logo"
             width="180"
             style="height: auto; display: block; padding: 0.5rem 0.75rem"
