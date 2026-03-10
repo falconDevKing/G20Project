@@ -201,7 +201,7 @@ export const stripeCreateGuestRecurringPayment = async (reqData: any) => {
       // update customer id in db
       const customerSubscriptionIdUpdate = {
         subscription_ids: [customerData.subscription_ids, subscription.id].flat().filter(Boolean),
-        active_recurring_remission: true,
+        g20_active_recurring_remission: true,
         preferred_remission_day: +remission_day,
       };
       const { data: updatedUser, error: updateUserError } = await SupabaseClient.from("partner")

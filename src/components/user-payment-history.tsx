@@ -8,7 +8,7 @@ import { LogPayment } from "./paymentHistoryTable/logPayment";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSmartDebounce } from "@/hooks/useSmartDebounce";
 import SupabaseClient from "@/supabase/supabaseConnection";
-import { PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
+import { G20PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
 import { CircleAlert, CircleCheckBig, CircleDashed } from "lucide-react";
 import { DynamicFilter } from "./dynamicFilters/DynamicFilters";
 import { getUserPayments } from "@/redux/paymentSlice";
@@ -26,20 +26,20 @@ export const UserPaymentHistory = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.userDetails);
   const appState = useAppSelector((state) => state.app);
-  const userPayments = useAppSelector((state) => state.payment.userPayments);
+  const userPayments = useAppSelector((state) => state.payment.userPayments) as unknown as G20PaymentRowType[];
   const userRemissionStartDate = user.remission_start_date;
   const isIndividual = user.permission_type === "individual";
   // const permission_type = user.permission_type || "";
   const currentMonthIndex = +dayjs().format("M") - 1;
   const { modifiedChapters } = initialiseDataList(appState);
 
-  const [tableData, setTableData] = useState<PaymentRowType[]>(userPayments);
+  const [tableData, setTableData] = useState<G20PaymentRowType[]>(userPayments);
   const [tableDataCount, setTableDataCount] = useState<number>(1);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState("10");
 
   const updateTableData = (data: Record<string, any>[]) => {
-    setTableData(data as PaymentRowType[]);
+    setTableData(data as G20PaymentRowType[]);
   };
   const updateTableDataCount = (count: number) => {
     setTableDataCount(count);

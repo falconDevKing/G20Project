@@ -6,6 +6,7 @@ import type {
   PartnerRowType,
   ProposedPaymentScheduleInsertType,
   ProposedPaymentScheduleRowType,
+  ProposedPaymentScheduleUpdateType,
 } from "@/supabase/modifiedSupabaseTypes";
 import dayjs from "dayjs";
 
@@ -58,7 +59,7 @@ export const fetchG20PaymentStats = async (user_id: string): Promise<G20PaymentS
     return { total_count: 0, total_value: 0 };
   }
 
-  const { data, error } = await SupabaseClient.from("g20_payments").select("amount,status").eq("user_id", user_id);
+  const { data, error } = await SupabaseClient.from("g20_payments").select("amount, currency, status").eq("user_id", user_id);
 
   if (error) {
     throw error;
@@ -95,15 +96,7 @@ export const fetchG20PaidAmount = async (user_id: string): Promise<number> => {
   }, 0);
 };
 
-export const fetchG20Payments = async ({
-  user_id,
-  page = 1,
-  pageSize = 20,
-}: {
-  user_id: string;
-  page?: number;
-  pageSize?: number;
-}) => {
+export const fetchG20Payments = async ({ user_id, page = 1, pageSize = 20 }: { user_id: string; page?: number; pageSize?: number }) => {
   if (!user_id) {
     return { data: [] as G20PaymentRowType[], count: 0 };
   }
@@ -147,15 +140,7 @@ export const updateG20Payment = async (payment_id: string, payload: G20PaymentUp
   return data as G20PaymentRowType;
 };
 
-export const fetchProposedScheduleRows = async ({
-  user_id,
-  page = 1,
-  pageSize = 20,
-}: {
-  user_id: string;
-  page?: number;
-  pageSize?: number;
-}) => {
+export const fetchProposedScheduleRows = async ({ user_id, page = 1, pageSize = 20 }: { user_id: string; page?: number; pageSize?: number }) => {
   if (!user_id) {
     return { data: [] as ProposedPaymentScheduleRowType[], count: 0 };
   }
@@ -198,6 +183,30 @@ export const fetchProposedScheduleRowsByYear = async (user_id: string, schedule_
   return (data || []) as ProposedPaymentScheduleRowType[];
 };
 
+export const updateProposedScheduleRow = async (row_id: string, payload: ProposedPaymentScheduleUpdateType) => {
+  const { data, error } = await SupabaseClient.from("proposed_payment_schedule").update(payload).eq("id", row_id).select().maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as ProposedPaymentScheduleRowType;
+};
+
+const resolveChapterCurrency = async (chapter_id: string | null | undefined, fallbackCurrency = "NGN") => {
+  if (!chapter_id) {
+    return fallbackCurrency;
+  }
+
+  const { data, error } = await SupabaseClient.from("chapter").select("base_currency").eq("id", chapter_id).maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data?.base_currency || fallbackCurrency;
+};
+
 export const getProposedDisplayStatus = (
   row: Pick<ProposedPaymentScheduleRowType, "status" | "proposed_date">,
   baseDate: Date = new Date(),
@@ -229,6 +238,7 @@ export const syncProposedScheduleAfterUpdate = async ({
   baseDate?: Date;
 }) => {
   const today = dayjs(baseDate).startOf("day").format("YYYY-MM-DD");
+  const chapterCurrency = await resolveChapterCurrency(user.chapter_id, "NGN");
 
   const { data: existingRows, error: existingRowsError } = await SupabaseClient.from("proposed_payment_schedule")
     .select("*")
@@ -274,6 +284,7 @@ export const syncProposedScheduleAfterUpdate = async ({
     schedule_index: highestIndex + index + 1,
     proposed_amount: row.proposed_amount,
     proposed_date: row.proposed_date,
+    currency: chapterCurrency,
     unique_code: user.unique_code,
     organisation_id: user.organisation_id,
     division_id: user.division_id,

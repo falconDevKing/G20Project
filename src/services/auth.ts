@@ -13,7 +13,12 @@ import { isEmail, isPartnerCode } from "@/lib/schemas";
 
 export const createUser = async (userData: PartnerInsertType): Promise<PartnerRowType> => {
   try {
-    const { data, error }: PostgrestSingleResponse<PartnerRowType[]> = await SupabaseClient.from("partner").insert([userData]).select(); // Return the inserted row(s)
+    const payload: PartnerInsertType = {
+      g20_status: "passive",
+      ...userData,
+    };
+
+    const { data, error }: PostgrestSingleResponse<PartnerRowType[]> = await SupabaseClient.from("partner").insert([payload]).select(); // Return the inserted row(s)
 
     if (error) {
       console.log("Supabase insert error", error);

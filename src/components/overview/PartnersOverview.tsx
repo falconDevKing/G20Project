@@ -37,7 +37,7 @@ export const PartnersOverview = () => {
   };
 
   const fetchPartnersStat = async () => {
-    const { data, error }: PostgrestSingleResponse<PartnerMetrics> = await SupabaseClient.rpc("get_partner_metrics_filtered", {
+    const { data, error }: PostgrestSingleResponse<PartnerMetrics> = await SupabaseClient.rpc("get_g20_partner_metrics_filtered", {
       input_division_id: selectedDivision === "all" ? null : selectedDivision || null,
       input_chapter_id: selectedChapter === "all" ? null : selectedChapter || null,
     });
@@ -49,12 +49,12 @@ export const PartnersOverview = () => {
   };
 
   const fetchPartnersValue = async () => {
-    const { data, error }: PostgrestSingleResponse<any> = await SupabaseClient.rpc("get_partnership_totals", {
+    const { data, error }: PostgrestSingleResponse<any> = await SupabaseClient.rpc("get_g20_partnership_totals", {
       p_division_id: selectedDivision === "all" ? null : selectedDivision || null,
       p_chapter_id: selectedChapter === "all" ? null : selectedChapter || null,
     });
 
-    setCurrencyBreakdown(data)
+    setCurrencyBreakdown(data);
 
     if (error) {
       return {
@@ -73,12 +73,12 @@ export const PartnersOverview = () => {
       rates,
       desiredCurrencyBase: currency?.toLowerCase(),
     });
-    setCurrencyTotal(selectedCurrencySummary?.total || 0)
-  }
+    setCurrencyTotal(selectedCurrencySummary?.total || 0);
+  };
 
   useEffect(() => {
     fetchPartnersStat();
-    fetchPartnersValue()
+    fetchPartnersValue();
   }, [currency, selectedDivision, selectedChapter]);
 
   return (
@@ -160,7 +160,7 @@ export const PartnersOverview = () => {
       {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-4"> */}
       <div className="space-y-6">
         {/* {(["Status", "GGP_Category", "Partner_Type", "Nationality"] as Array<keyof PartnerMetrics>).map((key) => { */}
-        {(["Status", "GGP_Category"] as Array<keyof PartnerMetrics>).map((key) => {
+        {(["Status", "G20_Category"] as Array<keyof PartnerMetrics>).map((key) => {
           const items = partnersData[key];
           const gridCols = items.length === 2 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4";
 
@@ -211,7 +211,6 @@ export const PartnersOverview = () => {
 
           {/* Grid Layout */}
           <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 gap-4`}>
-
             <div className="flex flex-col justify-between border border-[#E0C97F] rounded-xl p-4 h-[135px] min-w-[220px]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-x-3">
@@ -231,46 +230,38 @@ export const PartnersOverview = () => {
               </div>
 
               <div className="flex items-center justify-between mt-2">
-                <p
-                  className={`text-2xl font-semibold text-primary `}
-                >
-                  {numberWithCurrencyFormatter(currency, currencyTotal)}
-                </p>
+                <p className={`text-2xl font-semibold text-primary `}>{numberWithCurrencyFormatter(currency, currencyTotal)}</p>
               </div>
             </div>
 
-
-
-            {currencyBreakdown.length > 1 && currencyBreakdown.map((currencyItem: any) => {
-
-              const { currency, total_value } = currencyItem;
-              return (<div className="flex flex-col justify-between border border-[#E0C97F] rounded-xl p-4 h-[135px] min-w-[220px]">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-x-3">
-                    <div className="h-8 w-8 rounded-full bg-[#FFF8E5] flex justify-center items-center">
-                      <Users className="w-[16px] h-[16px] text-GGP-darkGold" />
+            {currencyBreakdown.length > 1 &&
+              currencyBreakdown.map((currencyItem: any) => {
+                const { currency, total_value } = currencyItem;
+                return (
+                  <div className="flex flex-col justify-between border border-[#E0C97F] rounded-xl p-4 h-[135px] min-w-[220px]">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-x-3">
+                        <div className="h-8 w-8 rounded-full bg-[#FFF8E5] flex justify-center items-center">
+                          <Users className="w-[16px] h-[16px] text-GGP-darkGold" />
+                        </div>
+                        <p className="text-base font-normal dark:text-white text-[#171721]">Breakdown {currency} Value</p>
+                      </div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info size={16} className="text-gray-500 dark:text-white cursor-pointer" />
+                          </TooltipTrigger>
+                          <TooltipContent>Approximate Value of signups</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
-                    <p className="text-base font-normal dark:text-white text-[#171721]">Breakdown {currency} Value</p>
-                  </div>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Info size={16} className="text-gray-500 dark:text-white cursor-pointer" />
-                      </TooltipTrigger>
-                      <TooltipContent>Approximate Value of signups</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
 
-                <div className="flex items-center justify-between mt-2">
-                  <p
-                    className={`text-2xl font-semibold text-primary `}
-                  >
-                    {numberWithCurrencyFormatter(currency, total_value)}
-                  </p>
-                </div>
-              </div>)
-            })}
+                    <div className="flex items-center justify-between mt-2">
+                      <p className={`text-2xl font-semibold text-primary `}>{numberWithCurrencyFormatter(currency, total_value)}</p>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         </div>
       </div>

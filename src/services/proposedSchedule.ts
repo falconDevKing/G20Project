@@ -51,8 +51,23 @@ export const hasProposedScheduleForYear = async (userId: string, scheduleYear: n
   return !!data?.length;
 };
 
+const resolveChapterCurrency = async (chapter_id: string | null | undefined, fallbackCurrency = "NGN") => {
+  if (!chapter_id) {
+    return fallbackCurrency;
+  }
+
+  const { data, error } = await SupabaseClient.from("chapter").select("base_currency").eq("id", chapter_id).maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data?.base_currency || fallbackCurrency;
+};
+
 export const saveProposedSchedule = async ({ user, scheduleYear, rows }: { user: PartnerRowType; scheduleYear: number; rows: ProposedScheduleRowInput[] }) => {
   const hasExistingRows = await hasProposedScheduleForYear(user.id, scheduleYear);
+  const chapterCurrency = await resolveChapterCurrency(user.chapter_id, "NGN");
 
   if (hasExistingRows) {
     throw new Error(`A proposed schedule already exists for ${scheduleYear}.`);
@@ -64,6 +79,7 @@ export const saveProposedSchedule = async ({ user, scheduleYear, rows }: { user:
     schedule_index: index + 1,
     proposed_amount: row.proposed_amount,
     proposed_date: row.proposed_date,
+    currency: chapterCurrency,
     unique_code: user.unique_code,
     organisation_id: user.organisation_id,
     division_id: user.division_id,

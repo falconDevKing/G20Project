@@ -117,7 +117,7 @@ export const G20LogOfflinePayment = ({ onSaved }: G20LogOfflinePaymentProps) => 
             <FormItem>
               <FormLabel>Unique Code</FormLabel>
               <FormControl>
-                <Input disabled value={user.unique_code || ""} />
+                <Input disabled value={user.unique_code || ""} className="dark:border-white/60" />
               </FormControl>
             </FormItem>
 
@@ -129,7 +129,7 @@ export const G20LogOfflinePayment = ({ onSaved }: G20LogOfflinePaymentProps) => 
                   <FormItem>
                     <FormLabel>Amount</FormLabel>
                     <FormControl>
-                      <Input type="number" min={1} step={1} {...field} />
+                      <Input type="number" min={1} step={1} {...field} className="dark:border-white/60" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -143,19 +143,22 @@ export const G20LogOfflinePayment = ({ onSaved }: G20LogOfflinePaymentProps) => 
                   <FormItem>
                     <FormLabel>Payment Date</FormLabel>
                     <FormControl>
-                      <DatePicker
-                        selected={field.value ? new Date(field.value) : null}
-                        onChange={(date) => field.onChange(date ? dayjs(date).format("YYYY-MM-DD") : "")}
-                        dateFormat="dd/MM/yyyy"
-                        placeholderText="Select Payment Date"
-                        showMonthDropdown
-                        showYearDropdown
-                        dropdownMode="select"
-                        wrapperClassName="date-picker w-full"
-                        className="border rounded-md w-full h-11 px-3"
-                        minDate={new Date("2010-01-01")}
-                        maxDate={new Date()}
-                      />
+                      <div className="flex rounded-md border border-gray-500/20 items-center px-2">
+                        <img className="mr-2" src="/icons/calendar.svg" height={24} width={24} alt="Calendar" />
+                        <DatePicker
+                          selected={field.value ? new Date(field.value) : null}
+                          onChange={(date) => field.onChange(date ? dayjs(date).format("YYYY-MM-DD") : "")}
+                          dateFormat="dd/MM/yyyy"
+                          placeholderText="Select Payment Date"
+                          showMonthDropdown
+                          showYearDropdown
+                          dropdownMode="select"
+                          wrapperClassName="date-picker w-full dark:border-white/60"
+                          className="border rounded-md w-full h-11 px-3 dark:border-white/60"
+                          minDate={new Date("2010-01-01")}
+                          maxDate={new Date()}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -170,7 +173,7 @@ export const G20LogOfflinePayment = ({ onSaved }: G20LogOfflinePaymentProps) => 
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="Any useful details about this transfer" {...field} value={field.value || ""} />
+                    <Input placeholder="Any useful details about this transfer" {...field} value={field.value || ""} className="dark:border-white/60" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -191,6 +194,7 @@ export const G20LogOfflinePayment = ({ onSaved }: G20LogOfflinePaymentProps) => 
                         const file = event.target.files?.[0];
                         field.onChange(file || undefined);
                       }}
+                      className="dark:border-white/60 dark:text-white"
                     />
                   </FormControl>
                   <FormMessage />

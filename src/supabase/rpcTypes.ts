@@ -9,7 +9,7 @@ type PartnerMetricItem = {
 export type PartnerMetrics = {
   Nationality: PartnerMetricItem[];
   Status: PartnerMetricItem[];
-  GGP_Category: PartnerMetricItem[];
+  G20_Category: PartnerMetricItem[];
   Partner_Type: PartnerMetricItem[];
 };
 

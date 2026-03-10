@@ -93,6 +93,7 @@ export type ChapterUpdateType = {
 };
 
 export type PartnerRowType = {
+  g20_status: "consistent" | "active" | "passive" | null;
   g20_active: boolean | null;
   proposed_payment_scheduled: boolean | null;
   married: boolean | null;
@@ -112,7 +113,6 @@ export type PartnerRowType = {
   email: string;
   first_name: string;
   gender: string | null;
-  ggp_category: string;
   id: string;
   image_url: string | null;
   last_name: string;
@@ -148,6 +148,7 @@ export type PartnerRowType = {
   assistant: boolean;
 };
 export type PartnerInsertType = {
+  g20_status?: "consistent" | "active" | "passive" | null;
   g20_active?: boolean | null;
   proposed_payment_scheduled?: boolean | null;
   married?: boolean | null;
@@ -167,7 +168,6 @@ export type PartnerInsertType = {
   email: string;
   first_name: string;
   gender?: string | null;
-  ggp_category: string;
   id?: string;
   image_url?: string | null;
   last_name: string;
@@ -203,6 +203,7 @@ export type PartnerInsertType = {
   assistant?: boolean;
 };
 export type PartnerUpdateType = {
+  g20_status?: "consistent" | "active" | "passive" | null;
   g20_active?: boolean | null;
   proposed_payment_scheduled?: boolean | null;
   married?: boolean | null;
@@ -222,7 +223,6 @@ export type PartnerUpdateType = {
   email?: string;
   first_name?: string;
   gender?: string | null;
-  ggp_category?: string;
   id?: string;
   image_url?: string | null;
   last_name?: string;
@@ -577,6 +577,7 @@ export type ProposedPaymentScheduleRowType = {
   schedule_index: number;
   proposed_amount: number;
   proposed_date: string;
+  currency: string | null;
   unique_code: string | null;
   organisation_id: string | null;
   division_id: string | null;
@@ -595,6 +596,7 @@ export type ProposedPaymentScheduleInsertType = {
   schedule_index: number;
   proposed_amount: number;
   proposed_date: string;
+  currency?: string | null;
   unique_code?: string | null;
   organisation_id?: string | null;
   division_id?: string | null;
@@ -605,3 +607,21 @@ export type ProposedPaymentScheduleInsertType = {
   status?: "pending" | "missed" | "cleared";
 };
 
+export type ProposedPaymentScheduleUpdateType = {
+  id?: string;
+  created_at?: string;
+  user_id?: string;
+  schedule_year?: number;
+  schedule_index?: number;
+  proposed_amount?: number;
+  proposed_date?: string;
+  currency?: string | null;
+  unique_code?: string | null;
+  organisation_id?: string | null;
+  division_id?: string | null;
+  chapter_id?: string | null;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  status?: "pending" | "missed" | "cleared";
+};

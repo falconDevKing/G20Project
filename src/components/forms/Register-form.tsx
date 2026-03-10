@@ -108,6 +108,7 @@ export const RegisterForm = () => {
           cognito_user_id: user_id,
           g20_active: false,
           proposed_payment_scheduled: false,
+          g20_status: "passive" as const,
           permission_type: UserPermissionType.individual,
           status: "passive",
           organisation_id: AppOrganisationId,
@@ -402,18 +403,18 @@ export const RegisterForm = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1">
+          <div className="w-full grid grid-cols-1">
             <div className="w-full">
-              <div className="flex items-center gap-1 pb-2">
+              <div className="flex items-center gap-1 pb-2 w-full">
                 <FormLabel className="text-gray-600/90 font-normal text-base">Birth Day</FormLabel>
                 <span className="text-red-500 text-base">*</span>
               </div>
-              <div className="flex gap-x-1">
+              <div className="flex gap-x-1 w-full">
                 <FormField
                   control={form.control}
                   name="birth_month"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-full flex-1">
                       <FormControl>
                         <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
                           <SelectTrigger className="w-full h-12" enforceWhite>
@@ -439,7 +440,7 @@ export const RegisterForm = () => {
                   control={form.control}
                   name="birth_day"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-full flex-1">
                       <FormControl>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                           <SelectTrigger className="w-full h-12" allowDark={false} enforceWhite>

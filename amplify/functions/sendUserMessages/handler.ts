@@ -87,7 +87,7 @@ export const handler = async (event: any) => {
                   const months = getRemissionsMonthsBetween(r.from, r.to);
                   if (months?.length) query = query.in(field, months);
                 }
-              } else if (field === "active_recurring_remission") {
+              } else if (field === "g20_active_recurring_remission") {
                 if (typeof value === "string" && ["True", "False"].includes(value)) {
                   if (value === "True") {
                     query = query.eq(field, true);
@@ -107,7 +107,7 @@ export const handler = async (event: any) => {
                 query = query.eq(field, +value);
               }
 
-              if (typeof value === "string" && !["active_recurring_remission", "online_payment"].includes(field)) {
+              if (typeof value === "string" && !["g20_active_recurring_remission", "online_payment"].includes(field)) {
                 query = query.eq(field, value);
               }
               break;

@@ -28,6 +28,7 @@ import {
 import { getNextOct30Window } from "@/services/proposedSchedule";
 import type { G20PaymentRowType, PartnerRowType } from "@/supabase/modifiedSupabaseTypes";
 import { CapitaliseText } from "@/lib/textUtils";
+import { findChapterDetails } from "@/services/payment";
 
 const ApprovedByCell = ({ approvedBy, status }: { approvedBy: string; status: string }) => {
   const label = approvedBy || status || "-";
@@ -40,7 +41,7 @@ const ApprovedByCell = ({ approvedBy, status }: { approvedBy: string; status: st
   return (
     <div className="flex items-center gap-2">
       <Avatar className="h-8 w-8">
-        <AvatarFallback>{initials || "NA"}</AvatarFallback>
+        <AvatarFallback className="dark:text-white">{initials || "NA"}</AvatarFallback>
       </Avatar>
       <span>{label}</span>
     </div>
@@ -72,6 +73,8 @@ export default function DashboardCom() {
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false);
 
   const permissionType = user.permission_type || "individual";
+  const chapterId = user.chapter_id || "";
+  const chapterCurrency = findChapterDetails(chapterId)?.currency || "NGN";
   const isAdmin = ["chapter", "division", "organisation"].includes(permissionType);
 
   const { scheduleYear } = useMemo(() => getNextOct30Window(), []);
@@ -206,7 +209,7 @@ export default function DashboardCom() {
 
           <div className="rounded-xl bg-white dark:bg-[#1A1B20] border border-[#D4AF37]/25 dark:border-white/10 p-4">
             <p className="text-sm text-[#667085] dark:text-gray-300">Total Paid Value</p>
-            <p className="text-2xl font-bold text-[#1E1E1E] dark:text-white">{numberWithCurrencyFormatter("NGN", stats.total_value)}</p>
+            <p className="text-2xl font-bold text-[#1E1E1E] dark:text-white">{numberWithCurrencyFormatter(chapterCurrency, stats.total_value)}</p>
           </div>
 
           <div className="rounded-xl bg-white dark:bg-[#1A1B20] border border-[#D4AF37]/25 dark:border-white/10 p-4 flex flex-col justify-between gap-3">
@@ -246,10 +249,8 @@ export default function DashboardCom() {
               filterType="Payment"
               allow="Individual"
               permission_type={permissionType}
-              paymentType="G20Payments"
+              paymentType="Payments"
               tableName="g20_payments"
-              allowedFieldValues={["status", "payment_date"]}
-              sortBy={[{ field: "payment_date", ascending: false }]}
               updateTableData={setActualData}
               updateTableDataCount={setActualCount}
               page={actualPage}
@@ -277,23 +278,11 @@ export default function DashboardCom() {
           <TabsContent value="proposed-schedule" className="space-y-4 mt-4">
             <DynamicFilter
               name="Filter Proposed"
-              filterType="Payment"
+              filterType="Proposed"
               allow="Individual"
               permission_type={permissionType}
               paymentType="ProposedSchedule"
               tableName="proposed_payment_schedule"
-              allowedFieldValues={["status", "schedule_year", "proposed_date"]}
-              customStatusOptions={[
-                { name: "All Statuses", value: "all" },
-                { name: "Pending", value: "pending" },
-                { name: "Due", value: "due" },
-                { name: "Missed", value: "missed" },
-                { name: "Cleared", value: "cleared" },
-              ]}
-              sortBy={[
-                { field: "schedule_year", ascending: false },
-                { field: "proposed_date", ascending: true },
-              ]}
               updateTableData={setProposedData}
               updateTableDataCount={setProposedCount}
               page={proposedPage}

@@ -523,7 +523,7 @@ export type Database = {
         Returns: Json;
       };
       get_remission_metrics_filtered: {
-        Args: { input_chapter_id?: string; input_division_id?: string };
+        Args: { input_chapter_id?: string; input_division_id?: string; input_remission_period?: string };
         Returns: Json;
       };
     };

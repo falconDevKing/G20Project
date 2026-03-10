@@ -38,7 +38,7 @@ export const stripePauseSubscription = async (reqData: any) => {
     });
 
     const { data: updatedUser, error: updateUserError } = await SupabaseClient.from("partner")
-      .update({ active_recurring_remission: false })
+      .update({ g20_active_recurring_remission: false })
       .eq("id", userId)
       .select();
     console.log("updatedUser", updatedUser);
@@ -67,7 +67,7 @@ export const stripeResumeSubscription = async (reqData: any) => {
     });
 
     const { data: updatedUser, error: updateUserError } = await SupabaseClient.from("partner")
-      .update({ active_recurring_remission: true })
+      .update({ g20_active_recurring_remission: true })
       .eq("id", userId)
       .select();
     console.log("updatedUser", updatedUser);

@@ -2,13 +2,12 @@ import G20Crest from "@/assets/generalAppAssets/G20_logo.png";
 import ProphetMinisteringPicture from "@/assets/generalAppAssets/GGP-hero.png";
 
 import { GhostButton, PrimaryButton } from "../customIcons";
-
 const Hero = () => {
   return (
     <section className="relative overflow-hidden px-6 sm:px-16 lg:px-24">
       <div className="absolute inset-0">
         <img src={ProphetMinisteringPicture} alt="" className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-[#0b1120]/85" />
+        <div className="absolute inset-0 bg-[#0b1120]/65" />
       </div>
 
       <div className="relative mx-auto px-4 py-14 sm:px-6 sm:py-12 lg:px-8">
@@ -20,7 +19,7 @@ const Hero = () => {
               <span className="text-xs text-[#c8d6f3]">Annual Partnership</span>
             </div>
 
-            <h1 className="mt-6 text-4xl font-bold tracking-tight text-[#f8f1e3] sm:text-5xl">Stand with the mandate of taking the Gospel to all Nations.</h1>
+            <h1 className="mt-6 text-4xl font-bold tracking-tight text-[#f8f1e3] sm:text-5xl ">Stand with the mandate of taking the Gospel to all Nations.</h1>
 
             <p className="mt-5 max-w-xl text-sm leading-7 text-[#d3ddf1] sm:text-base">
               The G20 is a select group of men and women committed to standing with Prophet Isaiah Macwealth in fulfilling the divine mandate of global Gospel

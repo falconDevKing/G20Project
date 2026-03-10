@@ -12,6 +12,7 @@ import {
   Eye,
   UserStar,
   Info,
+  NotebookTabs,
   // UserPlus,
   // Settings, MoreHorizontal
 } from "lucide-react";
@@ -21,7 +22,7 @@ import { numberWithCurrencyFormatter } from "@/lib/numberUtils";
 import { ChaptersList } from "@/interfaces/tools";
 import dayjs from "dayjs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { PartnerRowType, PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
+import { PartnerRowType, G20PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
 import { SelectOptions } from "@/interfaces/register";
 
 export const PartnerTypeOptions = [
@@ -42,6 +43,7 @@ export const AdminViews = [
   { name: "Metrics", route: "/overview", icon: LayoutDashboard, allowIndividual: false, allowChapter: true },
   { name: "Remission Management", route: "/remissions", icon: WalletMinimal, allowIndividual: false, allowChapter: true },
   { name: "Pending Remissions", route: "/pending-remissions", icon: Banknote, allowIndividual: false, allowChapter: true },
+  { name: "Proposal Management", route: "/proposal-management", icon: NotebookTabs, allowIndividual: false, allowChapter: true },
   { name: "Partner Management", route: "/users", icon: Users, allowIndividual: false, allowChapter: true },
   // { name: "Partner Signup", route: "/signup", icon: UserPlus , allowIndividual: false },
   { name: "Partner Messaging", route: "/message", icon: Mails, allowIndividual: false, allowChapter: false },
@@ -56,7 +58,7 @@ export const menuItems = [
 
 export const AppOrganisationId = "663faaca-5f76-4e01-b194-d282f33b9717";
 
-export const userColumns: (chapters: ChaptersList) => ColumnDef<PaymentRowType>[] = (chapters) => {
+export const userColumns: (chapters: ChaptersList) => ColumnDef<G20PaymentRowType>[] = (chapters) => {
   return [
     {
       accessorKey: "payment_date",
@@ -69,30 +71,9 @@ export const userColumns: (chapters: ChaptersList) => ColumnDef<PaymentRowType>[
       accessorKey: "amount",
       header: "Amount",
       cell: ({ row }) => {
-        const { is_converted, conversion_currency, conversion_amount, conversion_time, conversion_rate, currency } = row.original;
-
         return (
           <div className="capitalize flex items-center space-x-1">
             <div>{numberWithCurrencyFormatter(row.original["currency"] as string, row.original["amount"] as number)}</div>
-            <div>
-              {is_converted && (
-                <Tooltip>
-                  <TooltipTrigger>
-                    <RefreshCw size={12} color="green" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div>
-                      {conversion_currency &&
-                        conversion_amount &&
-                        conversion_time &&
-                        conversion_rate &&
-                        currency &&
-                        `Converted  ${numberWithCurrencyFormatter(conversion_currency || "", conversion_amount || 0)}  on ${dayjs(conversion_time).format("MMM DD, YYYY")} at the rate of ${numberWithCurrencyFormatter(currency || "", 1)}/${numberWithCurrencyFormatter(conversion_currency || "", conversion_rate || 0)}`}
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </div>
           </div>
         );
       },
@@ -126,7 +107,7 @@ export const userColumns: (chapters: ChaptersList) => ColumnDef<PaymentRowType>[
   ];
 };
 
-export const adminColumns: (chapters: ChaptersList) => ColumnDef<PaymentRowType>[] = (chapters) => {
+export const adminColumns: (chapters: ChaptersList) => ColumnDef<G20PaymentRowType>[] = (chapters) => {
   return [
     {
       accessorKey: "payment_date",
@@ -140,29 +121,9 @@ export const adminColumns: (chapters: ChaptersList) => ColumnDef<PaymentRowType>
       accessorKey: "amount",
       header: "Amount",
       cell: ({ row }) => {
-        const { is_converted, conversion_currency, conversion_amount, conversion_time, conversion_rate, currency } = row.original;
         return (
           <div className="capitalize flex items-center space-x-1">
             <div>{numberWithCurrencyFormatter(row.original["currency"] as string, row.original["amount"] as number)}</div>
-            <div>
-              {is_converted && (
-                <Tooltip>
-                  <TooltipTrigger>
-                    <RefreshCw size={12} color="green" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div>
-                      {conversion_currency &&
-                        conversion_amount &&
-                        conversion_time &&
-                        conversion_rate &&
-                        currency &&
-                        `Converted  ${numberWithCurrencyFormatter(conversion_currency || "", conversion_amount || 0)}  on ${dayjs(conversion_time).format("MMM DD, YYYY")} at the rate of ${numberWithCurrencyFormatter(currency || "", 1)}/${numberWithCurrencyFormatter(conversion_currency || "", conversion_rate || 0)}`}
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </div>
           </div>
         );
       },
@@ -615,7 +576,7 @@ export const placeholderOptions: { key: keyof PartnerRowType; label: string }[] 
   { key: "status", label: "Status" },
   // { key: "date_of_birth", label: "Date of Birth" },
   { key: "birth_day_mmdd", label: "Birth Day (MMDD)" },
-  { key: "ggp_category", label: "GGP Category" },
+  { key: "g20_category", label: "G20 Category" },
   { key: "unique_code", label: "Unique Code" },
   // You might optionally include these if you hydrate them for templating:
   { key: "chapter_id", label: "Chapter Name" },
@@ -631,7 +592,7 @@ export const partnerDetailsOrder = [
   "phone_number",
 
   "date_of_birth",
-  "ggp_category",
+  "g20_category",
 
   "permission_type",
   "status",
@@ -643,7 +604,7 @@ export const partnerDetailsOrder = [
   "nationality",
 
   "preferred_remission_day",
-  "active_recurring_remission",
+  "g20_active_recurring_remission",
 
   "address",
 

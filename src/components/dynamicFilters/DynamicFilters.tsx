@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppSelector } from "@/redux/hooks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SupabaseClient from "@/supabase/supabaseConnection";
 import { Plus, X, SearchX, ListFilterPlus } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -15,12 +15,12 @@ import {
   allChaptersOption,
   initialiseAdminOptions,
   PaymentStatusOptions,
+  ProposedStatusOptions,
   PermissionOptions,
   RemissionDayOptions,
   StatusOptions,
 } from "@/lib/utils";
-import { CovenantEntry, GGPCategories } from "@/constants";
-import { camelCaseToNormal } from "@/lib/textUtils";
+import { G20Categories } from "@/constants";
 import { isRange, RangePicker } from "./rangePicker";
 import { DateRange } from "react-day-picker";
 import { FilterPills } from "./filterPills";
@@ -32,14 +32,11 @@ import { AltDayPicker } from "./AltDayPicker";
 
 interface DynamicFilterProps {
   name?: string;
-  filterType: "Payment" | "Partner";
+  filterType: "Payment" | "Partner" | "Proposed";
   allow: "Individual" | "Admin";
   permission_type?: string;
   paymentType: string;
   tableName?: string;
-  allowedFieldValues?: string[];
-  sortBy?: { field: string; ascending: boolean }[];
-  customStatusOptions?: { name: string; value: string }[];
   updateTableData: (data: Record<string, any>[]) => void;
   updateTableDataCount: (data: number) => void;
   page: number;
@@ -63,9 +60,6 @@ export const DynamicFilter = ({
   allow,
   permission_type = "individual",
   tableName,
-  allowedFieldValues,
-  sortBy,
-  customStatusOptions,
   updateTableData,
   updateTableDataCount,
   paymentType = "",
@@ -98,9 +92,7 @@ export const DynamicFilter = ({
   const isPendingRemissions = paymentType === "pendingRemissions";
   const paymentStatusToUse = isPendingRemissions ? "Pending" : "all";
   const scheduleYearOptions = Array.from({ length: 10 }, (_, index) => String(2026 - index));
-  const fieldsOptionsToUse = filterFieldsOptions
-    .filter((field) => field.allow.includes(allow) && field.filterType.includes(filterType))
-    .filter((field) => (allowedFieldValues?.length ? allowedFieldValues.includes(field.value) : true));
+  const fieldsOptionsToUse = filterFieldsOptions.filter((field) => field.allow.includes(allow) && field.filterType.includes(filterType));
   const hasStatusField = fieldsOptionsToUse.some((field) => field.value === "status");
   const defaultFilterField = (hasStatusField ? "status" : fieldsOptionsToUse[0]?.value || "name_code") as DynamicFilterSchema["filters"][number]["field"];
   const defaultFilterOperator = (defaultFilterField === "name_code" ? "Contains" : "Equals") as DynamicFilterSchema["filters"][number]["operator"];
@@ -214,12 +206,19 @@ export const DynamicFilter = ({
       .select("*", { count: "exact" }) // include total count for pagination
       .range(from, to);
 
-    if (sortBy && sortBy.length) {
-      for (const sortConfig of sortBy) {
+    if (filterType === "Proposed") {
+      [
+        { field: "schedule_year", ascending: false },
+        { field: "proposed_date", ascending: true },
+      ].forEach((sortConfig) => {
         query = query.order(sortConfig.field, { ascending: sortConfig.ascending });
-      }
+      });
     } else {
       query = query.order(sortField, { ascending: false });
+    }
+
+    if (filterType === "Partner") {
+      query = query.eq("g20_active", true);
     }
 
     if (permission_type === "individual" && filterType === "Payment") {
@@ -238,6 +237,7 @@ export const DynamicFilter = ({
     // Apply filters dynamically
     for (const filter of filters) {
       const field = filter.field;
+      const resolvedField = field === "status" && sourceTable === "partner" ? "g20_status" : field;
       const operator = filter.operator;
       const value = filter.value;
 
@@ -249,27 +249,27 @@ export const DynamicFilter = ({
           // string equality
           const r = value as DateRange;
           if (field === "birth_day_mmdd") {
-            r.from && query.eq(field, formatDateToMMDD(r.from));
+            r.from && query.eq(resolvedField, formatDateToMMDD(r.from));
           } else if (["payment_date", "proposed_date"].includes(field)) {
-            r.from && query.gte(field, new Date(r.from).toISOString().split("T")[0] + "T00:00:00.000Z");
-            r.from && query.lte(field, new Date(r.from).toISOString().split("T")[0] + "T23:59:59.999Z");
+            r.from && query.gte(resolvedField, new Date(r.from).toISOString().split("T")[0] + "T00:00:00.000Z");
+            r.from && query.lte(resolvedField, new Date(r.from).toISOString().split("T")[0] + "T23:59:59.999Z");
           } else if (field === "status" && sourceTable === "proposed_payment_schedule" && typeof value === "string") {
             const statusValue = value.toLowerCase();
             const today = new Date().toISOString().split("T")[0];
             if (statusValue === "due") {
               query = query.eq("status", "pending").lte("proposed_date", today);
             } else {
-              query = query.eq(field, statusValue);
+              query = query.eq(resolvedField, statusValue);
             }
           } else if (field === "schedule_year") {
-            query = query.eq(field, +value);
+            query = query.eq(resolvedField, +value);
           } else if (field === "remission_period") {
             // array of "YYYY-MM" or similar, using your helper
             if (r.from && r.to) {
               const months = getRemissionsMonthsBetween(r.from, r.to);
               if (months?.length) query = query.in(field, months);
             }
-          } else if (field === "active_recurring_remission") {
+          } else if (field === "g20_active_recurring_remission") {
             if (typeof value === "string" && ["True", "False"].includes(value)) {
               if (value === "True") {
                 query = query.eq(field, true);
@@ -286,18 +286,18 @@ export const DynamicFilter = ({
               }
             }
           } else if (field === "preferred_remission_day") {
-            query = query.eq(field, +value);
+            query = query.eq(resolvedField, +value);
           }
 
-          if (typeof value === "string" && !["active_recurring_remission", "online_payment", "schedule_year", "status"].includes(field)) {
-            query = query.eq(field, value);
+          if (typeof value === "string" && !["g20_active_recurring_remission", "online_payment", "schedule_year"].includes(field)) {
+            query = query.eq(resolvedField, value);
           }
           break;
         }
         case "Contains": {
           // case‑insensitive contains for strings
           if (typeof value === "string") {
-            query = query.ilike(field, `%${value.toLowerCase()}%`);
+            query = query.ilike(resolvedField, `%${value.toLowerCase()}%`);
           }
           break;
         }
@@ -307,11 +307,11 @@ export const DynamicFilter = ({
           const r = value as DateRange;
 
           if (["payment_date", "proposed_date"].includes(field)) {
-            r.from && query.gte(field, new Date(r.from).toISOString().split("T")[0] + "T00:00:00.000Z");
-            r.to && query.lte(field, new Date(r.to).toISOString().split("T")[0] + "T23:59:59.999Z");
+            r.from && query.gte(resolvedField, new Date(r.from).toISOString().split("T")[0] + "T00:00:00.000Z");
+            r.to && query.lte(resolvedField, new Date(r.to).toISOString().split("T")[0] + "T23:59:59.999Z");
           } else if (field === "birth_day_mmdd") {
-            r.from && query.gte(field, formatDateToMMDD(r.from));
-            r.to && query.lte(field, formatDateToMMDD(r.to));
+            r.from && query.gte(resolvedField, formatDateToMMDD(r.from));
+            r.to && query.lte(resolvedField, formatDateToMMDD(r.to));
           } else if (field === "remission_period") {
             // array of "YYYY-MM" or similar, using your helper
             if (r.from && r.to) {
@@ -320,19 +320,19 @@ export const DynamicFilter = ({
             }
           } else if (field === "preferred_remission_day") {
             const ss = value as StringRange;
-            ss.from && query.gte(field, +ss.from);
-            ss.to && query.lte(field, +ss.to);
+            ss.from && query.gte(resolvedField, +ss.from);
+            ss.to && query.lte(resolvedField, +ss.to);
           } else if (field === "schedule_year") {
             const ss = value as StringRange;
-            ss.from && query.gte(field, +ss.from);
-            ss.to && query.lte(field, +ss.to);
+            ss.from && query.gte(resolvedField, +ss.from);
+            ss.to && query.lte(resolvedField, +ss.to);
           }
           break;
         }
         case "Not Equals": {
           // string equality
           if (typeof value === "string") {
-            query = query.neq(field, value);
+            query = query.neq(resolvedField, value);
           }
           break;
         }
@@ -369,7 +369,7 @@ export const DynamicFilter = ({
     setOpenDialog(false);
   };
 
-  const statusOptionsToUse = customStatusOptions || (filterType === "Payment" ? PaymentStatusOptions : StatusOptions);
+  const statusOptionsToUse = filterType === "Payment" ? PaymentStatusOptions : filterType === "Proposed" ? ProposedStatusOptions : StatusOptions;
 
   const filters = watch("filters");
   const name_Code_Value = filters.find((f) => f.field === "name_code")?.value || "";
@@ -377,7 +377,7 @@ export const DynamicFilter = ({
   const outsideSelectedChapter = filters.find((f) => f.field === "chapter_id")?.value || "all";
   const outsideSelectedSatus = filters.find((f) => f.field === "status")?.value || "all";
   const outsideSelectedOnlinePayment = filters.find((f) => f.field === "online_payment")?.value || "all";
-  const outsideSelectedActiveRecurringRemission = filters.find((f) => f.field === "active_recurring_remission")?.value || "all";
+  const outsideSelectedActiveRecurringRemission = filters.find((f) => f.field === "g20_active_recurring_remission")?.value || "all";
 
   useEffect(() => {
     filterData();
@@ -458,23 +458,27 @@ export const DynamicFilter = ({
                 </SelectContent>
               </Select>
 
-              <Select
-                onValueChange={(value) => {
-                  updateEqualsFilter("status", value);
-                }}
-                value={getFilterValue("status") as string}
-              >
-                <SelectTrigger className="w-[140px] shad-select-trigger">
-                  <SelectValue placeholder="Select Status" />
-                </SelectTrigger>
-                <SelectContent className="shad-select-content">
-                  {statusOptionsToUse.map((status) => (
-                    <SelectItem key={status.value || "all"} value={status.value}>
-                      {status.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {isPendingRemissions ? (
+                ""
+              ) : (
+                <Select
+                  onValueChange={(value) => {
+                    updateEqualsFilter("status", value);
+                  }}
+                  value={getFilterValue("status") as string}
+                >
+                  <SelectTrigger className="w-[140px] shad-select-trigger">
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent className="shad-select-content">
+                    {statusOptionsToUse.map((status) => (
+                      <SelectItem key={status.value || "all"} value={status.value}>
+                        {status.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
 
               {filterType === "Payment" && (
                 <Select
@@ -499,9 +503,9 @@ export const DynamicFilter = ({
               {filterType === "Partner" && (
                 <Select
                   onValueChange={(value) => {
-                    updateEqualsFilter("active_recurring_remission", value);
+                    updateEqualsFilter("g20_active_recurring_remission", value);
                   }}
-                  value={getFilterValue("active_recurring_remission") as string}
+                  value={getFilterValue("g20_active_recurring_remission") as string}
                 >
                   <SelectTrigger className="w-[140px] shad-select-trigger">
                     <SelectValue placeholder={"Automated Remissions"} />
@@ -564,12 +568,11 @@ export const DynamicFilter = ({
                                 <SelectValue placeholder="Select Field" />
                               </SelectTrigger>
                               <SelectContent>
-                                {fieldsOptionsToUse
-                                  .map((f) => (
-                                    <SelectItem key={f.value} value={f.value}>
-                                      {f.label}
-                                    </SelectItem>
-                                  ))}
+                                {fieldsOptionsToUse.map((f) => (
+                                  <SelectItem key={f.value} value={f.value}>
+                                    {f.label}
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                           )}
@@ -631,6 +634,7 @@ export const DynamicFilter = ({
               .filter((filter) => (isPendingRemissions ? filter.field !== "status" : true))
               .map((item, index) => {
                 const indexToUse = isPendingRemissions ? index + 1 : index;
+                const fieldOptions = watch("filters").map((filter) => filter.field as string);
                 const selectedField = watch(`filters.${indexToUse}.field`);
                 const selectedDivision = watch(`filters`).find((filter) => filter.field === "division_id")?.value || "all";
                 const isEqualsOperator = watch(`filters.${indexToUse}.operator`) === "Equals";
@@ -651,7 +655,7 @@ export const DynamicFilter = ({
                               .flat()
                               .filter((field) => (isPendingRemissions ? field.value !== "status" : true))
                               .map((f) => (
-                                <SelectItem key={f.value} value={f.value}>
+                                <SelectItem key={f.value} value={f.value} disabled={fieldOptions.includes(f.value)}>
                                   {f.label}
                                 </SelectItem>
                               ))}
@@ -857,7 +861,7 @@ export const DynamicFilter = ({
                           }
                         }}
                       />
-                    ) : selectedField === "ggp_category" ? (
+                    ) : selectedField === "g20_category" ? (
                       <Controller
                         control={control}
                         name={`filters.${indexToUse}.value`}
@@ -865,21 +869,14 @@ export const DynamicFilter = ({
                           return (
                             <Select onValueChange={field.onChange} value={field.value as string}>
                               <SelectTrigger className="w-[240px] shad-select-trigger">
-                                <SelectValue placeholder="Select the GGP category" />
+                                <SelectValue placeholder={`Select the G20 category`} />
                               </SelectTrigger>
                               <SelectContent className="shad-select-content">
-                                {Object.entries(GGPCategories["GBP"]).map(([label, options]: [string, CovenantEntry[]]) => {
-                                  return (
-                                    <SelectGroup key={label}>
-                                      <SelectLabel>{camelCaseToNormal(label)}</SelectLabel>
-                                      {options.map((groupOption) => (
-                                        <SelectItem key={groupOption.rank} value={groupOption.rank}>
-                                          <div className="flex items-center cursor-pointer gap-2 pl-4">{groupOption.rank}</div>
-                                        </SelectItem>
-                                      ))}
-                                    </SelectGroup>
-                                  );
-                                })}
+                                {G20Categories.map((category) => (
+                                  <SelectItem key={category.value || category.name} value={String(category.value)}>
+                                    <div className="flex items-center cursor-pointer gap-2 pl-4">{category.name}</div>
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                           );
@@ -929,7 +926,7 @@ export const DynamicFilter = ({
                           );
                         }}
                       />
-                    ) : ["active_recurring_remission", "online_payment"].includes(selectedField) ? (
+                    ) : ["g20_active_recurring_remission", "online_payment"].includes(selectedField) ? (
                       <Controller
                         control={control}
                         name={`filters.${indexToUse}.value`}
@@ -937,7 +934,7 @@ export const DynamicFilter = ({
                           return (
                             <Select onValueChange={field.onChange} value={field.value as string}>
                               <SelectTrigger className="w-[240px] shad-select-trigger">
-                                <SelectValue placeholder={selectedField === "active_recurring_remission" ? "Automated Remissions" : "Online Payment"} />
+                                <SelectValue placeholder={selectedField === "g20_active_recurring_remission" ? "Automated Remissions" : "Online Payment"} />
                               </SelectTrigger>
                               <SelectContent className="shad-select-content">
                                 {activeRecurringRemissionFilterOptions.map((status) => (
@@ -1107,7 +1104,7 @@ export const DynamicFilter = ({
               </Button>
 
               <div className="flex gap-2">
-                <Button variant="outline" className="text-black bg-white" onClick={() => append({ field: "name_code", operator: "Equals", value: "" })}>
+                <Button variant="outline" className="text-black bg-white" onClick={() => append({ field: "name_code", operator: "Contains", value: "" })}>
                   <Plus className="w-4 h-4 mr-1" /> Add Filter
                 </Button>
                 <Button variant={"custom"} type="submit">

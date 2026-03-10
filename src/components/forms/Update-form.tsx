@@ -76,6 +76,7 @@ export const UpdateForm = () => {
         motivation: motivation,
         attestation: attestation,
         g20_active: true,
+        g20_status: userDetails?.g20_status || "passive",
       });
 
       if (!updatedUser) {

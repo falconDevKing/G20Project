@@ -9,6 +9,7 @@ import { Profile } from "./pages/admin/profile/profile";
 import Overview from "./pages/admin/overview";
 import Remissions from "./pages/admin/remissions";
 import RemissionLog from "./pages/admin/remissionLog";
+import ProposalManagement from "./pages/admin/proposalManagement";
 import Users from "./pages/admin/users";
 import MessagePartners from "./pages/admin/message";
 import Entities from "./pages/admin/entities";
@@ -82,6 +83,7 @@ function App() {
         <Route path="overview" element={<Overview />} />
         <Route path="remissions" element={<Remissions />} />
         <Route path="pending-remissions" element={<RemissionLog />} />
+        <Route path="proposal-management" element={<ProposalManagement />} />
         <Route path="users" element={<Users />} />
         <Route path="message" element={<MessagePartners />} />
         <Route path="entities" element={<Entities />} />

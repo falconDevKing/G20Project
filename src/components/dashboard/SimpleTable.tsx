@@ -42,7 +42,7 @@ export const SimpleTable = <TData extends Record<string, any>>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="bg-[#FCF6E6]">
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="text-[#1E1E1E] font-bold text-md">
+                <TableHead key={header.id} className="text-[#1E1E1E] font-semibold text-sm md:text-base px-7">
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
@@ -55,7 +55,7 @@ export const SimpleTable = <TData extends Record<string, any>>({
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} className={`hover:bg-[#FCF9EF]  ${onRowClick ? "cursor-pointer" : ""}`} onClick={() => onRowClick?.(row.original)}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="dark:text-black">
+                  <TableCell key={cell.id} className="px-7 py-4 text-xs md:text-sm dark:text-black">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
-import { ChapterRowType, DivisionRowType, OrganisationRowType, PartnerRowType, PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
+import { ChapterRowType, DivisionRowType, OrganisationRowType, PartnerRowType, PaymentRowType, G20PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
 
 export const DoNothing = (_arg: any): void => {
   // no-op
@@ -21,12 +21,12 @@ export const pageSizeOptions = [
 
 export const activeRecurringRemissionFilterOptions = [
   { name: "All", value: "all" },
-  { name: "True", value: "True" },
-  { name: "False", value: "False" },
+  { name: "Online Payments", value: "True" },
+  { name: "Offline Payments", value: "False" },
 ];
 export const activeRecurringRemissionOptions = [
-  { name: "True", value: "True" },
-  { name: "False", value: "False" },
+  { name: "Online Payments", value: "True" },
+  { name: "Offline Payments", value: "False" },
 ];
 
 export const genderOptions = [
@@ -46,6 +46,14 @@ export const PaymentStatusOptions = [
   { name: "Paid", value: "Paid" },
   { name: "Pending", value: "Pending" },
   { name: "Cancelled", value: "Cancelled" },
+];
+
+export const ProposedStatusOptions = [
+  { name: "All Statuses", value: "all" },
+  { name: "Pending", value: "pending" },
+  { name: "Due", value: "due" },
+  { name: "Missed", value: "missed" },
+  { name: "Cleared", value: "cleared" },
 ];
 
 export const PermissionOptions = [
@@ -277,23 +285,21 @@ export const RemissionDayOptions = [
   "31",
 ];
 
-export const getPaidMonths = (userPayments: PaymentRowType[], trackingYear: string = dayjs().format("YYYY")) => {
-  const paidMonths = userPayments.reduce((paidMonthArray, payment) => {
-    if (payment.status === "Paid" && payment.remission_year === trackingYear) {
-      paidMonthArray = [...paidMonthArray, payment.remission_month as string];
-    }
+export const getPaidMonths = (userPayments: G20PaymentRowType[], trackingYear: string = dayjs().format("YYYY")) => {
+  const paidMonths = userPayments.reduce((paidMonthArray) => {
+    console.log("trackingYear", trackingYear);
     return paidMonthArray;
   }, [] as string[]);
 
   return paidMonths;
 };
 
-export const getDashboardSummary = (userPayments: PaymentRowType[], remissionStartMonth: number) => {
+export const getDashboardSummary = (userPayments: G20PaymentRowType[], remissionStartMonth: number) => {
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth(); // JS months are 0-based
 
-  const thisYearPayments = userPayments.filter((p) => p.remission_year === currentYear.toString());
+  const thisYearPayments = userPayments.filter((p) => p.payment_date === currentYear.toString());
 
   const noOfPaymentsMade = thisYearPayments.filter((p) => p.status === "Paid").length;
 
@@ -322,11 +328,12 @@ export const initialPartnersData = {
     { title: "Active Partners", value: 0 },
     { title: "Passive Partners", value: 0 },
   ],
-  GGP_Category: [
-    { title: "Covenant of Faith", value: 0 },
-    { title: "Covenant of Glory", value: 0 },
-    { title: "Covenant of Exploits", value: 0 },
-    { title: "Covenant of Wealth", value: 0 },
+  G20_Category: [
+    { title: "Bronze", value: 0 },
+    { title: "Silver", value: 0 },
+    { title: "Gold", value: 0 },
+    { title: "Diamond", value: 0 },
+    { title: "Platinum", value: 0 },
   ],
   Partner_Type: [
     { title: "New Partners", value: 0 },

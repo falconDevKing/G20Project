@@ -20,15 +20,13 @@ import { SelectOptions } from "@/interfaces/register";
 import { useAppSelector } from "@/redux/hooks";
 import { SuccessHandler, ErrorHandler, InfoHandler } from "@/lib/toastHandlers";
 // import { ContainerFluid } from "@/components/containerFluid";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { genderOptions, initialiseAdminOptions, PermissionOptions, monthsOfTheYearOptions, RemissionDayOptions } from "@/lib/utils";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { signupSchema } from "@/lib/schemas";
-import { CovenantEntry, GGPCategories, type CurrencyCode, Countries } from "../../constants/index";
-
-import { camelCaseToNormal } from "@/lib/textUtils";
+import { Countries } from "../../constants/index";
 import { createUniqueCode, createUser, vetUser } from "@/services/auth";
 import { signUp } from "aws-amplify/auth";
 import { v4 as uuidV4 } from "uuid";
@@ -62,7 +60,6 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
       email: "",
       division_id: "",
       chapter_id: "",
-      ggp_category: "",
       permission_type: "individual",
       address: "",
       gender: "",
@@ -74,22 +71,8 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
     try {
-
-      const {
-        first_name,
-        last_name,
-        phone_number,
-        email,
-        division_id,
-        chapter_id,
-        ggp_category,
-        permission_type,
-        address,
-        gender,
-        nationality,
-        birth_day,
-        birth_month
-      } = values;
+      const { first_name, last_name, phone_number, email, division_id, chapter_id, permission_type, address, gender, nationality, birth_day, birth_month } =
+        values;
 
       setIsPending(true);
 
@@ -103,9 +86,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
       const unique_code = await createUniqueCode({ first_name, last_name });
 
       // SIGN UP USER ON COGNITO
-      const {
-        userId: user_id,
-      } = await signUp({
+      const { userId: user_id } = await signUp({
         username: email.replace(/\s+/g, ""),
         password: "Password-123",
         options: {
@@ -127,10 +108,12 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
         last_name,
         first_name,
         email,
-        ggp_category,
         phone_number,
         cognito_user_id: user_id,
         status: "passive",
+        g20_status: "passive" as const,
+        g20_active: false,
+        proposed_payment_scheduled: false,
         organisation_id: AppOrganisationId,
         division_id,
         chapter_id,
@@ -138,7 +121,13 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
         address,
         gender,
         nationality,
-        date_of_birth: birth_month && birth_day ? dayjs().month(parseInt(birth_month) - 1).date(parseInt(birth_day)).toISOString() : null,
+        date_of_birth:
+          birth_month && birth_day
+            ? dayjs()
+                .month(parseInt(birth_month) - 1)
+                .date(parseInt(birth_day))
+                .toISOString()
+            : null,
         remission_start_date: new Date().toISOString().split("T")[0],
       };
 
@@ -146,14 +135,14 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
         await createUser(userData);
 
         const recipientMails = [email];
-        const mailSubject = "Welcome to GGP! You’re Officially a GGP Partner.";
+        const mailSubject = "Welcome to House of Greats! You’re Officially a G20 Partner.";
         const mailBody = PostConfirmationTemplate(first_name, unique_code, false);
 
         await sendEmail({ to: recipientMails, mailSubject, mailBody });
 
-        await sendWelcomeMessage({ to: phone_number, name: first_name, ggp_code: unique_code })
+        await sendWelcomeMessage({ to: phone_number, name: first_name, ggp_code: unique_code });
 
-        await sendDefaultPaswordMessage({ to: phone_number })
+        await sendDefaultPaswordMessage({ to: phone_number });
       }
 
       form.reset();
@@ -164,8 +153,8 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
     } catch (error: any) {
       setIsPending(false);
 
-      if (error?.message === 'User already exists') {
-        InfoHandler('User Already registered.');
+      if (error?.message === "User already exists") {
+        InfoHandler("User Already registered.");
         form.reset();
         setOpen(false);
       } else {
@@ -347,42 +336,65 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
               </div>
 
               <div className=" lg:grid grid-cols-2 gap-2 space-y-3 md:space-y-0">
-                <FormField
-                  control={form.control}
-                  name="ggp_category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-1">
-                        <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">GGP Category</FormLabel>
-                        <span className="text-red-500 text-base">*</span>
-                      </div>
-                      <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger className="shad-select-trigger">
-                            <SelectValue placeholder="Select your GGP Category" />
-                          </SelectTrigger>
-                          <SelectContent className="shad-select-content">
-                            {Object.entries(
-                              GGPCategories[(ChapterOptions.find((chapter) => chapter.value === form?.watch("chapter_id"))?.currency || "GBP") as CurrencyCode],
-                            ).map(([label, options]: [string, CovenantEntry[]]) => {
-                              return (
-                                <SelectGroup key={label}>
-                                  <SelectLabel>{camelCaseToNormal(label)}</SelectLabel>
-                                  {options.map((groupOption) => (
-                                    <SelectItem key={groupOption.rank} value={groupOption.rank}>
-                                      <div className="flex items-center cursor-pointer gap-2 pl-4">{`${groupOption.rank} (${groupOption.amount})`}</div>
-                                    </SelectItem>
-                                  ))}
-                                </SelectGroup>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="w-full">
+                  <div className="flex items-center gap-1 pb-2">
+                    <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Birth Day</FormLabel>
+                    <span className="text-red-500 text-base">*</span>
+                  </div>
+                  <div className="flex gap-x-1 w-full">
+                    <FormField
+                      control={form.control}
+                      name="birth_month"
+                      render={({ field }) => (
+                        <FormItem className="w-full flex-1">
+                          <FormControl>
+                            <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
+                              <SelectTrigger className=" w-full h-12 dark:border-white" allowDark={false} enforceWhite>
+                                <SelectValue placeholder="Birth Month" />
+                              </SelectTrigger>
+                              <SelectContent className="shad-select-content">
+                                {monthsOfTheYearOptions.map((month: any) => (
+                                  <SelectItem key={month.value} value={month.value}>
+                                    <div className="flex items-center cursor-pointer gap-3">
+                                      <p>{month.name}</p>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="birth_day"
+                      render={({ field }) => (
+                        <FormItem className="w-full flex-1">
+                          <FormControl>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                              <SelectTrigger className="w-full h-12 dark:border-white" allowDark={false} enforceWhite>
+                                <SelectValue placeholder="Birth Day" />
+                              </SelectTrigger>
+                              <SelectContent className="shad-select-content">
+                                {RemissionDayOptions.map((RemissionDay: string) => (
+                                  <SelectItem key={RemissionDay} value={RemissionDay}>
+                                    <div className="flex items-center cursor-pointer gap-3">
+                                      <p>{RemissionDay}</p>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
 
                 <FormField
                   control={form.control}
@@ -415,67 +427,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                 />
               </div>
 
-              <div className="lg:grid grid-cols-3 gap-1 space-y-3 md:space-y-0 space-x-3">
-                <div>
-                  <div className="flex items-center gap-1 pb-2">
-                    <FormLabel className="text-gray-600/90 dark:text-white font-normal text-base">Birth Day</FormLabel>
-                    <span className="text-red-500 text-base">*</span>
-                  </div>
-                  <div className="flex gap-x-1">
-                    <FormField
-                      control={form.control}
-                      name="birth_month"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
-                              <SelectTrigger className="basis-3/6 h-12 dark:border-white" allowDark={false} enforceWhite>
-                                <SelectValue placeholder="Birth Month" />
-                              </SelectTrigger>
-                              <SelectContent className="shad-select-content">
-                                {monthsOfTheYearOptions.map((month: any) => (
-                                  <SelectItem key={month.value} value={month.value}>
-                                    <div className="flex items-center cursor-pointer gap-3">
-                                      <p>{month.name}</p>
-                                    </div>
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="birth_day"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                              <SelectTrigger className="basis-2/6 h-12 dark:border-white" allowDark={false} enforceWhite>
-                                <SelectValue placeholder="Birth Day" />
-                              </SelectTrigger>
-                              <SelectContent className="shad-select-content">
-                                {RemissionDayOptions.map((RemissionDay: string) => (
-                                  <SelectItem key={RemissionDay} value={RemissionDay}>
-                                    <div className="flex items-center cursor-pointer gap-3">
-                                      <p>{RemissionDay}</p>
-                                    </div>
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
+              <div className="lg:grid grid-cols-2 gap-1 space-y-3 md:space-y-0 space-x-3">
                 <FormField
                   control={form.control}
                   name="gender"

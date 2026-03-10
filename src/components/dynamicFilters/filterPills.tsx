@@ -56,7 +56,7 @@ const fmtRange = (r: DateRange, type: string): string => {
 
 const toOrdinal = (n: number): string => {
   if (n < 1 || n > 31) {
-    return ""
+    return "";
   }
 
   if (n % 100 >= 11 && n % 100 <= 13) {
@@ -83,8 +83,6 @@ export const FilterPills: React.FC<Props> = ({ filters }) => {
   const { theme } = useTheme();
   if (!filters?.length) return null;
 
-
-
   return (
     <div>
       <div className="hidden sm:flex flex-wrap items-center gap-2">
@@ -92,20 +90,36 @@ export const FilterPills: React.FC<Props> = ({ filters }) => {
           const labelField = filterFieldsLabels[f.field] ?? f.field;
           const op = OperatorSymbols[f.operator] ?? f.operator;
 
-
           const isChapter = f.field === "chapter_id";
           const isDivision = f.field === "division_id";
-          const isPreferredRemissionDay = f.field === "preferred_remission_day"
-          const isEquals = op === "="
+          const isPreferredRemissionDay = f.field === "preferred_remission_day";
+          const isEquals = op === "=";
 
-          const isPreferredRemissionDayValue = typeof f.value === "string" ? toOrdinal(+f.value) : ordinalRange(f.value as { from: string; to: string })
+          const isPreferredRemissionDayValue = !isPreferredRemissionDay
+            ? ""
+            : typeof f.value === "string"
+              ? toOrdinal(+f.value)
+              : ordinalRange(f.value as { from: string; to: string });
 
-          const valueText = isPreferredRemissionDay ? isPreferredRemissionDayValue : isRange(f.value) ? isEquals ? fmtFirstDate(f.value, f.field) : fmtRange(f.value, f.field) : String(f.value ?? "").trim();
+          const valueText = isPreferredRemissionDay
+            ? isPreferredRemissionDayValue
+            : isRange(f.value)
+              ? isEquals
+                ? fmtFirstDate(f.value, f.field)
+                : fmtRange(f.value, f.field)
+              : String(f.value ?? "").trim();
 
           // Skip empty values to avoid blank pills
           if (!valueText) return null;
 
-          const textToUse = valueText === 'all' ? valueText : isChapter ? findChapterDetails(valueText).chapterName : isDivision ? findDivisionDetails(valueText).divisionName : valueText;
+          const textToUse =
+            valueText === "all"
+              ? valueText
+              : isChapter
+                ? findChapterDetails(valueText).chapterName
+                : isDivision
+                  ? findDivisionDetails(valueText).divisionName
+                  : valueText;
 
           return (
             <Badge

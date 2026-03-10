@@ -290,7 +290,11 @@ export const updateUserStatus = async (user_id: string, remission_start_date: st
     }
   }
 
-  const { data, error: updateError } = await SupabaseClient.from("partner").update({ status: userStatus }).eq("id", user_id).select().single();
+  const { data, error: updateError } = await SupabaseClient.from("partner")
+    .update({ status: userStatus, g20_status: userStatus })
+    .eq("id", user_id)
+    .select()
+    .single();
 
   if (updateError) {
     console.log("updateUserStatus error", updateError);
@@ -319,12 +323,12 @@ export const updateRecurringPayment = async (recurringPaymentId: string, userId:
     .maybeSingle();
 
   const userDataToUpdate: {
-    active_recurring_remission?: boolean;
+    g20_active_recurring_remission?: boolean;
     preferred_remission_day?: number;
   } = {};
 
   if (recurringPaymentUpdate.hasOwnProperty("active")) {
-    userDataToUpdate.active_recurring_remission = recurringPaymentUpdate.active;
+    userDataToUpdate.g20_active_recurring_remission = recurringPaymentUpdate.active;
   }
   if (recurringPaymentUpdate.hasOwnProperty("charge_day")) {
     userDataToUpdate.preferred_remission_day = +recurringPaymentUpdate.charge_day;

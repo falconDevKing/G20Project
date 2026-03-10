@@ -20,6 +20,10 @@ import {
 } from "@/lib/transformMetricsData";
 import dayjs from "dayjs";
 
+type RemissionMetricsResponse = RemissionMetrics & {
+  Monthly_Remission_Totals?: RemissionTotalsRow[];
+};
+
 export const RemissionsOverview = () => {
   const navigate = useNavigate();
   const [currency, setCurrency] = useState("GBP");
@@ -49,40 +53,29 @@ export const RemissionsOverview = () => {
   };
 
   const fetchRemissionsStat = async () => {
-    const { data, error }: PostgrestSingleResponse<RemissionMetrics> = await SupabaseClient.rpc("get_remission_metrics_filtered", {
+    const { data, error }: PostgrestSingleResponse<RemissionMetricsResponse> = await SupabaseClient.rpc("get_g20_remission_metrics_filtered", {
       input_division_id: selectedDivision === "all" ? null : selectedDivision || null,
       input_chapter_id: selectedChapter === "all" ? null : selectedChapter || null,
+      input_remission_period: remissionPeriod || RemissionPeriodOptions[0],
     });
 
     if (data && !error) {
-      const transformedData = addFiltersToRemissionsMetrics(data);
+      const metricsData: RemissionMetrics = {
+        Payment_Inflow: data.Payment_Inflow || [],
+        Annual_Payment_Overview: data.Annual_Payment_Overview || [],
+        Pending_Remissions: data.Pending_Remissions || [],
+      };
+      const transformedData = addFiltersToRemissionsMetrics(metricsData);
       setRemissionsData(transformedData);
+      setRemissionBreakdown(data.Monthly_Remission_Totals || []);
     }
   };
 
-  const fetchMonthlyRemissionsValue = async () => {
-    const { data, error }: PostgrestSingleResponse<any> = await SupabaseClient.rpc("get_remission_totals_by_period", {
-      p_remission_period: remissionPeriod || RemissionPeriodOptions[0],
-      p_division_id: selectedDivision === "all" ? null : selectedDivision || null,
-      p_chapter_id: selectedChapter === "all" ? null : selectedChapter || null,
-    });
-
-    setRemissionBreakdown(data);
-
-    if (error) {
-      return {
-        desiredCurrencyBase: "Nil",
-        total: "Come out",
-        // optional diagnostics so you can show warnings in UI
-        missingCurrencies: Array.from(new Set([])),
-        sumInRatesBaseCurrency: 0,
-      };
-    }
-
+  const recomputeMonthlyRemissionsValue = async () => {
     const rates = await FetchGBPExchangeRates();
 
     const selectedCurrencySummary = rebaseRemissionTotalsToCurrency({
-      totals: data,
+      totals: remissionBreakdown,
       rates,
       desiredCurrencyBase: currency?.toLowerCase(),
     });
@@ -149,11 +142,11 @@ export const RemissionsOverview = () => {
 
   useEffect(() => {
     fetchRemissionsStat();
-  }, [selectedDivision, selectedChapter]);
+  }, [selectedDivision, selectedChapter, remissionPeriod]);
 
   useEffect(() => {
-    fetchMonthlyRemissionsValue();
-  }, [selectedDivision, selectedChapter, remissionPeriod, currency]);
+    recomputeMonthlyRemissionsValue();
+  }, [remissionBreakdown, currency]);
 
   return (
     <section className=" ">

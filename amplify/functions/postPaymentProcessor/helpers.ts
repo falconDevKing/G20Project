@@ -264,7 +264,7 @@ export const handleMailingAndStatusUpdates = async ({
   if (successfulMonthly) {
     const { data, error: updateError } = await SupabaseClient.from("partner")
       .update({
-        active_recurring_remission: true,
+        g20_active_recurring_remission: true,
         preferred_remission_day: +remission_day,
       })
       .eq("id", user_id)

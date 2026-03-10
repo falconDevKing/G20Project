@@ -1,31 +1,31 @@
-import { useState, Suspense } from "react";
+import { Suspense } from "react";
 import { useReactTable, getCoreRowModel, ColumnDef, flexRender } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "../ui/button";
 import { Loader, ClipboardClock, CircleX, CalendarCog } from "lucide-react";
-import { ApprovePayment } from "./approvePayment";
+import { SelectOptions } from "@/interfaces/register";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { pageSizeOptions } from "@/lib/utils";
 import { useAppSelector } from "@/redux/hooks";
 import MobileTableCard from "../mobileTableCard";
 import MobileTableHeader from "../mobileTableHeader";
 import useLargeScreen from "@/hooks/checkScreenSize";
-import { PartnerRowType, PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useLocation } from "react-router";
-import { PartnerPaymentDetails } from "../PartnerDetails";
-import { SelectOptions } from "@/interfaces/register";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { pageSizeOptions } from "@/lib/utils";
-import { sendPaymentReceivedMessage } from "@/services/twilioMessaging";
-import dayjs from "dayjs";
-import { sendEmail } from "@/services/sendMail";
-import { updateUserStatus } from "@/services/payment";
-import { refreshLoggedInUser } from "@/services/auth";
-import PaymentReciept from "@/mailTemplates/paymentRecieptNew";
-import { numberWithCurrencyFormatter } from "@/lib/numberUtils";
+// import { PartnerRowType, G20PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
+// import { ApprovePayment } from "./approvePayment";
+// import { PartnerPaymentDetails } from "../PartnerDetails";
+// import { sendPaymentReceivedMessage } from "@/services/twilioMessaging";
+// import dayjs from "dayjs";
+// import { sendEmail } from "@/services/sendMail";
+// import { updateUserStatus } from "@/services/payment";
+// import { refreshLoggedInUser } from "@/services/auth";
+// import PaymentReciept from "@/mailTemplates/paymentRecieptNew";
+// import { numberWithCurrencyFormatter } from "@/lib/numberUtils";
 
-interface DataTableProps {
-  data: PaymentRowType[];
-  columns: ColumnDef<PaymentRowType>[];
+interface DataTableProps<TData extends Record<string, any>> {
+  data: TData[];
+  columns: ColumnDef<TData>[];
   tableType: string;
   count: number;
   pageSize: string;
@@ -33,11 +33,12 @@ interface DataTableProps {
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   customText?: string;
-  order: string[];
+  order?: string[];
   setRefreshData?: React.Dispatch<React.SetStateAction<number>>;
+  onRowClick?: (row: TData) => void;
 }
 
-export default function DataTable({
+const DataTable = <TData extends Record<string, any>>({
   columns,
   data,
   tableType,
@@ -47,104 +48,104 @@ export default function DataTable({
   pageSize = "10",
   setPageSize,
   customText,
-  order,
-  setRefreshData,
-}: DataTableProps) {
+  onRowClick,
+  // setRefreshData,
+}: DataTableProps<TData>) => {
   const permission_type = useAppSelector((state) => state.auth.userDetails.permission_type);
-  const [details, setDetails] = useState<Partial<PaymentRowType> | Partial<PartnerRowType>>({});
-  const [paymentData, setPaymentData] = useState<PaymentRowType>();
-  const [openDialog, setOpenDialog] = useState(false);
-  const [openSheet, setOpenSheet] = useState(false);
+  // const [details, setDetails] = useState<Partial<G20PaymentRowType> | Partial<PartnerRowType>>({});
+  // const [paymentData, setPaymentData] = useState<G20PaymentRowType>();
+  // const [openDialog, setOpenDialog] = useState(false);
+  // const [openSheet, setOpenSheet] = useState(false);
   // To hide Remission Tracker text for other pages...
   const location = useLocation();
   const isProfilePage = location.pathname === "/";
 
   const isDivisionalRep = ["division", "organisation"].includes(permission_type);
-  const selectRow = (row: any) => {
-    if (tableType === "pendingRemissions" && isDivisionalRep) {
-      setPaymentData(row.original);
-      setOpenDialog(true);
-    } else {
-      setDetails(row.original);
-      setOpenSheet(true);
-    }
-  };
+  // const selectRow = (row: any) => {
+  //   if (tableType === "pendingRemissions" && isDivisionalRep) {
+  //     setPaymentData(row.original);
+  //     setOpenDialog(true);
+  //   } else {
+  //     setDetails(row.original);
+  //     setOpenSheet(true);
+  //   }
+  // };
 
   const totalPages = Math.ceil(count / +pageSize);
   const isLargeScreen = useLargeScreen();
 
-  const table = useReactTable({
+  const table = useReactTable<TData>({
     data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const postApprovePaymentProcessing = async ({
-    user_name,
-    currency,
-    amount,
-    remission_period,
-    payment_date,
-    chapterName,
-    approved_by,
-    payerDataUser_id,
-    payerDataRemission_start_date,
-    userId,
-    payerDataEmail,
-    payerDataPhone_number,
-  }: {
-    user_name: string;
-    currency: string;
-    amount: number;
-    remission_period: string;
-    payment_date: string;
-    chapterName: string;
-    approved_by: string;
-    payerDataUser_id: string;
-    payerDataRemission_start_date: string;
-    userId: string;
-    payerDataEmail: string;
-    payerDataPhone_number: string;
-  }) => {
-    try {
-      setRefreshData && setRefreshData((prev) => prev + 1);
+  // const postApprovePaymentProcessing = async ({
+  //   user_name,
+  //   currency,
+  //   amount,
+  //   remission_period,
+  //   payment_date,
+  //   chapterName,
+  //   approved_by,
+  //   payerDataUser_id,
+  //   payerDataRemission_start_date,
+  //   userId,
+  //   payerDataEmail,
+  //   payerDataPhone_number,
+  // }: {
+  //   user_name: string;
+  //   currency: string;
+  //   amount: number;
+  //   remission_period: string;
+  //   payment_date: string;
+  //   chapterName: string;
+  //   approved_by: string;
+  //   payerDataUser_id: string;
+  //   payerDataRemission_start_date: string;
+  //   userId: string;
+  //   payerDataEmail: string;
+  //   payerDataPhone_number: string;
+  // }) => {
+  //   try {
+  //     setRefreshData && setRefreshData((prev) => prev + 1);
 
-      // send Mail to client
-      const mailSubject = `Your GGP Remission Has Been Received!`;
-      const mailBody = PaymentReciept({
-        first_name: user_name,
-        currency,
-        amount: +amount,
-        remission_period,
-        remissionDate: dayjs(payment_date).format("MMMM DD, YYYY"),
-        baseUrl: import.meta.env.VITE_APP_BASE_URL || "",
-        chapterName,
-        approved_by,
-      });
+  //     // send Mail to client
+  //     const mailSubject = `Your GGP Remission Has Been Received!`;
+  //     const mailBody = PaymentReciept({
+  //       first_name: user_name,
+  //       currency,
+  //       amount: +amount,
+  //       remission_period,
+  //       remissionDate: dayjs(payment_date).format("MMMM DD, YYYY"),
+  //       baseUrl: import.meta.env.VITE_APP_BASE_URL || "",
+  //       chapterName,
+  //       approved_by,
+  //     });
 
-      await sendEmail({ to: [payerDataEmail], mailSubject, mailBody });
+  //     await sendEmail({ to: [payerDataEmail], mailSubject, mailBody });
 
-      await sendPaymentReceivedMessage({
-        to: payerDataPhone_number,
-        name: user_name,
-        amount: numberWithCurrencyFormatter(currency, amount),
-        period: remission_period,
-        remission_period: remission_period,
-        remission_amount: numberWithCurrencyFormatter(currency, amount),
-        payment_date: dayjs(payment_date).format("MMMM DD, YYYY"),
-        chapter_name: chapterName,
-        approved_by_name: approved_by,
-      });
+  //     await sendPaymentReceivedMessage({
+  //       to: payerDataPhone_number,
+  //       name: user_name,
+  //       amount: numberWithCurrencyFormatter(currency, amount),
+  //       period: remission_period,
+  //       remission_period: remission_period,
+  //       remission_amount: numberWithCurrencyFormatter(currency, amount),
+  //       payment_date: dayjs(payment_date).format("MMMM DD, YYYY"),
+  //       chapter_name: chapterName,
+  //       approved_by_name: approved_by,
+  //     });
 
-      await updateUserStatus(payerDataUser_id, payerDataRemission_start_date);
+  //     await updateUserStatus(payerDataUser_id, payerDataRemission_start_date);
 
-      if (userId === payerDataUser_id) {
-        await refreshLoggedInUser(userId || "");
-      }
-    } catch (error: any) {
-      console.log("postApprovePaymentProcessing", error?.message, error);
-    }
-  };
+  //     if (userId === payerDataUser_id) {
+  //       await refreshLoggedInUser(userId || "");
+  //     }
+  //   } catch (error: any) {
+  //     console.log("postApprovePaymentProcessing", error?.message, error);
+  //   }
+  // };
 
   return (
     <Suspense
@@ -186,7 +187,8 @@ export default function DataTable({
                     key={row.id}
                     onClick={(e) => {
                       e.stopPropagation();
-                      selectRow(row);
+                      onRowClick?.(row.original);
+                      // selectRow(row);
                     }}
                     className={`hover:bg-muted/50 transition-colors ${isDivisionalRep ? "cursor-pointer" : ""}`}
                   >
@@ -195,7 +197,7 @@ export default function DataTable({
                         const { status, approved_by } = row.original;
                         const interim_approved_by_image = "";
                         const isPaid = status === "Paid";
-                        const approvedName = ["Setup", "Paid"].includes(status || "") ? approved_by || "" : status || "";
+                        const approvedName: string = ["Setup", "Paid"].includes(status || "") ? approved_by || "" : status || "";
                         const initials = approvedName
                           .split(" ")
                           .map((n) => n[0])
@@ -255,7 +257,8 @@ export default function DataTable({
                     row={row}
                     tableType={tableType}
                     clickHandler={() => {
-                      selectRow(row);
+                      onRowClick?.(row.original);
+                      // selectRow(row);
                     }}
                   />
                 ),
@@ -311,7 +314,7 @@ export default function DataTable({
         )}
       </div>
 
-      {/* Approve Dialog */}
+      {/* Approve Dialog
       <ApprovePayment
         paymentData={paymentData}
         openDialog={openDialog}
@@ -320,7 +323,9 @@ export default function DataTable({
         postApprovePaymentProcessing={postApprovePaymentProcessing}
       />
       {/* PartnerPaymentDetails Drawer */}
-      <PartnerPaymentDetails details={details} open={openSheet} setOpen={setOpenSheet} order={order} />
+      {/* <PartnerPaymentDetails details={details} open={openSheet} setOpen={setOpenSheet} order={order} /> */}
     </Suspense>
   );
-}
+};
+
+export default DataTable;

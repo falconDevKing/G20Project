@@ -1,7 +1,7 @@
 import { ContainerFluid } from "@/components/containerFluid";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Church, Image } from "lucide-react";
+import { Church, Image, CirclePause } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ const ToolsPage = () => {
         <Input type="text" className="mr-2 border-black dark:border-white  border-2" value={userCode} onChange={(e) => setUserCode(e.target.value)} placeholder="User Unique Code" />
         <Button onClick={pauseSubscriptionRequest} disabled={loading}>{loading ? "Pausing..." : "Pause Subscription"}</Button>
       </div>,
-      icon: Image,
+      icon: CirclePause,
     },
   ];
 
