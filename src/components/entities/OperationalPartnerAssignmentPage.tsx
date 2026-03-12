@@ -13,7 +13,7 @@ import { PartnerRowType } from "@/supabase/modifiedSupabaseTypes";
 
 export const OperationalPartnerAssignmentPage = () => {
   const appState = useAppSelector((state) => state.app);
-  const { HoSOptions, GovernorOptions, PresidentOptions } = initialiseAdminOptions(appState);
+  const { ShepherdOptions, GovernorOptions, PresidentOptions } = initialiseAdminOptions(appState);
 
   const [tableData, setTableData] = useState<PartnerRowType[]>([]);
   const [tableDataCount, setTableDataCount] = useState(1);
@@ -23,17 +23,17 @@ export const OperationalPartnerAssignmentPage = () => {
   const [filterData, setFilterData] = useState<Record<string, any>[]>([]);
   const [refreshData, setRefreshData] = useState(0);
   const [isPending, setIsPending] = useState(false);
-  const [hosId, setHosId] = useState("");
+  const [shepherdId, setShepherdId] = useState("");
   const [governorId, setGovernorId] = useState("");
   const [presidentId, setPresidentId] = useState("");
 
-  const scopedGovernorOptions = useMemo(() => GovernorOptions.filter((governor) => (hosId ? governor.hos_id === hosId : true)), [GovernorOptions, hosId]);
+  const scopedGovernorOptions = useMemo(() => GovernorOptions.filter((governor) => (shepherdId ? governor.shepherd_id === shepherdId : true)), [GovernorOptions, shepherdId]);
   const scopedPresidentOptions = useMemo(
     () =>
-      PresidentOptions.filter((president) => (hosId ? president.hos_id === hosId : true)).filter((president) =>
+      PresidentOptions.filter((president) => (shepherdId ? president.shepherd_id === shepherdId : true)).filter((president) =>
         governorId ? president.governor_id === governorId : true,
       ),
-    [PresidentOptions, hosId, governorId],
+    [PresidentOptions, shepherdId, governorId],
   );
   const toggleId = (id: string) => {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((existingId) => existingId !== id) : [...prev, id]));
@@ -64,9 +64,9 @@ export const OperationalPartnerAssignmentPage = () => {
         cell: ({ row }) => <div className="truncate max-w-[240px]">{row.original.email || "---"}</div>,
       },
       {
-        id: "hos",
-        header: "Current HoS",
-        cell: ({ row }) => HoSOptions.find((hos) => hos.value === row.original.hos_id)?.name || "---",
+        id: "shepherd",
+        header: "Current Shepherd",
+        cell: ({ row }) => ShepherdOptions.find((shepherd) => shepherd.value === row.original.shepherd_id)?.name || "---",
       },
       {
         id: "governor",
@@ -79,12 +79,12 @@ export const OperationalPartnerAssignmentPage = () => {
         cell: ({ row }) => PresidentOptions.find((president) => president.value === row.original.president_id)?.name || "---",
       },
     ],
-    [PresidentOptions, GovernorOptions, HoSOptions, selectedIds],
+    [PresidentOptions, GovernorOptions, ShepherdOptions, selectedIds],
   );
 
   const assignByIds = async (partnerIds: string[]) => {
     try {
-      if (!hosId && !governorId && !presidentId) {
+      if (!shepherdId && !governorId && !presidentId) {
         ErrorHandler("Please select Rep before assigning.");
         return;
       }
@@ -96,7 +96,7 @@ export const OperationalPartnerAssignmentPage = () => {
       setIsPending(true);
       await assignPartnersToOperationalHierarchy({
         partnerIds,
-        hos_id: hosId,
+        shepherd_id: shepherdId,
         governor_id: governorId || undefined,
         president_id: presidentId || undefined,
       });
@@ -139,26 +139,26 @@ export const OperationalPartnerAssignmentPage = () => {
       <div>
         <h1 className="md:text-2xl text-lg font-bold dark:text-white text-GGP-dark">Assign Partners To Operational Reps</h1>
         <p className="max-w-[760px] font-light text-base dark:text-white text-GGP-dark/75">
-          Select HoS and optional Governor/President, then assign selected partners or all currently filtered partners.
+          Select Shepherd and optional Governor/President, then assign selected partners or all currently filtered partners.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
         <Select
-          value={hosId}
+          value={shepherdId}
           onValueChange={(value) => {
-            setHosId(value);
+            setShepherdId(value);
             setGovernorId("");
             setPresidentId("");
           }}
         >
           <SelectTrigger className="shad-select-trigger">
-            <SelectValue placeholder="Select HoS" />
+            <SelectValue placeholder="Select Shepherd" />
           </SelectTrigger>
           <SelectContent className="shad-select-content">
-            {HoSOptions.map((hos) => (
-              <SelectItem key={hos.value} value={hos.value}>
-                {hos.name}
+            {ShepherdOptions.map((shepherd) => (
+              <SelectItem key={shepherd.value} value={shepherd.value}>
+                {shepherd.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -168,9 +168,9 @@ export const OperationalPartnerAssignmentPage = () => {
           value={governorId}
           onValueChange={(value) => {
             setGovernorId(value);
-            if (!hosId) {
+            if (!shepherdId) {
               const selectedGovernor = scopedGovernorOptions.find((gov) => gov.value === value);
-              setHosId(selectedGovernor?.hos_id || "");
+              setShepherdId(selectedGovernor?.shepherd_id || "");
             }
             setPresidentId("");
           }}
@@ -190,11 +190,11 @@ export const OperationalPartnerAssignmentPage = () => {
         <Select
           value={presidentId}
           onValueChange={(value) => {
-            if (!hosId) {
+            if (!shepherdId) {
               const selectedPresident = scopedPresidentOptions.find((gov) => gov.value === value);
-              setHosId(selectedPresident?.hos_id || "");
+              setShepherdId(selectedPresident?.shepherd_id || "");
             }
-            if (!hosId) {
+            if (!shepherdId) {
               const selectedPresident = scopedPresidentOptions.find((gov) => gov.value === value);
               setGovernorId(selectedPresident?.governor_id || "");
             }

@@ -6,7 +6,7 @@ import {
   DivisionRowType,
   OrganisationRowType,
   PartnerRowType,
-  HoSRowType,
+  ShepherdRowType,
   GovernorRowType,
   PresidentRowType,
 } from "@/supabase/modifiedSupabaseTypes";
@@ -17,7 +17,7 @@ export const fetchBasicData = async () => {
     const Organisation = await fetchOrganisationData();
     const Divisions = await fetchDivisionsData();
     const Chapters = await fetchChaptersData();
-    const HoSEntities = await fetchHoSEntitiesData();
+    const ShepherdEntities = await fetchShepherdEntitiesData();
     const GovernorEntities = await fetchGovernorEntitiesData();
     const PresidentEntities = await fetchPresidentEntitiesData();
 
@@ -28,7 +28,7 @@ export const fetchBasicData = async () => {
       Organisation,
       Divisions,
       Chapters,
-      HoSEntities,
+      ShepherdEntities,
       GovernorEntities,
       PresidentEntities,
     };
@@ -140,16 +140,16 @@ export const fetchChaptersData = async () => {
   }
 };
 
-export const fetchHoSEntitiesData = async () => {
+export const fetchShepherdEntitiesData = async () => {
   try {
-    const entities: HoSRowType[] = [];
+    const entities: ShepherdRowType[] = [];
     const pageSize = 1000;
 
     const fetchPage = async (from: number, to: number): Promise<void> => {
-      const { data, error }: PostgrestSingleResponse<HoSRowType[]> = await SupabaseClient.from("hos").select("*").range(from, to);
+      const { data, error }: PostgrestSingleResponse<ShepherdRowType[]> = await SupabaseClient.from("shepherd").select("*").range(from, to);
 
       if (error) {
-        console.log("hos entities error", error);
+        console.log("shepherd entities error", error);
         throw error;
       }
 
@@ -166,7 +166,7 @@ export const fetchHoSEntitiesData = async () => {
     store.dispatch(
       setOperationalEntities({
         data: {
-          hosEntities: entities,
+          shepherdEntities: entities,
           governorEntities: appState.governorEntities || [],
           presidentEntities: appState.presidentEntities || [],
         },
@@ -174,7 +174,7 @@ export const fetchHoSEntitiesData = async () => {
     );
     return entities;
   } catch (error) {
-    console.log("fetching hos entities error", error);
+    console.log("fetching shepherd entities error", error);
     throw error;
   }
 };
@@ -205,7 +205,7 @@ export const fetchGovernorEntitiesData = async () => {
     store.dispatch(
       setOperationalEntities({
         data: {
-          hosEntities: appState.hosEntities || [],
+          shepherdEntities: appState.shepherdEntities || [],
           governorEntities: entities,
           presidentEntities: appState.presidentEntities || [],
         },
@@ -244,7 +244,7 @@ export const fetchPresidentEntitiesData = async () => {
     store.dispatch(
       setOperationalEntities({
         data: {
-          hosEntities: appState.hosEntities || [],
+          shepherdEntities: appState.shepherdEntities || [],
           governorEntities: appState.governorEntities || [],
           presidentEntities: entities,
         },
@@ -386,8 +386,8 @@ export const fetchUsersByEntity = async () => {
     const entityKey = (adminLevel.toLowerCase() + "Id") as keyof Partial<PartnerRowType>;
     const entityId = userDetails[entityKey] as string;
 
-    if (opsPermission === "hos" && userDetails.hos_id) {
-      const { data, error }: PostgrestSingleResponse<PartnerRowType[]> = await SupabaseClient.from("partner").select("*").eq("hos_id", userDetails.hos_id);
+    if (opsPermission === "shepherd" && userDetails.shepherd_id) {
+      const { data, error }: PostgrestSingleResponse<PartnerRowType[]> = await SupabaseClient.from("partner").select("*").eq("shepherd_id", userDetails.shepherd_id);
       if (error) throw error;
       const users = data || [];
       store.dispatch(setUsers({ data: users }));

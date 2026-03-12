@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
 import G20Crest from "@/assets/generalAppAssets/G20_logo.png";
-// import HeroBackgroundOne from "@/assets/generalAppAssets/GGP-hero.png";
+import HeroBackgroundOne from "@/assets/generalAppAssets/GGP-hero.png";
 import HeroBackgroundTwo from "@/assets/generalAppAssets/Prop2.jpg";
 import HeroBackgroundThree from "@/assets/generalAppAssets/Prop3.jpg";
 import HeroBackgroundFour from "@/assets/generalAppAssets/gp-bg.webp";
-// import HeroBackgroundFive from "@/assets/generalAppAssets/Prop 4.jpg";
-// import HeroBackgroundSix from "@/assets/generalAppAssets/Prop 5.jpg";
+import HeroBackgroundFive from "@/assets/generalAppAssets/Prop 4.jpg";
+import HeroBackgroundSix from "@/assets/generalAppAssets/Prop 5.jpg";
 import HeroBackgroundSeven from "@/assets/generalAppAssets/Prop 6.jpg";
 import HeroBackgroundEight from "@/assets/generalAppAssets/Prop 7.jpg";
 import HeroBackgroundNine from "@/assets/generalAppAssets/Prop 8.jpg";
@@ -15,12 +15,12 @@ import HeroBackgroundTen from "@/assets/generalAppAssets/Prop 9.jpg";
 import { GhostButton, PrimaryButton } from "../customIcons";
 
 const heroImages = [
-  // HeroBackgroundOne,
+  HeroBackgroundOne,
   HeroBackgroundTwo,
   HeroBackgroundThree,
   HeroBackgroundFour,
-  // HeroBackgroundFive,
-  // HeroBackgroundSix,
+  HeroBackgroundFive,
+  HeroBackgroundSix,
   HeroBackgroundSeven,
   HeroBackgroundEight,
   HeroBackgroundNine,
@@ -52,7 +52,7 @@ const Hero = () => {
             }`}
           />
         ))}
-        <div className="absolute inset-0 bg-[#0b1120]/65" />
+        <div className="absolute inset-0 bg-[#0b1120]/35" />
       </div>
 
       <div className="relative mx-auto px-4 py-14 sm:px-6 sm:py-12 lg:px-8">

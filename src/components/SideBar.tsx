@@ -1,9 +1,8 @@
-import { AdminViews, UserViews } from "../constants/index";
+import { AdminViews } from "../constants/index";
 import { cn } from "@/lib/utils";
 import { useLocation, Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useAppSelector, useAppDispatch } from "@/redux/hooks";
-import { setMenuType } from "@/redux/authSlice";
+import { useAppSelector } from "@/redux/hooks";
 
 import Logo from "../../src/assets/G20_logo.png";
 import ToggleAndUser from "./toggleAndUser/ToggleAndUser";
@@ -11,25 +10,17 @@ import ToggleAndUser from "./toggleAndUser/ToggleAndUser";
 export const SideBar = () => {
   const location = useLocation();
   const auth = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
-  const menuType = auth.menuType;
+
   const permission_type = auth.userDetails.permission_type;
   const opsPermissionType = auth.userDetails.ops_permission_type;
-  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "") || ["hos", "governor", "president"].includes(opsPermissionType || "");
+  const isAdmin =
+    ["chapter", "division", "organisation"].includes(permission_type || "") || ["shepherd", "governor", "president"].includes(opsPermissionType || "");
   const isChapterAdmin = permission_type === "chapter";
 
   // const [search, setSearch] = useState("");
-  const SideBarLink = menuType === "admin" ? AdminViews : UserViews;
+  const SideBarLink = AdminViews;
   const filteredLinks = SideBarLink.filter((link) => link.name && (isAdmin ? true : !!link?.allowIndividual));
   const filteredAdminLinks = filteredLinks.filter((link) => link.name && (isChapterAdmin ? !!link?.allowChapter : true));
-
-  const handleMenuSwitch = (menuName: string) => {
-    if (menuName === "Admin View") {
-      dispatch(setMenuType({ data: "admin" }));
-    } else if (menuName === "Personal View") {
-      dispatch(setMenuType({ data: "personal" }));
-    }
-  };
 
   return (
     <section className="fixed top-0 left-0 lg:w-[312px] w-full h-screen flex flex-col justify-between bg-[#1E1E1E] px-6 py-2 max-lg:hidden border-r dark border-gray-100/10 z-20">
@@ -58,7 +49,7 @@ export const SideBar = () => {
         {filteredAdminLinks.map((link) => {
           const isActive = location.pathname === link.route;
           return (
-            <div onClick={() => handleMenuSwitch(link.name)} key={link.name}>
+            <div key={link.name}>
               <Link
                 to={link.route}
                 className={cn("flex items-center px-4 py-2 rounded-lg transition-all duration-300 group", {

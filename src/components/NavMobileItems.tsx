@@ -3,11 +3,10 @@ import { SheetClose } from "./ui/sheet";
 // import { LogoutButton } from "./auth/logout-button";
 // import { Button } from "./ui/button";
 import { useLocation, Link } from "react-router-dom";
-import { AdminViews, UserViews } from "../constants/index";
+import { AdminViews } from "../constants/index";
 // import { LogoutButton } from "./forms/logout-button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useAppSelector, useAppDispatch } from "@/redux/hooks";
-import { setMenuType } from "@/redux/authSlice";
+import { useAppSelector } from "@/redux/hooks";
 
 interface NavMobileItemsProp {
   name: string;
@@ -18,31 +17,23 @@ interface NavMobileItemsProp {
 export const NavMobileItems = () => {
   const location = useLocation();
   const auth = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
-  const menuType = auth.menuType;
+
   const permission_type = auth.userDetails.permission_type;
   const opsPermissionType = auth.userDetails.ops_permission_type;
-  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "") || ["hos", "governor", "president"].includes(opsPermissionType || "");
+  const isAdmin =
+    ["chapter", "division", "organisation"].includes(permission_type || "") || ["shepherd", "governor", "president"].includes(opsPermissionType || "");
   const isChapterAdmin = permission_type === "chapter";
 
-  const SideBarLink = menuType === "admin" ? AdminViews : UserViews;
+  const SideBarLink = AdminViews;
   const filteredLinks = SideBarLink.filter((link) => link.name && (isAdmin ? true : !!link?.allowIndividual));
   const filteredAdminLinks = filteredLinks.filter((link) => link.name && (isChapterAdmin ? !!link?.allowChapter : true));
-
-  const handleMenuSwitch = (menuName: string) => {
-    if (menuName === "Admin View") {
-      dispatch(setMenuType({ data: "admin" }));
-    } else if (menuName === "Personal View") {
-      dispatch(setMenuType({ data: "personal" }));
-    }
-  };
 
   return (
     <>
       {filteredAdminLinks.map((link: NavMobileItemsProp) => {
         const isActive = location.pathname === link.route;
         return (
-          <SheetClose asChild key={link.route} onClick={() => handleMenuSwitch(link.name)}>
+          <SheetClose asChild key={link.route}>
             <Link
               to={link.route}
               key={link.name}

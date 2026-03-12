@@ -14,7 +14,7 @@ const LayoutRoot = () => {
   const isDashboardPage = location.pathname === "/dashboard";
   const permission_type = auth.userDetails.permission_type;
   const opsPermissionType = auth.userDetails.ops_permission_type;
-  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "") || ["hos", "governor", "president"].includes(opsPermissionType || "");
+  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "") || ["shepherd", "governor", "president"].includes(opsPermissionType || "");
   const postAuthRoute = auth.authenticated ? resolvePostAuthRoute(auth.userDetails) : "/login";
 
   const userAllowedPaths = [

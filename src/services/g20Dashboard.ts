@@ -289,7 +289,7 @@ export const syncProposedScheduleAfterUpdate = async ({
     organisation_id: user.organisation_id,
     division_id: user.division_id,
     chapter_id: user.chapter_id,
-    hos_id: user.hos_id,
+    shepherd_id: user.shepherd_id,
     governor_id: user.governor_id,
     president_id: user.president_id,
     email: user.email,

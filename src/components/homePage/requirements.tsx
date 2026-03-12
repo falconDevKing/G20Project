@@ -6,7 +6,7 @@ import { CheckCircle } from "lucide-react";
 const requirementsLeft: string[] = [
   "Be a born-again believer, transformed by the Spirit and committed to the Lordship of Christ.",
   "Be a lover of Jesus Christ and his church on earth",
-  "Demonstrate love and passion for the growth and expansion of the ministry",
+  "Have a love and passion for the growth and expansion of the ministry",
   "Have joy and willingness in giving whenever opportunities arise",
   "Carry a genuine burden for souls and for the spread of the Gospel",
   "Love the vision and ministry of Prophet Isaiah Macwealth",

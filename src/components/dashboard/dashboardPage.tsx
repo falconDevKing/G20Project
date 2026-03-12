@@ -76,7 +76,7 @@ export default function DashboardCom() {
   const opsPermissionType = user.ops_permission_type || "";
   const chapterId = user.chapter_id || "";
   const chapterCurrency = findChapterDetails(chapterId)?.currency || "NGN";
-  const isAdmin = ["chapter", "division", "organisation"].includes(permissionType) || ["hos", "governor", "president"].includes(opsPermissionType);
+  const isAdmin = ["chapter", "division", "organisation"].includes(permissionType) || ["shepherd", "governor", "president"].includes(opsPermissionType);
 
   const { scheduleYear } = useMemo(() => getNextOct30Window(), []);
 

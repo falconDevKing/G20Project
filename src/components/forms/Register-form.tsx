@@ -26,9 +26,6 @@ import { Checkbox } from "../ui/checkbox";
 import Logo from "../../assets/G20_logo.png";
 import dayjs from "dayjs";
 import { sendWelcomeMessage } from "@/services/twilioMessaging";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Command, CommandInput, CommandItem, CommandList, CommandEmpty, CommandGroup } from "@/components/ui/command";
-import { resolvedTypedChapter } from "@/services/tools";
 import { AuthInput } from "../ui/authInput";
 
 export const RegisterForm = () => {
@@ -71,8 +68,6 @@ export const RegisterForm = () => {
 
         const unique_code = await createUniqueCode({ first_name, last_name });
 
-        let resolvedChapterId = await resolvedTypedChapter(ChapterOptions, division_id, chapter_id);
-
         // SIGN UP USER ON COGNITO
         const { userId: user_id, nextStep } = await signUp({
           username: email.replace(/\s+/g, ""),
@@ -114,7 +109,7 @@ export const RegisterForm = () => {
           organisation_id: AppOrganisationId,
           division_id,
 
-          chapter_id: resolvedChapterId,
+          chapter_id,
           remission_start_date: new Date().toISOString().split("T")[0],
         };
 
@@ -320,16 +315,7 @@ export const RegisterForm = () => {
               name="chapter_id"
               render={({ field }) => {
                 const divisionId = form.watch("division_id");
-
                 const filteredChapters = ChapterOptions.filter((chapter) => (divisionId ? chapter.filt === divisionId : true));
-
-                // If the field holds an existing chapter ID, show its name
-                const existingById = filteredChapters.find((c) => c.value === field.value);
-
-                // What the user currently has "in the box"
-                const inputValue = existingById ? existingById.name : (field.value as string) || "";
-
-                const matchingChapters = filteredChapters.filter((chapter) => chapter.name.toLowerCase().includes(inputValue.toLowerCase()));
 
                 return (
                   <FormItem>
@@ -338,63 +324,20 @@ export const RegisterForm = () => {
                       <span className="text-red-500 text-base">*</span>
                     </div>
                     <FormControl>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <button
-                            type="button"
-                            className={[
-                              "w-full flex items-center justify-between h-12 px-3 rounded-md border text-sm",
-                              "bg-white text-gray-900 border-gray-300",
-                              !inputValue && "text-gray-400",
-                            ]
-                              .filter(Boolean)
-                              .join(" ")}
-                          >
-                            {inputValue || "Type in your chapter"}
-                          </button>
-                        </PopoverTrigger>
-
-                        <PopoverContent className="w-full p-0 bg-white text-gray-900 border border-gray-300 shadow-md">
-                          <div className="bg-white text-gray-900">
-                            <Command className="bg-white text-gray-900">
-                              <CommandInput
-                                placeholder="Start typing your chapter name..."
-                                value={inputValue}
-                                onValueChange={(value) => {
-                                  // Treat as free text while typing
-                                  field.onChange(value);
-                                }}
-                                className="bg-white text-gray-900 placeholder-gray-400"
-                              />
-
-                              <CommandList className="bg-white text-gray-900">
-                                <CommandEmpty className="text-gray-600 text-sm px-3 py-2">
-                                  First from your chapter? You can keep typing and continue with other fields once done
-                                </CommandEmpty>
-
-                                <CommandGroup
-                                  heading={divisionId ? "Existing chapters in this division" : "Existing chapters"}
-                                  className="bg-white text-gray-900"
-                                >
-                                  {matchingChapters.map((chapter) => (
-                                    <CommandItem
-                                      key={chapter.value}
-                                      value={chapter.name}
-                                      onSelect={() => {
-                                        // Selecting a suggestion stores the ID
-                                        field.onChange(chapter.value as string);
-                                      }}
-                                      className="cursor-pointer bg-white text-gray-900 hover:bg-gray-100"
-                                    >
-                                      {chapter.name}
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={!divisionId}>
+                        <SelectTrigger className="h-12" enforceWhite>
+                          <SelectValue placeholder={divisionId ? "Select your Chapter" : "Select your Division first"} />
+                        </SelectTrigger>
+                        <SelectContent className="shad-select-content">
+                          {filteredChapters.map((chapter: SelectOptions) => (
+                            <SelectItem key={chapter.value} value={chapter.value as unknown as string}>
+                              <div className="flex items-center cursor-pointer gap-3">
+                                <p>{chapter.name}</p>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -23,7 +23,7 @@ export type Division = {
   reps?: DummyObject[];
 };
 
-export type HoS = {
+export type Shepherd = {
   id?: string;
   name: string;
   rep_partner_id?: string | null;
@@ -33,7 +33,7 @@ export type HoS = {
 export type Governor = {
   id?: string;
   name: string;
-  hos_id?: string | null;
+  shepherd_id?: string | null;
   rep_partner_id?: string | null;
   reps?: DummyObject[];
 };
@@ -41,7 +41,7 @@ export type Governor = {
 export type President = {
   id?: string;
   name: string;
-  hos_id?: string | null;
+  shepherd_id?: string | null;
   governor_id?: string | null;
   rep_partner_id?: string | null;
   reps?: DummyObject[];
@@ -65,7 +65,7 @@ export const tabItems = [
 ];
 
 export const operationalTabItems = [
-  { value: "hos", label: "HoS" },
+  { value: "shepherd", label: "Shepherds" },
   { value: "governor", label: "Governors" },
   { value: "president", label: "Presidents" },
 ];
@@ -159,7 +159,7 @@ export const divisionColumns: ColumnDef<Division>[] = [
   },
 ];
 
-export const hosColumns: ColumnDef<HoS>[] = [
+export const shepherdColumns: ColumnDef<Shepherd>[] = [
   { accessorKey: "name", header: "Name" },
   {
     accessorKey: "rep_name",
@@ -171,12 +171,12 @@ export const hosColumns: ColumnDef<HoS>[] = [
   },
 ];
 
-export const governorColumns: (hosEntities: { id: string; name: string }[]) => ColumnDef<Governor>[] = (hosEntities) => [
+export const governorColumns: (shepherdEntities: { id: string; name: string }[]) => ColumnDef<Governor>[] = (shepherdEntities) => [
   { accessorKey: "name", header: "Name" },
   {
-    accessorKey: "hos_id",
-    header: "HoS",
-    cell: ({ row }) => <div className="capitalize">{hosEntities.find((hos) => hos.id === row.original.hos_id)?.name || "---"}</div>,
+    accessorKey: "shepherd_id",
+    header: "Shepherd",
+    cell: ({ row }) => <div className="capitalize">{shepherdEntities.find((shepherd) => shepherd.id === row.original.shepherd_id)?.name || "---"}</div>,
   },
   {
     accessorKey: "rep_name",
@@ -188,15 +188,15 @@ export const governorColumns: (hosEntities: { id: string; name: string }[]) => C
   },
 ];
 
-export const presidentColumns: (hosEntities: { id: string; name: string }[], governors: { id: string; name: string }[]) => ColumnDef<President>[] = (
-  hosEntities,
+export const presidentColumns: (shepherdEntities: { id: string; name: string }[], governors: { id: string; name: string }[]) => ColumnDef<President>[] = (
+  shepherdEntities,
   governors,
 ) => [
   { accessorKey: "name", header: "Name" },
   {
-    accessorKey: "hos_id",
-    header: "HoS",
-    cell: ({ row }) => <div className="capitalize">{hosEntities.find((hos) => hos.id === row.original.hos_id)?.name || "---"}</div>,
+    accessorKey: "shepherd_id",
+    header: "Shepherd",
+    cell: ({ row }) => <div className="capitalize">{shepherdEntities.find((shepherd) => shepherd.id === row.original.shepherd_id)?.name || "---"}</div>,
   },
   {
     accessorKey: "governor_id",

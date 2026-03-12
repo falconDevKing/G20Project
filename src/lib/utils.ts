@@ -87,7 +87,7 @@ export const ToolAccess: Record<string, string[]> = {
   organisation: ["individual", "chapter", "division", "organisation"],
   division: ["individual", "chapter"],
   chapter: [],
-  hos: ["individual", "president", "governor", "hos"],
+  shepherd: ["individual", "president", "governor", "shepherd"],
   governor: ["individual", "president"],
   president: [],
   individual: [],
@@ -119,13 +119,13 @@ export const allChaptersOption = { value: "all", name: "All Chapters", filt: "al
 export const initialiseAdminOptions = (appState: {
   adminDivisions: DivisionRowType[];
   adminChapters: ChapterRowType[];
-  adminHosEntities?: { id: string; name: string }[];
-  adminGovernorEntities?: { id: string; name: string; hos_id?: string | null }[];
-  adminPresidentEntities?: { id: string; name: string; governor_id?: string | null; hos_id?: string | null }[];
+  adminShepherdEntities?: { id: string; name: string }[];
+  adminGovernorEntities?: { id: string; name: string; shepherd_id?: string | null }[];
+  adminPresidentEntities?: { id: string; name: string; governor_id?: string | null; shepherd_id?: string | null }[];
   organisation: OrganisationRowType | Record<string, any>;
 }) => {
   const { adminDivisions: divisions, adminChapters: chapters, organisation } = appState;
-  const hosEntities = appState.adminHosEntities || [];
+  const shepherdEntities = appState.adminShepherdEntities || [];
   const governorEntities = appState.adminGovernorEntities || [];
   const presidentEntities = appState.adminPresidentEntities || [];
 
@@ -138,19 +138,19 @@ export const initialiseAdminOptions = (appState: {
       currency: chapter.base_currency as string,
     }))
     .sort((a, b) => (a.name < b.name ? -1 : 1));
-  const HoSOptions = hosEntities.map((hos) => ({ value: hos.id, name: hos.name })).sort((a, b) => (a.name < b.name ? -1 : 1));
+  const ShepherdOptions = shepherdEntities.map((shepherd) => ({ value: shepherd.id, name: shepherd.name })).sort((a, b) => (a.name < b.name ? -1 : 1));
   const GovernorOptions = governorEntities
-    .map((governor) => ({ value: governor.id, name: governor.name, hos_id: governor.hos_id || "" }))
+    .map((governor) => ({ value: governor.id, name: governor.name, shepherd_id: governor.shepherd_id || "" }))
     .sort((a, b) => (a.name < b.name ? -1 : 1));
   const PresidentOptions = presidentEntities
-    .map((president) => ({ value: president.id, name: president.name, governor_id: president.governor_id || "", hos_id: president.hos_id || "" }))
+    .map((president) => ({ value: president.id, name: president.name, governor_id: president.governor_id || "", shepherd_id: president.shepherd_id || "" }))
     .sort((a, b) => (a.name < b.name ? -1 : 1));
 
   return {
     AppOrganisationId: organisation?.id || "",
     DivisionOptions: DivisionOptions?.length > 1 ? [allDivisionsOption, ...DivisionOptions] : DivisionOptions,
     ChapterOptions: ChapterOptions?.length > 1 ? [allChaptersOption, ...ChapterOptions] : ChapterOptions,
-    HoSOptions,
+    ShepherdOptions,
     GovernorOptions,
     PresidentOptions,
   };

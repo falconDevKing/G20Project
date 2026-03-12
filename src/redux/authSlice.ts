@@ -14,7 +14,6 @@ interface AuthState {
   signInDetails: PartnerRowType | DummyObject | undefined;
   userDetails: PartnerRowType | DummyObject;
   user_id: string;
-  menuType: "personal" | "admin";
 }
 
 const initialState: AuthState = {
@@ -25,7 +24,6 @@ const initialState: AuthState = {
   loading: false,
   authenticated: false,
   userDetails: {},
-  menuType: "personal",
 };
 
 // Then, handle actions in your reducers:
@@ -83,14 +81,6 @@ const authSlice = createSlice({
     ) => {
       state.authenticated = action.payload.authenticated;
     },
-    setMenuType: (
-      state: AuthState,
-      action: PayloadAction<{
-        data: "personal" | "admin";
-      }>,
-    ) => {
-      state.menuType = action.payload.data;
-    },
   },
   // extraReducers: (builder: ActionReducerMapBuilder<AuthState>) => {
   //   builder.addCase(getLoggedInUser.pending, (state: AuthState) => {
@@ -99,6 +89,6 @@ const authSlice = createSlice({
   // },
 });
 
-export const { setAuthLoading, setAuthData, setAuthenticated, setUserDetails, setLogOut, setMenuType } = authSlice.actions;
+export const { setAuthLoading, setAuthData, setAuthenticated, setUserDetails, setLogOut } = authSlice.actions;
 
 export default authSlice.reducer;

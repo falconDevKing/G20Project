@@ -19,7 +19,7 @@ import { migrateUserSchema } from "@/lib/toolsSchemas";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { SelectOptions } from "@/interfaces/register";
 import { useAppSelector } from "@/redux/hooks";
-import { initialiseOptions } from "@/lib/utils";
+import { initialiseAdminOptions } from "@/lib/utils";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
 import { removeRep, updateMember } from "@/services/users";
 import { refreshLoggedInUser } from "@/services/auth";
@@ -28,21 +28,16 @@ type FormValues = z.infer<typeof migrateUserSchema>;
 
 type EditUserProps = {
   open: boolean;
-  permission_type: string;
   userData: Record<string, any>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setUser: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   setRefreshData?: React.Dispatch<React.SetStateAction<number>>;
-  // fields: (keyof FormValues)[];
-  // onAdd: (val: FormValues) => Promise<void> | void;
 };
 
 export default function MigrateUserDialog({ userData, open, setOpen, setUser, setRefreshData }: EditUserProps) {
   const appState = useAppSelector((state) => state.app);
   const authUser = useAppSelector((state) => state.auth.userDetails);
-  const { DivisionOptions, ChapterOptions } = initialiseOptions(appState);
-
-  // const [entity, setUser] = useState<Record<string, any>>({});
+  const { ShepherdOptions, GovernorOptions, PresidentOptions } = initialiseAdminOptions(appState);
   const [isPending, setIsPending] = useState(false);
 
   const form = useForm<FormValues>({
@@ -50,19 +45,35 @@ export default function MigrateUserDialog({ userData, open, setOpen, setUser, se
     defaultValues: {
       id: userData?.id || "",
       name: userData?.name || "",
-      division_id: userData?.division_id || "",
-      chapter_id: userData?.chapter_id || "",
+      shepherd_id: userData?.shepherd_id || "",
+      governor_id: userData?.governor_id || "",
+      president_id: userData?.president_id || "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof migrateUserSchema>) => {
+  const selectedShepherdId = form.watch("shepherd_id");
+  const selectedGovernorId = form.watch("governor_id");
+
+  const filteredGovernorOptions = GovernorOptions.filter((governor) => governor.shepherd_id === selectedShepherdId);
+  const filteredPresidentOptions = PresidentOptions.filter(
+    (president) => president.shepherd_id === selectedShepherdId && president.governor_id === selectedGovernorId
+  );
+
+  const onSubmit = async (values: FormValues) => {
     try {
       setIsPending(true);
 
-      const { division_id, chapter_id } = values;
-      const memberData = { id: userData.id, division_id, chapter_id, permission_type: "individual" };
+      const memberData = {
+        id: userData.id,
+        shepherd_id: values.shepherd_id,
+        governor_id: values.governor_id,
+        president_id: values.president_id,
+        ops_permission_type: null,
+      };
+
       await updateMember(memberData);
-      await removeRep(userData, userData.permission_type);
+      await removeRep(userData, userData.ops_permission_type || "");
+
       if (authUser.id === userData.id) {
         await refreshLoggedInUser(authUser.id || "");
       }
@@ -81,24 +92,21 @@ export default function MigrateUserDialog({ userData, open, setOpen, setUser, se
   };
 
   useEffect(() => {
-    form.reset(userData);
-  }, [userData]);
+    form.reset({
+      id: userData?.id || "",
+      name: userData?.name || "",
+      shepherd_id: userData?.shepherd_id || "",
+      governor_id: userData?.governor_id || "",
+      president_id: userData?.president_id || "",
+    });
+  }, [form, userData]);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      {/* <AlertDialogTrigger asChild>
-        <div className=" mt-4 flex justify-end w-full">
-          <Button variant={"outline2"} size={"lg2"} className="mb-4 w-full border-[#304ddb] md:w-fit">
-            {" "}
-            <Plus className="text-[#304ddb]" /> Add New {label}
-          </Button>
-        </div>
-      </AlertDialogTrigger> */}
-
       <AlertDialogContent className=" bg-white dark:bg-[#1E1E1E] p-6">
         <AlertDialogHeader>
           <AlertDialogTitle className="dark:text-white ">Migrate Partner</AlertDialogTitle>
-          <AlertDialogDescription className="">Fill in the details...</AlertDialogDescription>
+          <AlertDialogDescription className="">Assign this partner to a President...</AlertDialogDescription>
         </AlertDialogHeader>
 
         <Form {...form}>
@@ -121,23 +129,31 @@ export default function MigrateUserDialog({ userData, open, setOpen, setUser, se
 
             <FormField
               control={form.control}
-              name={"division_id"}
+              name="shepherd_id"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-[#111c30] font-normal dark:text-white  text-base">Division</FormLabel>
+                    <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Shepherd</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        form.setValue("governor_id", "");
+                        form.setValue("president_id", "");
+                      }}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
                       <SelectTrigger className="shad-select-trigger">
-                        <SelectValue placeholder={`Select the Division`} />
+                        <SelectValue placeholder="Select Shepherd" />
                       </SelectTrigger>
                       <SelectContent className="shad-select-content">
-                        {DivisionOptions.map((division: SelectOptions) => (
-                          <SelectItem key={division.value} value={division.value as string}>
+                        {ShepherdOptions.map((shepherd: SelectOptions) => (
+                          <SelectItem key={shepherd.value} value={shepherd.value as unknown as string}>
                             <div className="flex items-center cursor-pointer gap-3">
-                              <p>{division.name}</p>
+                              <p>{shepherd.name}</p>
                             </div>
                           </SelectItem>
                         ))}
@@ -151,23 +167,61 @@ export default function MigrateUserDialog({ userData, open, setOpen, setUser, se
 
             <FormField
               control={form.control}
-              name="chapter_id"
+              name="governor_id"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-[#111c30] dark:text-white  font-normal text-base">Chapter</FormLabel>
+                    <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Governor</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        form.setValue("president_id", "");
+                      }}
+                      defaultValue={field.value}
+                      value={field.value}
+                      disabled={!selectedShepherdId}
+                    >
                       <SelectTrigger className="shad-select-trigger">
-                        <SelectValue placeholder="Select your chapter" />
+                        <SelectValue placeholder={selectedShepherdId ? "Select Governor" : "Select Shepherd first"} />
                       </SelectTrigger>
                       <SelectContent className="shad-select-content">
-                        {ChapterOptions.filter((chapter) => chapter.filt === form.watch("division_id")).map((chapter: SelectOptions) => (
-                          <SelectItem key={chapter.value} value={chapter.value as unknown as string}>
+                        {filteredGovernorOptions.map((governor: SelectOptions) => (
+                          <SelectItem key={governor.value} value={governor.value as unknown as string}>
                             <div className="flex items-center cursor-pointer gap-3">
-                              <p>{chapter.name}</p>
+                              <p>{governor.name}</p>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="president_id"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-1">
+                    <FormLabel className="text-[#111c30] dark:text-white  font-normal text-base">President</FormLabel>
+                    <span className="text-red-500 text-base">*</span>
+                  </div>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={!selectedGovernorId}>
+                      <SelectTrigger className="shad-select-trigger">
+                        <SelectValue placeholder={selectedGovernorId ? "Select President" : "Select Governor first"} />
+                      </SelectTrigger>
+                      <SelectContent className="shad-select-content">
+                        {filteredPresidentOptions.map((president: SelectOptions) => (
+                          <SelectItem key={president.value} value={president.value as unknown as string}>
+                            <div className="flex items-center cursor-pointer gap-3">
+                              <p>{president.name}</p>
                             </div>
                           </SelectItem>
                         ))}

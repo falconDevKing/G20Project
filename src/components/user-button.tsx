@@ -5,8 +5,8 @@ import { LogOut } from "lucide-react";
 // import { menuItems } from "../constants/index";
 import { LogoutButton } from "./forms/logout-button";
 // import { Link, useLocation } from "react-router-dom";
-import { setMenuType } from "@/redux/authSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+
+import { useAppSelector } from "@/redux/hooks";
 import { getFileUrl } from "@/services/storage";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
@@ -14,7 +14,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export const UserButton = () => {
   const user = useAppSelector((state) => state.auth.userDetails);
-  const dispatch = useAppDispatch();
 
   // const [isOpen, setIsOpen] = useState(false);
 
@@ -30,11 +29,6 @@ export const UserButton = () => {
 
   const filePath = user.image_url;
   const [fileUrlToUse, setFileUrlToUse] = useState<string>("");
-
-
-  const handleMenuSwitch = () => {
-    dispatch(setMenuType({ data: "personal" }))
-  }
 
   useEffect(() => {
     const updateFileUrl = async () => {
@@ -97,7 +91,7 @@ export const UserButton = () => {
     //   </DropdownMenuContent>
     // </DropdownMenu>
 
-    <div className="flex items-center justify-between rounded-md" onClick={handleMenuSwitch}>
+    <div className="flex items-center justify-between rounded-md">
       {/* Avatar */}
       <div className="flex items-center gap-3 cursor-pointer">
         <Link to="/profile">
@@ -116,7 +110,7 @@ export const UserButton = () => {
 
       {/* Logout Icon */}
       <Tooltip delayDuration={300}>
-        <TooltipTrigger  >
+        <TooltipTrigger>
           <LogoutButton>
             <LogOut className="h-5 w-5 text-white cursor-pointer hover:text-GGP-darkGold" />
           </LogoutButton>

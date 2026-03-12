@@ -2,8 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut, Moon, Sun, User, LayoutDashboard } from "lucide-react";
-import { setMenuType } from "@/redux/authSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppSelector } from "@/redux/hooks";
 import { getFileUrl } from "@/services/storage";
 import { useEffect, useState } from "react";
 import { useTheme } from "./themeProvider/theme-provider";
@@ -12,7 +11,6 @@ import { logOutUser } from "@/services/auth";
 export const UserButtonCode = ({ position = "justify-between" }: { position?: string }) => {
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.userDetails);
-  const dispatch = useAppDispatch();
   const { theme, toggleTheme } = useTheme();
 
   const getInitials = (surname: string, name: string) => {
@@ -25,10 +23,6 @@ export const UserButtonCode = ({ position = "justify-between" }: { position?: st
 
   const filePath = user.image_url;
   const [fileUrlToUse, setFileUrlToUse] = useState<string>("");
-
-  const handleMenuSwitch = () => {
-    dispatch(setMenuType({ data: "personal" }));
-  };
 
   const handleLogout = async () => {
     await logOutUser();
@@ -47,7 +41,7 @@ export const UserButtonCode = ({ position = "justify-between" }: { position?: st
   }, [filePath]);
 
   return (
-    <div className={`flex items-center ${position} rounded-md p-2 `} onClick={handleMenuSwitch}>
+    <div className={`flex items-center ${position} rounded-md p-2 `}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="flex items-center gap-3 rounded-md bg-black/70 px-3 py-2 text-white dark:bg-G20-darkGold">

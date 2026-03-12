@@ -1,6 +1,6 @@
 import { ErrorHandler, SuccessHandler } from "@/lib/toastHandlers";
 import store from "../redux/store";
-import { fetchDivisionsData, fetchChaptersData, fetchHoSEntitiesData, fetchGovernorEntitiesData, fetchPresidentEntitiesData } from "./appData";
+import { fetchDivisionsData, fetchChaptersData, fetchShepherdEntitiesData, fetchGovernorEntitiesData, fetchPresidentEntitiesData } from "./appData";
 import SupabaseClient from "@/supabase/supabaseConnection";
 import { PartnerUpdateType } from "@/supabase/modifiedSupabaseTypes";
 
@@ -13,7 +13,7 @@ const client = generateClient<Schema>();
 
 export const createEntity = async (label: string, data: Record<string, string>) => {
   try {
-    const { name, division_id, country, base_currency, hos_id, governor_id, rep_partner_id } = data;
+    const { name, division_id, country, base_currency, shepherd_id, governor_id, rep_partner_id } = data;
 
     switch (label) {
       case "Division": {
@@ -25,14 +25,14 @@ export const createEntity = async (label: string, data: Record<string, string>) 
         const createdChapter = await createChapter(name, division_id, country, base_currency);
         return createdChapter;
       }
-      case "HoS": {
-        return await createHoS(name, rep_partner_id);
+      case "Shepherd": {
+        return await createShepherd(name, rep_partner_id);
       }
       case "Governor": {
-        return await createGovernor(name, hos_id, rep_partner_id);
+        return await createGovernor(name, shepherd_id, rep_partner_id);
       }
       case "President": {
-        return await createPresident(name, hos_id, governor_id, rep_partner_id);
+        return await createPresident(name, shepherd_id, governor_id, rep_partner_id);
       }
 
       default:
@@ -46,7 +46,7 @@ export const createEntity = async (label: string, data: Record<string, string>) 
 
 export const updateEntity = async (label: string, data: Record<string, string>) => {
   try {
-    const { id, name, division_id, country, base_currency, hos_id, governor_id, rep_partner_id } = data;
+    const { id, name, division_id, country, base_currency, shepherd_id, governor_id, rep_partner_id } = data;
 
     switch (label) {
       case "Division": {
@@ -58,14 +58,14 @@ export const updateEntity = async (label: string, data: Record<string, string>) 
         const updatedChapter = await updateChapter(id, name, division_id, country, base_currency);
         return updatedChapter;
       }
-      case "HoS": {
-        return await updateHoS(id, name, rep_partner_id);
+      case "Shepherd": {
+        return await updateShepherd(id, name, rep_partner_id);
       }
       case "Governor": {
-        return await updateGovernor(id, name, hos_id, rep_partner_id);
+        return await updateGovernor(id, name, shepherd_id, rep_partner_id);
       }
       case "President": {
-        return await updatePresident(id, name, hos_id, governor_id, rep_partner_id);
+        return await updatePresident(id, name, shepherd_id, governor_id, rep_partner_id);
       }
 
       default:
@@ -88,7 +88,7 @@ export const createDivision = async (name: string) => {
         reps: [],
       })
       .select()
-      .single(); // Ensures you get a single row object instead of array
+      .single();
 
     if (error) {
       console.log("createDivision error", error);
@@ -102,6 +102,7 @@ export const createDivision = async (name: string) => {
     throw error;
   }
 };
+
 export const updateDivision = async (id: string, name: string) => {
   try {
     const { data: updatedDivision, error } = await SupabaseClient.from("division").update({ name }).eq("id", id).select().single();
@@ -127,10 +128,10 @@ export const createChapter = async (name: string, division_id: string, country: 
       .insert([
         {
           name,
-          division_id: division_id,
+          division_id,
           country,
-          base_currency: base_currency,
-          organisation_id: organisation_id,
+          base_currency,
+          organisation_id,
           reps: [],
         },
       ])
@@ -155,9 +156,9 @@ export const updateChapter = async (id: string, name: string, division_id: strin
     const { data: updatedChapter, error } = await SupabaseClient.from("chapter")
       .update({
         name,
-        division_id: division_id,
+        division_id,
         country,
-        base_currency: base_currency,
+        base_currency,
       })
       .eq("id", id)
       .select()
@@ -196,92 +197,95 @@ const setRepOpsPermission = async (repPartnerId: string, payload: PartnerUpdateT
   }
 };
 
-export const createHoS = async (name: string, rep_partner_id: string) => {
+export const createShepherd = async (name: string, rep_partner_id: string) => {
   const organisation_id = store.getState().app.organisation.id;
   const rep = await resolveRepObject(rep_partner_id);
-  const { data, error } = await SupabaseClient.from("hos")
+  const { data, error } = await SupabaseClient.from("shepherd")
     .insert({ name, organisation_id, rep_partner_id, reps: [rep] } as any)
     .select()
     .single();
   if (error) throw error;
-  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "hos", hos_id: data.id, governor_id: null, president_id: null });
-  await fetchHoSEntitiesData();
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "shepherd", shepherd_id: data.id, governor_id: null, president_id: null });
+  await fetchShepherdEntitiesData();
   return data;
 };
 
-export const updateHoS = async (id: string, name: string, rep_partner_id: string) => {
+export const updateShepherd = async (id: string, name: string, rep_partner_id: string) => {
   const rep = await resolveRepObject(rep_partner_id);
-  const { data, error } = await SupabaseClient.from("hos")
+  const { data, error } = await SupabaseClient.from("shepherd")
     .update({ name, rep_partner_id, reps: [rep] } as any)
     .eq("id", id)
     .select()
     .single();
   if (error) throw error;
-  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "hos", hos_id: id, governor_id: null, president_id: null });
-  await fetchHoSEntitiesData();
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "shepherd", shepherd_id: id, governor_id: null, president_id: null });
+  await fetchShepherdEntitiesData();
   return data;
 };
 
-export const createGovernor = async (name: string, hos_id: string, rep_partner_id: string) => {
+export const createGovernor = async (name: string, shepherd_id: string, rep_partner_id: string) => {
   const organisation_id = store.getState().app.organisation.id;
   const rep = await resolveRepObject(rep_partner_id);
   const { data, error } = await SupabaseClient.from("governor")
-    .insert({ name, organisation_id, hos_id, rep_partner_id, reps: [rep] } as any)
+    .insert({ name, organisation_id, shepherd_id, rep_partner_id, reps: [rep] } as any)
     .select()
     .single();
   if (error) throw error;
-  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "governor", hos_id, governor_id: data.id, president_id: null });
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "governor", shepherd_id, governor_id: data.id, president_id: null });
   await fetchGovernorEntitiesData();
   return data;
 };
 
-export const updateGovernor = async (id: string, name: string, hos_id: string, rep_partner_id: string) => {
+export const updateGovernor = async (id: string, name: string, shepherd_id: string, rep_partner_id: string) => {
   const rep = await resolveRepObject(rep_partner_id);
   const { data, error } = await SupabaseClient.from("governor")
-    .update({ name, hos_id, rep_partner_id, reps: [rep] } as any)
+    .update({ name, shepherd_id, rep_partner_id, reps: [rep] } as any)
     .eq("id", id)
     .select()
     .single();
   if (error) throw error;
-  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "governor", hos_id, governor_id: id, president_id: null });
+  await SupabaseClient.from("president").update({ shepherd_id }).eq("governor_id", id);
+  await SupabaseClient.from("partner").update({ shepherd_id }).eq("governor_id", id);
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "governor", shepherd_id, governor_id: id, president_id: null });
   await fetchGovernorEntitiesData();
   return data;
 };
 
-export const createPresident = async (name: string, hos_id: string, governor_id: string, rep_partner_id: string) => {
+export const createPresident = async (name: string, shepherd_id: string, governor_id: string, rep_partner_id: string) => {
   const organisation_id = store.getState().app.organisation.id;
   const rep = await resolveRepObject(rep_partner_id);
   const { data, error } = await SupabaseClient.from("president")
-    .insert({ name, organisation_id, hos_id, governor_id, rep_partner_id, reps: [rep] } as any)
+    .insert({ name, organisation_id, shepherd_id, governor_id, rep_partner_id, reps: [rep] } as any)
     .select()
     .single();
   if (error) throw error;
-  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "president", hos_id, governor_id, president_id: data.id });
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "president", shepherd_id, governor_id, president_id: data.id });
   await fetchPresidentEntitiesData();
   return data;
 };
 
-export const updatePresident = async (id: string, name: string, hos_id: string, governor_id: string, rep_partner_id: string) => {
+export const updatePresident = async (id: string, name: string, shepherd_id: string, governor_id: string, rep_partner_id: string) => {
   const rep = await resolveRepObject(rep_partner_id);
   const { data, error } = await SupabaseClient.from("president")
-    .update({ name, hos_id, governor_id, rep_partner_id, reps: [rep] } as any)
+    .update({ name, shepherd_id, governor_id, rep_partner_id, reps: [rep] } as any)
     .eq("id", id)
     .select()
     .single();
   if (error) throw error;
-  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "president", hos_id, governor_id, president_id: id });
+  await SupabaseClient.from("partner").update({ shepherd_id, governor_id }).eq("president_id", id);
+  await setRepOpsPermission(rep_partner_id, { ops_permission_type: "president", shepherd_id, governor_id, president_id: id });
   await fetchPresidentEntitiesData();
   return data;
 };
 
 export const assignPartnersToOperationalHierarchy = async ({
   partnerIds,
-  hos_id,
+  shepherd_id,
   governor_id,
   president_id,
 }: {
   partnerIds: string[];
-  hos_id: string;
+  shepherd_id: string;
   governor_id?: string;
   president_id?: string;
 }) => {
@@ -290,7 +294,7 @@ export const assignPartnersToOperationalHierarchy = async ({
   }
 
   const payload: PartnerUpdateType = {
-    hos_id,
+    shepherd_id,
     governor_id: governor_id || null,
     president_id: president_id || null,
   };
@@ -363,31 +367,16 @@ type ChapterOptionsType = {
 }[];
 
 export const resolvedTypedChapter = async (ChapterOptions: ChapterOptionsType, division_id: string, chapter_id: string) => {
-  // Resolve / create chapter
+  void division_id;
   let resolvedChapterId = chapter_id;
 
-  // 1. Do we already know this as an existing chapter?
   const existingChapter = ChapterOptions.find((c) => c.value === chapter_id || c.name.toLowerCase() === chapter_id.toLowerCase());
 
   if (existingChapter) {
     resolvedChapterId = existingChapter.value as string;
   } else {
-    if (!division_id) {
-      ErrorHandler("Please select a division before submitting");
-      throw new Error("Please select a division before submitting");
-    }
-
-    // 2. It is a new chapter name → create on the fly
-    const newChapterName = chapter_id.trim();
-
-    if (!newChapterName) {
-      ErrorHandler("Chapter name is required");
-      throw new Error("Chapter name is required");
-    }
-
-    const newChapter = await createChapter(newChapterName, division_id, "Nigeria", "NGN");
-
-    resolvedChapterId = newChapter.id;
+    ErrorHandler("Please select an existing chapter.");
+    throw new Error("Please select an existing chapter.");
   }
 
   return resolvedChapterId;

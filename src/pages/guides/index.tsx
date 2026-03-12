@@ -13,7 +13,7 @@ export const GuidesHome: React.FC = () => {
   const userDetails = useAppSelector((state) => state.auth.userDetails);
   const permission_type = userDetails.permission_type;
   const opsPermissionType = userDetails.ops_permission_type;
-  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "") || ["hos", "governor", "president"].includes(opsPermissionType || "");
+  const isAdmin = ["chapter", "division", "organisation"].includes(permission_type || "") || ["shepherd", "governor", "president"].includes(opsPermissionType || "");
   const divisionAdmin = ["division", "organisation"].includes(permission_type || "");
 
   const adminGuides = divisionAdmin ? [...chapterAdminGuides, ...divisionalAdminGuides] : chapterAdminGuides;

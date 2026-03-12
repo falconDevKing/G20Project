@@ -92,7 +92,7 @@ export type ChapterUpdateType = {
   updated_at?: string | null;
 };
 
-export type HoSRowType = {
+export type ShepherdRowType = {
   created_at: string | null;
   id: string;
   name: string;
@@ -101,7 +101,7 @@ export type HoSRowType = {
   reps?: Record<string, any>[] | null;
   updated_at: string | null;
 };
-export type HoSInsertType = {
+export type ShepherdInsertType = {
   created_at?: string | null;
   id?: string;
   name: string;
@@ -110,7 +110,7 @@ export type HoSInsertType = {
   reps?: Record<string, any>[] | null;
   updated_at?: string | null;
 };
-export type HoSUpdateType = {
+export type ShepherdUpdateType = {
   created_at?: string | null;
   id?: string;
   name?: string;
@@ -125,7 +125,7 @@ export type GovernorRowType = {
   id: string;
   name: string;
   organisation_id: string | null;
-  hos_id: string | null;
+  shepherd_id: string | null;
   rep_partner_id: string | null;
   reps?: Record<string, any>[] | null;
   updated_at: string | null;
@@ -135,7 +135,7 @@ export type GovernorInsertType = {
   id?: string;
   name: string;
   organisation_id?: string | null;
-  hos_id?: string | null;
+  shepherd_id?: string | null;
   rep_partner_id?: string | null;
   reps?: Record<string, any>[] | null;
   updated_at?: string | null;
@@ -145,7 +145,7 @@ export type GovernorUpdateType = {
   id?: string;
   name?: string;
   organisation_id?: string | null;
-  hos_id?: string | null;
+  shepherd_id?: string | null;
   rep_partner_id?: string | null;
   reps?: Record<string, any>[] | null;
   updated_at?: string | null;
@@ -156,7 +156,7 @@ export type PresidentRowType = {
   id: string;
   name: string;
   organisation_id: string | null;
-  hos_id: string | null;
+  shepherd_id: string | null;
   governor_id: string | null;
   rep_partner_id: string | null;
   reps?: Record<string, any>[] | null;
@@ -167,7 +167,7 @@ export type PresidentInsertType = {
   id?: string;
   name: string;
   organisation_id?: string | null;
-  hos_id?: string | null;
+  shepherd_id?: string | null;
   governor_id?: string | null;
   rep_partner_id?: string | null;
   reps?: Record<string, any>[] | null;
@@ -178,7 +178,7 @@ export type PresidentUpdateType = {
   id?: string;
   name?: string;
   organisation_id?: string | null;
-  hos_id?: string | null;
+  shepherd_id?: string | null;
   governor_id?: string | null;
   rep_partner_id?: string | null;
   reps?: Record<string, any>[] | null;
@@ -224,8 +224,8 @@ export type PartnerRowType = {
   paystack_monthly_payment_id: string | null;
   permission_access: string[] | null;
   permission_type: string | null;
-  ops_permission_type: "hos" | "governor" | "president" | null;
-  hos_id: string | null;
+  ops_permission_type: "shepherd" | "governor" | "president" | null;
+  shepherd_id: string | null;
   governor_id: string | null;
   president_id: string | null;
   phone_number: string | null;
@@ -283,8 +283,8 @@ export type PartnerInsertType = {
   paystack_monthly_payment_id?: string | null;
   permission_access?: string[] | null;
   permission_type?: string | null;
-  ops_permission_type?: "hos" | "governor" | "president" | null;
-  hos_id?: string | null;
+  ops_permission_type?: "shepherd" | "governor" | "president" | null;
+  shepherd_id?: string | null;
   governor_id?: string | null;
   president_id?: string | null;
   phone_number?: string | null;
@@ -342,8 +342,8 @@ export type PartnerUpdateType = {
   paystack_monthly_payment_id?: string | null;
   permission_access?: string[] | null;
   permission_type?: string | null;
-  ops_permission_type?: "hos" | "governor" | "president" | null;
-  hos_id?: string | null;
+  ops_permission_type?: "shepherd" | "governor" | "president" | null;
+  shepherd_id?: string | null;
   governor_id?: string | null;
   president_id?: string | null;
   phone_number?: string | null;
@@ -467,7 +467,7 @@ export type G20PaymentRowType = {
   organisation_id: string | null;
   division_id: string | null;
   chapter_id: string | null;
-  hos_id: string | null;
+  shepherd_id: string | null;
   governor_id: string | null;
   president_id: string | null;
   unique_code: string | null;
@@ -500,7 +500,7 @@ export type G20PaymentInsertType = {
   organisation_id?: string | null;
   division_id?: string | null;
   chapter_id?: string | null;
-  hos_id?: string | null;
+  shepherd_id?: string | null;
   governor_id?: string | null;
   president_id?: string | null;
   unique_code?: string | null;
@@ -533,7 +533,7 @@ export type G20PaymentUpdateType = {
   organisation_id?: string | null;
   division_id?: string | null;
   chapter_id?: string | null;
-  hos_id?: string | null;
+  shepherd_id?: string | null;
   governor_id?: string | null;
   president_id?: string | null;
   unique_code?: string | null;
@@ -696,7 +696,7 @@ export type ProposedPaymentScheduleRowType = {
   organisation_id: string | null;
   division_id: string | null;
   chapter_id: string | null;
-  hos_id: string | null;
+  shepherd_id: string | null;
   governor_id: string | null;
   president_id: string | null;
   email: string;
@@ -718,7 +718,7 @@ export type ProposedPaymentScheduleInsertType = {
   organisation_id?: string | null;
   division_id?: string | null;
   chapter_id?: string | null;
-  hos_id?: string | null;
+  shepherd_id?: string | null;
   governor_id?: string | null;
   president_id?: string | null;
   email: string;
@@ -740,7 +740,7 @@ export type ProposedPaymentScheduleUpdateType = {
   organisation_id?: string | null;
   division_id?: string | null;
   chapter_id?: string | null;
-  hos_id?: string | null;
+  shepherd_id?: string | null;
   governor_id?: string | null;
   president_id?: string | null;
   email?: string;

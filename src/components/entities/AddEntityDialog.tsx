@@ -21,7 +21,7 @@ import {
   createDivisionSchema,
   createChapterSchema,
   createGovernorSchema,
-  createHoSSchema,
+  createShepherdSchema,
   createPresidentSchema,
   genericToolsSchema,
 } from "@/lib/toolsSchemas";
@@ -50,7 +50,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
   const appState = useAppSelector((state) => state.app);
   const userId = useAppSelector((state) => state.auth.user_id);
 
-  const { DivisionOptions, HoSOptions, GovernorOptions } = initialiseAdminOptions(appState);
+  const { DivisionOptions, ShepherdOptions, GovernorOptions } = initialiseAdminOptions(appState);
 
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -58,7 +58,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
   const schemaOptions = {
     Chapter: createChapterSchema,
     Division: createDivisionSchema,
-    HoS: createHoSSchema,
+    Shepherd: createShepherdSchema,
     Governor: createGovernorSchema,
     President: createPresidentSchema,
   };
@@ -70,7 +70,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
     defaultValues: {
       name: "",
       division_id: "",
-      hos_id: "",
+      shepherd_id: "",
       governor_id: "",
       country: "",
       base_currency: "",
@@ -78,7 +78,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
     },
   });
 
-  const selectedHoS = form.watch("hos_id");
+  const selectedShepherd = form.watch("shepherd_id");
   // const selectedGovernor = form.watch("governor_id");
 
   const onSubmit = async (values: FormValues) => {
@@ -173,11 +173,11 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
             {["Governor", "President"].includes(label) && (
               <FormField
                 control={form.control}
-                name={"hos_id"}
+                name={"shepherd_id"}
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center gap-1">
-                      <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">House Of Shepherds</FormLabel>
+                      <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">Shepherd</FormLabel>
                       <span className="text-red-500 text-base">*</span>
                     </div>
                     <FormControl>
@@ -190,13 +190,13 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
                         value={field.value}
                       >
                         <SelectTrigger className="shad-select-trigger">
-                          <SelectValue placeholder={`Select HoS`} />
+                          <SelectValue placeholder={`Select Shepherd`} />
                         </SelectTrigger>
                         <SelectContent className="shad-select-content">
-                          {HoSOptions.map((hos: SelectOptions) => (
-                            <SelectItem key={hos.value} value={hos.value as string}>
+                          {ShepherdOptions.map((shepherd: SelectOptions) => (
+                            <SelectItem key={shepherd.value} value={shepherd.value as string}>
                               <div className="flex items-center cursor-pointer gap-3">
-                                <p>{hos.name}</p>
+                                <p>{shepherd.name}</p>
                               </div>
                             </SelectItem>
                           ))}
@@ -225,7 +225,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
                           <SelectValue placeholder={`Select Governor`} />
                         </SelectTrigger>
                         <SelectContent className="shad-select-content">
-                          {GovernorOptions.filter((governor) => (selectedHoS ? governor.hos_id === selectedHoS : true)).map((governor: any) => (
+                          {GovernorOptions.filter((governor) => (selectedShepherd ? governor.shepherd_id === selectedShepherd : true)).map((governor: any) => (
                             <SelectItem key={governor.value} value={governor.value as string}>
                               <div className="flex items-center cursor-pointer gap-3">
                                 <p>{governor.name}</p>
@@ -241,7 +241,7 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
               />
             )}
 
-            {["HoS", "Governor", "President"].includes(label) && (
+            {["Shepherd", "Governor", "President"].includes(label) && (
               <FormField
                 control={form.control}
                 name={"rep_partner_id"}

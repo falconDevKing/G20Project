@@ -1,7 +1,7 @@
 import { ContainerFluid } from "@/components/containerFluid";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Church, Image, CirclePause, Workflow, UserRoundCog } from "lucide-react";
+import { Church, Image, CirclePause, UserRoundCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,14 +26,8 @@ const ToolsPage = () => {
       href: "/entities",
     },
     {
-      title: "Manage Operational Entities",
-      description: "Create and update HoS, Governors, and Presidents",
-      icon: Workflow,
-      href: "/operational-entities",
-    },
-    {
       title: "Assign Partners to Operational Reps",
-      description: "Assign selected or filtered partners to HoS/Governor/President",
+      description: "Assign selected or filtered partners to Shepherd/Governor/President",
       icon: UserRoundCog,
       href: "/operational-assignments",
     },

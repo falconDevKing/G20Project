@@ -34,6 +34,7 @@ interface DynamicFilterProps {
   name?: string;
   filterType: "Payment" | "Partner" | "Proposed";
   allow: "Individual" | "Admin";
+  permission_type?: string;
   paymentType: string;
   tableName?: string;
   updateTableData: (data: Record<string, any>[]) => void;
@@ -94,9 +95,9 @@ export const DynamicFilter = ({
   const pstPermission = String(user.permission_type || "").toLowerCase();
   const opsPermission = String(user.ops_permission_type || "").toLowerCase();
   const hasPstScope = ["division", "chapter"].includes(opsPermission);
-  const hasOpsScope = ["hos", "governor", "president"].includes(opsPermission);
+  const hasOpsScope = ["shepherd", "governor", "president"].includes(opsPermission);
   const pstScopeField = pstPermission === "division" ? "division_id" : pstPermission === "chapter" ? "chapter_id" : "";
-  const opsScopeField = opsPermission === "hos" ? "hos_id" : opsPermission === "governor" ? "governor_id" : opsPermission === "president" ? "president_id" : "";
+  const opsScopeField = opsPermission === "shepherd" ? "shepherd_id" : opsPermission === "governor" ? "governor_id" : opsPermission === "president" ? "president_id" : "";
 
   const filterOperatorsOptions = filterOperatorsOptionsCreator(pstPermission);
   const isPendingRemissions = paymentType === "pendingRemissions";
@@ -463,73 +464,70 @@ export const DynamicFilter = ({
                     ))}
                 </SelectContent>
               </Select>
-              {paymentType === "PartnerSearchSelect" ? (
-                ""
-              ) : (
-                <>
-                  {isPendingRemissions ? (
-                    ""
-                  ) : (
-                    <Select
-                      onValueChange={(value) => {
-                        updateEqualsFilter("status", value);
-                      }}
-                      value={getFilterValue("status") as string}
-                    >
-                      <SelectTrigger className="w-[140px] shad-select-trigger">
-                        <SelectValue placeholder="Select Status" />
-                      </SelectTrigger>
-                      <SelectContent className="shad-select-content">
-                        {statusOptionsToUse.map((status) => (
-                          <SelectItem key={status.value || "all"} value={status.value}>
-                            {status.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
 
-                  {filterType === "Payment" && (
-                    <Select
-                      onValueChange={(value) => {
-                        updateEqualsFilter("online_payment", value);
-                      }}
-                      value={getFilterValue("online_payment") as string}
-                    >
-                      <SelectTrigger className="w-[140px] shad-select-trigger">
-                        <SelectValue placeholder={"Online Payment"} />
-                      </SelectTrigger>
-                      <SelectContent className="shad-select-content">
-                        {activeRecurringRemissionFilterOptions.map((status) => (
-                          <SelectItem key={status.value} value={status.value}>
-                            {status.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
+              <>
+                {isPendingRemissions ? (
+                  ""
+                ) : (
+                  <Select
+                    onValueChange={(value) => {
+                      updateEqualsFilter("status", value);
+                    }}
+                    value={getFilterValue("status") as string}
+                  >
+                    <SelectTrigger className="w-[140px] shad-select-trigger">
+                      <SelectValue placeholder="Select Status" />
+                    </SelectTrigger>
+                    <SelectContent className="shad-select-content">
+                      {statusOptionsToUse.map((status) => (
+                        <SelectItem key={status.value || "all"} value={status.value}>
+                          {status.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
 
-                  {filterType === "Partner" && (
-                    <Select
-                      onValueChange={(value) => {
-                        updateEqualsFilter("g20_active_recurring_remission", value);
-                      }}
-                      value={getFilterValue("g20_active_recurring_remission") as string}
-                    >
-                      <SelectTrigger className="w-[140px] shad-select-trigger">
-                        <SelectValue placeholder={"Automated Remissions"} />
-                      </SelectTrigger>
-                      <SelectContent className="shad-select-content">
-                        {activeRecurringRemissionFilterOptions.map((status) => (
-                          <SelectItem key={status.value} value={status.value}>
-                            {status.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </>
-              )}
+                {filterType === "Payment" && paymentType !== "PartnerSearchSelect" && (
+                  <Select
+                    onValueChange={(value) => {
+                      updateEqualsFilter("online_payment", value);
+                    }}
+                    value={getFilterValue("online_payment") as string}
+                  >
+                    <SelectTrigger className="w-[140px] shad-select-trigger">
+                      <SelectValue placeholder={"Online Payment"} />
+                    </SelectTrigger>
+                    <SelectContent className="shad-select-content">
+                      {activeRecurringRemissionFilterOptions.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+
+                {filterType === "Partner" && paymentType !== "PartnerSearchSelect" && (
+                  <Select
+                    onValueChange={(value) => {
+                      updateEqualsFilter("g20_active_recurring_remission", value);
+                    }}
+                    value={getFilterValue("g20_active_recurring_remission") as string}
+                  >
+                    <SelectTrigger className="w-[140px] shad-select-trigger">
+                      <SelectValue placeholder={"Automated Remissions"} />
+                    </SelectTrigger>
+                    <SelectContent className="shad-select-content">
+                      {activeRecurringRemissionFilterOptions.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </>
             </div>
           )}
         </div>

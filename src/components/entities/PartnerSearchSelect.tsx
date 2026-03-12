@@ -11,12 +11,12 @@ type PartnerSearchSelectProps = {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  hosId?: string;
+  shepherdId?: string;
   governorId?: string;
   presidentId?: string;
 };
 
-export const PartnerSearchSelect = ({ value, onChange, placeholder = "Search partner", hosId, governorId, presidentId }: PartnerSearchSelectProps) => {
+export const PartnerSearchSelect = ({ value, onChange, placeholder = "Search partner", shepherdId, governorId, presidentId }: PartnerSearchSelectProps) => {
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState<PartnerRowType[]>([]);
   const [tableDataCount, setTableDataCount] = useState(1);
@@ -28,11 +28,11 @@ export const PartnerSearchSelect = ({ value, onChange, placeholder = "Search par
   const lockedFilters = useMemo<FilterType[]>(
     () =>
       [
-        hosId ? { field: "hos_id", operator: "Equals", value: hosId } : null,
+        shepherdId ? { field: "shepherd_id", operator: "Equals", value: shepherdId } : null,
         governorId ? { field: "governor_id", operator: "Equals", value: governorId } : null,
         presidentId ? { field: "president_id", operator: "Equals", value: presidentId } : null,
       ].filter(Boolean) as FilterType[],
-    [hosId, governorId, presidentId],
+    [shepherdId, governorId, presidentId],
   );
 
   const options = useMemo(
@@ -65,7 +65,7 @@ export const PartnerSearchSelect = ({ value, onChange, placeholder = "Search par
   useEffect(() => {
     setPage(1);
     setRefreshData((prev) => prev + 1);
-  }, [hosId, governorId, presidentId]);
+  }, [shepherdId, governorId, presidentId]);
 
   useEffect(() => {
     if (!value) {

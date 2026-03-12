@@ -19,7 +19,7 @@ import {
   createDivisionSchema,
   createChapterSchema,
   createGovernorSchema,
-  createHoSSchema,
+  createShepherdSchema,
   createPresidentSchema,
   genericToolsSchema,
 } from "@/lib/toolsSchemas";
@@ -52,8 +52,8 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
   const userId = useAppSelector((state) => state.auth.user_id);
   const appState = useAppSelector((state) => state.app);
   const { DivisionOptions } = initialiseOptions(appState);
-  const HoSOptions = (appState.hosEntities || []).map((hos) => ({ value: hos.id, name: hos.name }));
-  const GovernorOptions = (appState.governorEntities || []).map((governor) => ({ value: governor.id, name: governor.name, hos_id: governor.hos_id || "" }));
+  const ShepherdOptions = (appState.shepherdEntities || []).map((shepherd) => ({ value: shepherd.id, name: shepherd.name }));
+  const GovernorOptions = (appState.governorEntities || []).map((governor) => ({ value: governor.id, name: governor.name, shepherd_id: governor.shepherd_id || "" }));
 
   // const [entity, setEntity] = useState<Record<string, any>>({});
   const [isPending, setIsPending] = useState(false);
@@ -62,7 +62,7 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
     Chapter: createChapterSchema,
 
     Division: createDivisionSchema,
-    HoS: createHoSSchema,
+    Shepherd: createShepherdSchema,
     Governor: createGovernorSchema,
     President: createPresidentSchema,
   };
@@ -75,14 +75,14 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
       id: entityData?.id || "",
       name: entityData?.name || "",
       division_id: entityData?.division_id || "",
-      hos_id: entityData?.hos_id || "",
+      shepherd_id: entityData?.shepherd_id || "",
       governor_id: entityData?.governor_id || "",
       country: entityData?.country || "",
       base_currency: entityData?.base_currency || "",
       rep_partner_id: entityData?.rep_partner_id || "",
     },
   });
-  const selectedHoS = form.watch("hos_id");
+  const selectedShepherd = form.watch("shepherd_id");
   const selectedGovernor = form.watch("governor_id");
 
   const onSubmit = async () => {
@@ -187,10 +187,10 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
             {["Governor", "President"].includes(label) && (
               <FormField
                 control={form.control}
-                name={"hos_id"}
+                name={"shepherd_id"}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">House Of Shepherds</FormLabel>
+                    <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Shepherd</FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={(value) => {
@@ -201,13 +201,13 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
                         value={field.value}
                       >
                         <SelectTrigger className="shad-select-trigger">
-                          <SelectValue placeholder={`Select HoS`} />
+                          <SelectValue placeholder={`Select Shepherd`} />
                         </SelectTrigger>
                         <SelectContent className="shad-select-content">
-                          {HoSOptions.map((hos: SelectOptions) => (
-                            <SelectItem key={hos.value} value={hos.value as string}>
+                          {ShepherdOptions.map((shepherd: SelectOptions) => (
+                            <SelectItem key={shepherd.value} value={shepherd.value as string}>
                               <div className="flex items-center cursor-pointer gap-3">
-                                <p>{hos.name}</p>
+                                <p>{shepherd.name}</p>
                               </div>
                             </SelectItem>
                           ))}
@@ -233,7 +233,7 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
                           <SelectValue placeholder={`Select Governor`} />
                         </SelectTrigger>
                         <SelectContent className="shad-select-content">
-                          {GovernorOptions.filter((governor) => (selectedHoS ? governor.hos_id === selectedHoS : true)).map((governor: any) => (
+                          {GovernorOptions.filter((governor) => (selectedShepherd ? governor.shepherd_id === selectedShepherd : true)).map((governor: any) => (
                             <SelectItem key={governor.value} value={governor.value as string}>
                               <div className="flex items-center cursor-pointer gap-3">
                                 <p>{governor.name}</p>
@@ -249,7 +249,7 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
               />
             )}
 
-            {["HoS", "Governor", "President"].includes(label) && (
+            {["Shepherd", "Governor", "President"].includes(label) && (
               <FormField
                 control={form.control}
                 name={"rep_partner_id"}
@@ -261,7 +261,7 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
                         value={field.value || ""}
                         onChange={field.onChange}
                         placeholder="Search and select rep partner"
-                        hosId={["Governor", "President"].includes(label) ? selectedHoS || "" : ""}
+                        shepherdId={["Governor", "President"].includes(label) ? selectedShepherd || "" : ""}
                         governorId={label === "President" ? selectedGovernor || "" : ""}
                       />
                     </FormControl>

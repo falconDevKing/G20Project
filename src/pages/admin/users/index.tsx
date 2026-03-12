@@ -93,7 +93,6 @@ const Users = () => {
         open={openUpdate}
         setOpen={setOpenUpdate}
         setUser={setUser}
-        permission_type={permission_type}
         setRefreshData={setRefreshData}
       />
 
@@ -102,7 +101,6 @@ const Users = () => {
         open={openMigrate}
         setOpen={setOpenMigrate}
         setUser={setUser}
-        permission_type={permission_type}
         setRefreshData={setRefreshData}
       />
     </div>
