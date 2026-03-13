@@ -2,6 +2,7 @@ import LandingHeader from "@/components/homePage/landingHeader";
 import Hero from "@/components/homePage/hero";
 import About from "@/components/homePage/about";
 import Category from "@/components/homePage/category";
+import PartnerBenefits from "@/components/homePage/partnerBenefits";
 import Requirements from "@/components/homePage/requirements";
 import Banner from "@/components/homePage/banner";
 import Benefits from "@/components/homePage/benefits";
@@ -18,6 +19,8 @@ export default function G20LandingPage() {
       <About />
 
       <Category />
+
+      <PartnerBenefits />
 
       <Requirements />
 

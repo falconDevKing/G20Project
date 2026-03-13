@@ -1,5 +1,6 @@
-import { GhostButton, PrimaryButton } from "../customIcons";
+import { PrimaryButton } from "../customIcons";
 import G20Crest from "@/assets/generalAppAssets/G20_logo.png";
+import { OfflineBankDetails } from "./offlinePaymentDetails";
 
 type NavItem = { label: string; href: string };
 
@@ -41,9 +42,7 @@ const LandingHeader = () => {
           </nav>
 
           <div className="flex items-center gap-2">
-            <GhostButton href="/paymentButton" className="hidden sm:inline-flex">
-              Give now
-            </GhostButton>
+            <OfflineBankDetails />
             <PrimaryButton href="/login">Login</PrimaryButton>
           </div>
         </div>

@@ -6,23 +6,33 @@ type Feature = { title: string; body: string; icon?: React.ReactNode };
 
 const benefits: Feature[] = [
   {
-    title: "Fulfilling the Kingdom mandate",
-    body: "Play an active role in taking the Gospel to all nations through deliberate partnership.",
-    icon: <CheckCircle className="h-5 w-5" />,
-  },
-  {
-    title: "Create eternal value",
-    body: "Your partnership translates into lasting spiritual impact and kingdom advancement.",
-    icon: <CheckCircle className="h-5 w-5" />,
-  },
-  {
-    title: "Build a lasting legacy",
-    body: "Leave a footprint of faith, love, and generosity that outlives you.",
-    icon: <CheckCircle className="h-5 w-5" />,
-  },
-  {
     title: "Personalised support",
-    body: "Receive dedicated assistance for enquiries, guidance, and partner-related requests.",
+    body: "Enjoy dedicated assistance for enquiries, updates, and partner-related requests from the team.",
+    icon: <CheckCircle className="h-5 w-5" />,
+  },
+  {
+    title: "Profile management",
+    body: "Update your personal details easily and keep your information accurate and current.",
+    icon: <CheckCircle className="h-5 w-5" />,
+  },
+  {
+    title: "Consistency tracker",
+    body: "Monitor your commitment through the year with a visual tracker that helps you stay consistent.",
+    icon: <CheckCircle className="h-5 w-5" />,
+  },
+  {
+    title: "Remission history",
+    body: "Access a complete record of your remissions from the beginning, all in one place.",
+    icon: <CheckCircle className="h-5 w-5" />,
+  },
+  {
+    title: "Offline payment logging",
+    body: "Record and track offline payments directly on the platform for easier reconciliation.",
+    icon: <CheckCircle className="h-5 w-5" />,
+  },
+  {
+    title: "Automated payment control",
+    body: "Manage recurring remissions by updating amounts, changing cards, or pausing and resuming payments when needed.",
     icon: <CheckCircle className="h-5 w-5" />,
   },
 ];
@@ -32,7 +42,7 @@ const Benefits = () => {
     <SectionShell
       eyebrow="Benefits"
       title="Benefits of signing up"
-      subtitle="Partnership should be simple, clear, and well supported."
+      subtitle="Your G20 account gives you the tools to stay organised, consistent, and well supported."
       className="bg-[#0a1220]"
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

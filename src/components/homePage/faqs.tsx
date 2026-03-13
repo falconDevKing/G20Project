@@ -7,24 +7,52 @@ type FAQ = { q: string; a: string };
 
 const faqs: FAQ[] = [
   {
-    q: "What is the difference between GGP and G20?",
-    a: "GGP is a monthly partnership structure focused on consistent kingdom advancement. G20 is a higher-tier annual partnership for those committed to bearing greater financial responsibility in funding major global Gospel projects.",
+    q: "What is G20?",
+    a: "G20 is a higher-tier partnership community within the broader global vision, designed for men and women committed to bearing greater financial responsibility for major Gospel projects, kingdom expansion, and strategic impact.",
   },
   {
     q: "Who can become a G20 partner?",
-    a: "Men and women who are aligned with the mandate, meet the requirements, and can commit at least NGN 1,000,000 annually with clarity and intention.",
+    a: "Anyone with a heart for the Gospel who aligns with the mandate and can commit to the G20 annual partnership threshold can become a partner.",
   },
   {
-    q: "Can I partner from outside Nigeria?",
-    a: "Yes. International partners can join and remit in equivalent local currency through the platform's available options.",
+    q: "Do I need to be a member of Gospel Pillars Ministry to become a G20 partner?",
+    a: "No. G20 welcomes partners from different regions and backgrounds who believe in the vision and want to stand with the mandate.",
   },
   {
-    q: "Can I adjust my partnership commitment?",
-    a: "Yes. As your capacity grows, you are encouraged to step up to higher levels of partnership with intentional review.",
+    q: "How much do I need to give to be a partner?",
+    a: "G20 partnership is structured in annual categories, beginning from NGN 1,000,000 per year, so you can choose a level that matches your capacity and conviction.",
   },
   {
-    q: "Will I receive updates?",
-    a: "Yes. Partners receive communications and updates from the Prophet's office and the partnership team.",
+    q: "What happens to my partnership seed?",
+    a: "Your giving supports major Gospel projects, media outreach, strategic kingdom assignments, and humanitarian impact connected to the wider vision.",
+  },
+  {
+    q: "How often do I give: monthly or one-time?",
+    a: "G20 is built around an annual commitment, but remittance can be fulfilled in scheduled payments through the platform based on the structure approved for your partnership.",
+  },
+  {
+    q: "How do I make my partnership payments?",
+    a: "You can remit through the official G20 platform using the available online payment options, and approved offline payments can also be logged for reconciliation.",
+  },
+  {
+    q: "Will I receive updates on how my partnership is used?",
+    a: "Yes. Partners receive regular updates, communication, and impact stories from the partnership team and the Prophet's office.",
+  },
+  {
+    q: "Can I change or upgrade my partnership level?",
+    a: "Absolutely. As your faith and financial capacity grow, you can review and move to a higher G20 category.",
+  },
+  {
+    q: "What are the spiritual benefits of being a G20 partner?",
+    a: "G20 partnership offers spiritual alignment with the mandate, dedicated prayers, kingdom impact, and the privilege of standing with a vision larger than yourself.",
+  },
+  {
+    q: "Is my giving tax-deductible?",
+    a: "This may vary by country or region. Kindly check with the appropriate authority in your location for clarity on the treatment of charitable or ministry giving.",
+  },
+  {
+    q: "How can I get more information or assistance?",
+    a: "You can reach the G20 support team through the official contact channels provided on the platform for guidance, payment help, or partnership enquiries.",
   },
 ];
 

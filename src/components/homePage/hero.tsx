@@ -14,9 +14,10 @@ import HeroBackgroundSeven from "@/assets/heroImages/Prop 9.jpg";
 import HeroBackgroundEight from "@/assets/heroImages/Prop 3.jpg";
 import HeroBackgroundNine from "@/assets/heroImages/Prop 7.jpg";
 import HeroBackgroundTen from "@/assets/heroImages/Prop 6.jpg";
-import HeroBackgroundEleven from "@/assets/heroImages/newBgPic11.jpeg";
+import HeroBackgroundEleven from "@/assets/heroImages/newBgPic12.jpeg";
 
-import { GhostButton, PrimaryButton } from "../customIcons";
+import { PrimaryButton } from "../customIcons";
+import { OfflineBankDetails } from "./offlinePaymentDetails";
 
 const heroImages = [
   HeroBackgroundOne,
@@ -89,9 +90,7 @@ const Hero = () => {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <PrimaryButton href="/register">Join the G20</PrimaryButton>
-              <GhostButton href="/paymentButton" className="hidden sm:inline-flex">
-                Give now
-              </GhostButton>
+              <OfflineBankDetails />
             </div>
 
             <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
