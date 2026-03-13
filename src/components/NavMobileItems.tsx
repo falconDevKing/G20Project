@@ -20,13 +20,11 @@ export const NavMobileItems = () => {
 
   const permission_type = auth.userDetails.permission_type;
   const opsPermissionType = auth.userDetails.ops_permission_type;
-  const isAdmin =
-    ["chapter", "division", "organisation"].includes(permission_type || "") || ["shepherd", "governor", "president"].includes(opsPermissionType || "");
-  const isChapterAdmin = permission_type === "chapter";
+  const isAdmin = ["division", "organisation"].includes(permission_type || "") || ["shepherd", "governor", "president"].includes(opsPermissionType || "");
 
   const SideBarLink = AdminViews;
   const filteredLinks = SideBarLink.filter((link) => link.name && (isAdmin ? true : !!link?.allowIndividual));
-  const filteredAdminLinks = filteredLinks.filter((link) => link.name && (isChapterAdmin ? !!link?.allowChapter : true));
+  const filteredAdminLinks = filteredLinks.filter((link) => link.name);
 
   return (
     <>

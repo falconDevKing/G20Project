@@ -299,20 +299,22 @@ const filterDataBasedOnPermission = (user: PartnerRowType | DummyObject, divisio
       break;
   }
 
-  if (opsPermission === "shepherd") {
-    filteredShepherds = shepherdEntities.filter((h) => h.id === user.shepherd_id);
-    filteredGovernors = governorEntities.filter((g) => g.shepherd_id === user.shepherd_id);
-    filteredPresidents = presidentEntities.filter((p) => p.shepherd_id === user.shepherd_id);
-  } else if (opsPermission === "governor") {
-    filteredGovernors = governorEntities.filter((g) => g.id === user.governor_id);
-    const governor = filteredGovernors[0];
-    filteredShepherds = governor ? shepherdEntities.filter((h) => h.id === governor.shepherd_id) : [];
-    filteredPresidents = presidentEntities.filter((p) => p.governor_id === user.governor_id);
-  } else if (opsPermission === "president") {
-    filteredPresidents = presidentEntities.filter((p) => p.id === user.president_id);
-    const president = filteredPresidents[0];
-    filteredGovernors = president ? governorEntities.filter((g) => g.id === president.governor_id) : [];
-    filteredShepherds = president ? shepherdEntities.filter((h) => h.id === president.shepherd_id) : [];
+  if (user.permission_type?.toLowerCase() !== "organisation") {
+    if (opsPermission === "shepherd") {
+      filteredShepherds = shepherdEntities.filter((h) => h.id === user.shepherd_id);
+      filteredGovernors = governorEntities.filter((g) => g.shepherd_id === user.shepherd_id);
+      filteredPresidents = presidentEntities.filter((p) => p.shepherd_id === user.shepherd_id);
+    } else if (opsPermission === "governor") {
+      filteredGovernors = governorEntities.filter((g) => g.id === user.governor_id);
+      const governor = filteredGovernors[0];
+      filteredShepherds = governor ? shepherdEntities.filter((h) => h.id === governor.shepherd_id) : [];
+      filteredPresidents = presidentEntities.filter((p) => p.governor_id === user.governor_id);
+    } else if (opsPermission === "president") {
+      filteredPresidents = presidentEntities.filter((p) => p.id === user.president_id);
+      const president = filteredPresidents[0];
+      filteredGovernors = president ? governorEntities.filter((g) => g.id === president.governor_id) : [];
+      filteredShepherds = president ? shepherdEntities.filter((h) => h.id === president.shepherd_id) : [];
+    }
   }
 
   return {

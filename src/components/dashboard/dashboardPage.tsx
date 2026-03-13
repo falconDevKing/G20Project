@@ -76,7 +76,7 @@ export default function DashboardCom() {
   const opsPermissionType = user.ops_permission_type || "";
   const chapterId = user.chapter_id || "";
   const chapterCurrency = findChapterDetails(chapterId)?.currency || "NGN";
-  const isAdmin = ["chapter", "division", "organisation"].includes(permissionType) || ["shepherd", "governor", "president"].includes(opsPermissionType);
+  const isAdmin = ["division", "organisation"].includes(permissionType) || ["shepherd", "governor", "president"].includes(opsPermissionType);
 
   const { scheduleYear } = useMemo(() => getNextOct30Window(), []);
 
@@ -124,7 +124,7 @@ export default function DashboardCom() {
         header: "Status",
       },
       {
-        accessorKey: "payment_method",
+        accessorKey: "payment_channel",
         header: "Channel",
         cell: ({ row }) => CapitaliseText(row.original.payment_channel || "") || "-",
       },
@@ -183,13 +183,13 @@ export default function DashboardCom() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F4EA] dark:bg-[#101114]">
+    <div className="min-h-screen bg-[#F8F4EA] dark:bg-G20-surface">
       <G20DashboardHeader />
 
       <div className="px-4 md:px-12 lg:px-24 py-6 space-y-6">
         <section className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
           <div>
-            <h1 className="text-2xl md:text-3xl font-semibold text-[#1E1E1E] dark:text-white">Welcome, {user.first_name || "Partner"}</h1>
+            <h1 className="text-2xl md:text-3xl font-semibold text-[#1E1E1E] dark:text-white">Welcome, Honourable {user.first_name || "Partner"}</h1>
             <p className="text-[#475467] dark:text-gray-300 mt-1 max-w-2xl">Keep track of your commitments, payments, and proposed schedule in one place.</p>
           </div>
 

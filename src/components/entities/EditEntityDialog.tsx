@@ -33,7 +33,6 @@ import { updateEntity } from "@/services/tools";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
 import { refreshLoggedInUser } from "@/services/auth";
 import { triggerChapterMembersMigration } from "@/services/triggerChapterMembersMigration";
-import { PartnerSearchSelect } from "./PartnerSearchSelect";
 import { fetchUsersByEntity } from "@/services/appData";
 
 type FormValues = z.infer<typeof genericToolsSchema>;
@@ -53,7 +52,11 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
   const appState = useAppSelector((state) => state.app);
   const { DivisionOptions } = initialiseOptions(appState);
   const ShepherdOptions = (appState.shepherdEntities || []).map((shepherd) => ({ value: shepherd.id, name: shepherd.name }));
-  const GovernorOptions = (appState.governorEntities || []).map((governor) => ({ value: governor.id, name: governor.name, shepherd_id: governor.shepherd_id || "" }));
+  const GovernorOptions = (appState.governorEntities || []).map((governor) => ({
+    value: governor.id,
+    name: governor.name,
+    shepherd_id: governor.shepherd_id || "",
+  }));
 
   // const [entity, setEntity] = useState<Record<string, any>>({});
   const [isPending, setIsPending] = useState(false);
@@ -79,11 +82,9 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
       governor_id: entityData?.governor_id || "",
       country: entityData?.country || "",
       base_currency: entityData?.base_currency || "",
-      rep_partner_id: entityData?.rep_partner_id || "",
     },
   });
   const selectedShepherd = form.watch("shepherd_id");
-  const selectedGovernor = form.watch("governor_id");
 
   const onSubmit = async () => {
     try {
@@ -91,7 +92,7 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
       const values = form.watch();
       const { id, division_id } = values;
       await updateEntity(label, values);
-      if (id && division_id && entityData.division_id !== division_id) {
+      if (label === "Chapter" && id && division_id && entityData.division_id !== division_id) {
         const params = {
           chapterId: id,
           newDivisionId: division_id,
@@ -148,14 +149,14 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
                 <FormItem>
                   <FormLabel className="capitalize text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Name</FormLabel>
                   <FormControl>
-                    <Input className="focus-visible:ring-0 focus-visible:ring-offset-0" placeholder={`Enter name`} {...field} />
+                    <Input className="focus-visible:ring-0 focus-visible:ring-offset-0 dark:border-white/60" placeholder={`Enter name`} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {["Chapter"].includes(label) && (
+            {["Chapter", "Shepherd"].includes(label) && (
               <FormField
                 control={form.control}
                 name={"division_id"}
@@ -242,28 +243,6 @@ export default function EditItemDialog({ label, entityData, open, setOpen, setEn
                           ))}
                         </SelectContent>
                       </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            {["Shepherd", "Governor", "President"].includes(label) && (
-              <FormField
-                control={form.control}
-                name={"rep_partner_id"}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Rep Partner</FormLabel>
-                    <FormControl>
-                      <PartnerSearchSelect
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        placeholder="Search and select rep partner"
-                        shepherdId={["Governor", "President"].includes(label) ? selectedShepherd || "" : ""}
-                        governorId={label === "President" ? selectedGovernor || "" : ""}
-                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

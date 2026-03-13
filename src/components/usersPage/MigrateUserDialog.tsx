@@ -56,7 +56,7 @@ export default function MigrateUserDialog({ userData, open, setOpen, setUser, se
 
   const filteredGovernorOptions = GovernorOptions.filter((governor) => governor.shepherd_id === selectedShepherdId);
   const filteredPresidentOptions = PresidentOptions.filter(
-    (president) => president.shepherd_id === selectedShepherdId && president.governor_id === selectedGovernorId
+    (president) => president.shepherd_id === selectedShepherdId && president.governor_id === selectedGovernorId,
   );
 
   const onSubmit = async (values: FormValues) => {
@@ -209,13 +209,13 @@ export default function MigrateUserDialog({ userData, open, setOpen, setUser, se
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1">
-                    <FormLabel className="text-[#111c30] dark:text-white  font-normal text-base">President</FormLabel>
+                    <FormLabel className="text-[#111c30] dark:text-white  font-normal text-base">House</FormLabel>
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
                     <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={!selectedGovernorId}>
                       <SelectTrigger className="shad-select-trigger">
-                        <SelectValue placeholder={selectedGovernorId ? "Select President" : "Select Governor first"} />
+                        <SelectValue placeholder={selectedGovernorId ? "Select House" : "Select Governor first"} />
                       </SelectTrigger>
                       <SelectContent className="shad-select-content">
                         {filteredPresidentOptions.map((president: SelectOptions) => (

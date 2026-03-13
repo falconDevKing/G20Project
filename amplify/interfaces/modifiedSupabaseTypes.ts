@@ -107,6 +107,7 @@ export type PartnerRowType = {
   id: string;
   image_url: string | null;
   last_name: string;
+  marriage_anniversary: string | null;
   middle_name: string | null;
   name: string | null;
   name_code: string | null;
@@ -147,6 +148,7 @@ export type PartnerInsertType = {
   id?: string;
   image_url?: string | null;
   last_name: string;
+  marriage_anniversary?: string | null;
   middle_name?: string | null;
   name?: string | null;
   name_code?: string | null;
@@ -187,6 +189,7 @@ export type PartnerUpdateType = {
   id?: string;
   image_url?: string | null;
   last_name?: string;
+  marriage_anniversary?: string | null;
   middle_name?: string | null;
   name?: string | null;
   name_code?: string | null;

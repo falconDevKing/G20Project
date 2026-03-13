@@ -94,6 +94,7 @@ export type ChapterUpdateType = {
 
 export type ShepherdRowType = {
   created_at: string | null;
+  division_id: string | null;
   id: string;
   name: string;
   organisation_id: string | null;
@@ -103,6 +104,7 @@ export type ShepherdRowType = {
 };
 export type ShepherdInsertType = {
   created_at?: string | null;
+  division_id?: string | null;
   id?: string;
   name: string;
   organisation_id?: string | null;
@@ -112,6 +114,7 @@ export type ShepherdInsertType = {
 };
 export type ShepherdUpdateType = {
   created_at?: string | null;
+  division_id?: string | null;
   id?: string;
   name?: string;
   organisation_id?: string | null;
@@ -122,6 +125,7 @@ export type ShepherdUpdateType = {
 
 export type GovernorRowType = {
   created_at: string | null;
+  division_id: string | null;
   id: string;
   name: string;
   organisation_id: string | null;
@@ -132,6 +136,7 @@ export type GovernorRowType = {
 };
 export type GovernorInsertType = {
   created_at?: string | null;
+  division_id?: string | null;
   id?: string;
   name: string;
   organisation_id?: string | null;
@@ -142,6 +147,7 @@ export type GovernorInsertType = {
 };
 export type GovernorUpdateType = {
   created_at?: string | null;
+  division_id?: string | null;
   id?: string;
   name?: string;
   organisation_id?: string | null;
@@ -153,6 +159,7 @@ export type GovernorUpdateType = {
 
 export type PresidentRowType = {
   created_at: string | null;
+  division_id: string | null;
   id: string;
   name: string;
   organisation_id: string | null;
@@ -164,6 +171,7 @@ export type PresidentRowType = {
 };
 export type PresidentInsertType = {
   created_at?: string | null;
+  division_id?: string | null;
   id?: string;
   name: string;
   organisation_id?: string | null;
@@ -175,6 +183,7 @@ export type PresidentInsertType = {
 };
 export type PresidentUpdateType = {
   created_at?: string | null;
+  division_id?: string | null;
   id?: string;
   name?: string;
   organisation_id?: string | null;
@@ -479,7 +488,6 @@ export type G20PaymentRowType = {
   currency: string;
   status: string;
   payment_channel: string | null;
-  payment_method: string | null;
   payment_reference: string | null;
   receipt_url: string | null;
   proof_file_path: string | null;
@@ -512,7 +520,6 @@ export type G20PaymentInsertType = {
   currency?: string;
   status?: string;
   payment_channel?: string | null;
-  payment_method?: string | null;
   payment_reference?: string | null;
   receipt_url?: string | null;
   proof_file_path?: string | null;
@@ -545,7 +552,6 @@ export type G20PaymentUpdateType = {
   currency?: string;
   status?: string;
   payment_channel?: string | null;
-  payment_method?: string | null;
   payment_reference?: string | null;
   receipt_url?: string | null;
   proof_file_path?: string | null;

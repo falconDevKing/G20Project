@@ -17,20 +17,18 @@ export const createChapterSchema = z.object({
 
 export const createShepherdSchema = z.object({
   name: z.string().min(3, { message: "Name is required and must be longer than 3 characters" }),
-  rep_partner_id: z.string().min(1, { message: "You must select a rep" }),
+  division_id: z.string().min(1, { message: "You must select a division" }),
 });
 
 export const createGovernorSchema = z.object({
   name: z.string().min(3, { message: "Name is required and must be longer than 3 characters" }),
   shepherd_id: z.string().min(1, { message: "You must select Shepherd" }),
-  rep_partner_id: z.string().min(1, { message: "You must select a rep" }),
 });
 
 export const createPresidentSchema = z.object({
   name: z.string().min(3, { message: "Name is required and must be longer than 3 characters" }),
   shepherd_id: z.string().min(1, { message: "You must select Shepherd" }),
   governor_id: z.string().min(1, { message: "You must select Governor" }),
-  rep_partner_id: z.string().min(1, { message: "You must select a rep" }),
 });
 
 export const genericToolsSchema = z.object({
@@ -54,14 +52,10 @@ export const opsAssignmentSchema = z.object({
 export const updateUserSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Name is required"),
+  chapter_id: z.string().optional(),
   g20_category: z.string().min(1, "G20 Category is required"),
+  g20_amount: z.coerce.number().int().positive("Amount is required"),
   ops_permission_type: z.string(),
-  shepherd_id: z.string().optional(),
-  governor_id: z.string().optional(),
-  president_id: z.string().optional(),
-  custom_remission_start: z.boolean().optional(),
-  remission_start_date: z.string().optional().nullable(),
-  preferred_remission_day: z.string().optional().nullable(),
   // rep: z.string().optional(),
 });
 

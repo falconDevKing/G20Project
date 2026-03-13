@@ -24,7 +24,6 @@ create table if not exists public.g20_payments (
   status text not null default 'Pending',
 
   payment_channel text null,
-  payment_method text null,
   payment_reference text null,
   receipt_url text null,
   notes text null,

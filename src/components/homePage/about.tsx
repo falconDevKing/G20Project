@@ -1,4 +1,5 @@
-import G20ParliamentTable from "@/assets/generalAppAssets/G20_Table.jpg";
+// import G20ParliamentTable from "@/assets/generalAppAssets/G20_Table.jpg";
+import G20ParliamentTable from "@/assets/heroImages/newG20ParliamentTable.jpeg";
 
 import SectionShell from "./sectionShell";
 import { GhostButton, PrimaryButton } from "../customIcons";
@@ -51,7 +52,7 @@ const About = () => {
     <SectionShell id="about" eyebrow="Who we are" title="About G20" className="bg-[#0c1423]">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
         <div className="relative overflow-hidden rounded-3xl border border-[#2e3a55] bg-[#111c31]">
-          <img src={G20ParliamentTable} alt="G20 gathering" className="h-[360px] w-full object-cover" />
+          <img src={G20ParliamentTable} alt="G20 gathering" className="h-[428px] w-full object-cover" />
           <div className="absolute inset-0 bg-[#0b1120]/30" />
         </div>
 
@@ -77,7 +78,7 @@ const About = () => {
         {quotesDavid.map((q) => (
           <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-6">
             <div className="absolute left-0 top-0 h-full w-1 bg-[#d0aa56]" />
-            <p className="text-md leading-7 text-[#f0cf86]">"{q.text}"</p>
+            <p className="text-lg leading-7 text-[#f0cf86]">"{q.text}"</p>
             <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9] italic">{q.ref}</p>
           </div>
         ))}
@@ -93,13 +94,13 @@ const About = () => {
         {quotesJesus.map((q) => (
           <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-6">
             <div className="absolute left-0 top-0 h-full w-1 bg-[#d0aa56]" />
-            <p className="text-md leading-7 text-[#f0cf86]">"{q.text}"</p>
+            <p className="text-lg leading-7 text-[#f0cf86]">"{q.text}"</p>
             <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9] italic">{q.ref}</p>
           </div>
         ))}
 
         <div className="relative min-h-[160px] rounded-3xl border border-[#34415b] bg-[#1b2842] p-8">
-          <p className="text-base leading-8 text-[#dbe5f7]">
+          <p className="text-lg leading-8 text-[#dbe5f7]">
             In every generation, God raises men and women <span className="font-semibold text-[#f0cf86]">who stand with divine assignments.</span>
           </p>
           <p className="text-xl text-right font-semibold text-[#f0cf86]">Will you be one of them?</p>
@@ -108,7 +109,7 @@ const About = () => {
         {quotesPaul.map((q) => (
           <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-6">
             <div className="absolute left-0 top-0 h-full w-1 bg-[#d0aa56]" />
-            <p className="text-md leading-7 text-[#f0cf86] ">"{q.text}"</p>
+            <p className="text-lg leading-7 text-[#f0cf86] ">"{q.text}"</p>
             <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9] italic">{q.ref}</p>
           </div>
         ))}

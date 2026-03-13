@@ -26,8 +26,8 @@ const ToolsPage = () => {
       href: "/entities",
     },
     {
-      title: "Assign Partners to Operational Reps",
-      description: "Assign selected or filtered partners to Shepherd/Governor/President",
+      title: "Assign Honourables to Houses",
+      description: "Assign selected or filtered honourables to Shepherd/Governor/President",
       icon: UserRoundCog,
       href: "/operational-assignments",
     },

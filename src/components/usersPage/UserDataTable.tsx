@@ -68,10 +68,13 @@ export default function UserDataTable<T>({
             <TableRow key={headerGroup.id} className="bg-[#FFF8E5] dark:bg-[#CCA33D]">
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className={cn("text-[#171721] dark:text-white font-semibold px-7 text-sm md:text-base", header.id === 'Actions' ? 'text-center' : '')}>
+                  <TableHead
+                    key={header.id}
+                    className={cn("text-[#171721] dark:text-white font-semibold px-7 text-sm md:text-base", header.id === "Actions" ? "text-center" : "")}
+                  >
                     {flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
-                )
+                );
               })}
             </TableRow>
           ))}
@@ -91,8 +94,8 @@ export default function UserDataTable<T>({
                     e.stopPropagation();
                     selectRow(row);
                   }}
-                // className="text-green-500 border-0 border-l-4  border-green-500"
-                // className="hidden md:contents"
+                  // className="text-green-500 border-0 border-l-4  border-green-500"
+                  // className="hidden md:contents"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="px-7 py-4 text-xs md:text-sm">
@@ -101,7 +104,16 @@ export default function UserDataTable<T>({
                   ))}
                 </TableRow>
               ) : (
-                <MobileTableCard key={row.id} row={row} tableType="users" openMigrateDialog={openMigrateDialog} openUpdateDialog={openUpdateDialog} clickHandler={() => { selectRow(row) }} />
+                <MobileTableCard
+                  key={row.id}
+                  row={row}
+                  tableType="users"
+                  openMigrateDialog={openMigrateDialog}
+                  openUpdateDialog={openUpdateDialog}
+                  clickHandler={() => {
+                    selectRow(row);
+                  }}
+                />
               ),
             )
           ) : (

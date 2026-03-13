@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CheckCircle } from "lucide-react";
 import G20Logo from "@/assets/generalAppAssets/G20_logo.png";
-import HeroImage from "@/assets/generalAppAssets/GGP-hero.png";
+import HeroImage from "@/assets/generalAppAssets/ggp-hero.png";
 import AboutImage from "@/assets/generalAppAssets/G20_Table.jpg";
 import ProphetImage from "@/assets/generalAppAssets/prophet.png";
 import RequirementsImage from "@/assets/generalAppAssets/requirements.png";

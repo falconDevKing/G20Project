@@ -1,7 +1,16 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
-import { ChapterRowType, DivisionRowType, OrganisationRowType, PartnerRowType, G20PaymentRowType } from "@/supabase/modifiedSupabaseTypes";
+import {
+  ChapterRowType,
+  DivisionRowType,
+  OrganisationRowType,
+  PartnerRowType,
+  G20PaymentRowType,
+  GovernorRowType,
+  PresidentRowType,
+  ShepherdRowType,
+} from "@/supabase/modifiedSupabaseTypes";
 
 export const DoNothing = (_arg: any): void => {
   // no-op
@@ -119,9 +128,9 @@ export const allChaptersOption = { value: "all", name: "All Chapters", filt: "al
 export const initialiseAdminOptions = (appState: {
   adminDivisions: DivisionRowType[];
   adminChapters: ChapterRowType[];
-  adminShepherdEntities?: { id: string; name: string }[];
-  adminGovernorEntities?: { id: string; name: string; shepherd_id?: string | null }[];
-  adminPresidentEntities?: { id: string; name: string; governor_id?: string | null; shepherd_id?: string | null }[];
+  adminShepherdEntities?: { id: string; name: string; division_id?: string | null }[];
+  adminGovernorEntities?: { id: string; name: string; shepherd_id?: string | null; division_id?: string | null }[];
+  adminPresidentEntities?: { id: string; name: string; governor_id?: string | null; shepherd_id?: string | null; division_id?: string | null }[];
   organisation: OrganisationRowType | Record<string, any>;
 }) => {
   const { adminDivisions: divisions, adminChapters: chapters, organisation } = appState;
@@ -138,12 +147,20 @@ export const initialiseAdminOptions = (appState: {
       currency: chapter.base_currency as string,
     }))
     .sort((a, b) => (a.name < b.name ? -1 : 1));
-  const ShepherdOptions = shepherdEntities.map((shepherd) => ({ value: shepherd.id, name: shepherd.name })).sort((a, b) => (a.name < b.name ? -1 : 1));
+  const ShepherdOptions = shepherdEntities
+    .map((shepherd) => ({ value: shepherd.id, name: shepherd.name, division_id: shepherd.division_id || "" }))
+    .sort((a, b) => (a.name < b.name ? -1 : 1));
   const GovernorOptions = governorEntities
-    .map((governor) => ({ value: governor.id, name: governor.name, shepherd_id: governor.shepherd_id || "" }))
+    .map((governor) => ({ value: governor.id, name: governor.name, shepherd_id: governor.shepherd_id || "", division_id: governor.division_id || "" }))
     .sort((a, b) => (a.name < b.name ? -1 : 1));
   const PresidentOptions = presidentEntities
-    .map((president) => ({ value: president.id, name: president.name, governor_id: president.governor_id || "", shepherd_id: president.shepherd_id || "" }))
+    .map((president) => ({
+      value: president.id,
+      name: president.name,
+      governor_id: president.governor_id || "",
+      shepherd_id: president.shepherd_id || "",
+      division_id: president.division_id || "",
+    }))
     .sort((a, b) => (a.name < b.name ? -1 : 1));
 
   return {
@@ -161,8 +178,11 @@ export const initialiseDataList = (appState: {
   chapters: ChapterRowType[];
   organisation: OrganisationRowType | Record<string, any>;
   users: PartnerRowType[];
+  shepherdEntities: ShepherdRowType[];
+  governorEntities: GovernorRowType[];
+  presidentEntities: PresidentRowType[];
 }) => {
-  const { divisions, chapters, organisation, users } = appState;
+  const { divisions, chapters, organisation, users, shepherdEntities, governorEntities, presidentEntities } = appState;
 
   const modifiedDivisions = divisions
     .map((division) => ({
@@ -189,9 +209,48 @@ export const initialiseDataList = (appState: {
     ...user,
     name: `${user?.first_name || ""} ${user?.last_name || ""}`,
   }));
-  // .sort((a, b) => ((a?.createdAt || 0) < (b?.createdAt || 0) ? -1 : 1));
 
-  return { AppOrganisationId: organisation?.id || "", organisation, modifiedDivisions, modifiedChapters, modifiedUsers };
+  const modifiedShepherds = shepherdEntities
+    .map((shepherd) => ({
+      id: shepherd.id,
+      name: shepherd.name,
+      division_id: shepherd.division_id || "",
+      organisation_id: shepherd.organisation_id as string,
+      reps: shepherd.reps || [],
+    }))
+    .sort((a, b) => (a.name < b.name ? -1 : 1));
+  const modifiedGovernors = governorEntities
+    .map((governor) => ({
+      id: governor.id,
+      name: governor.name,
+      shepherd_id: governor.shepherd_id || "",
+      division_id: governor.division_id || "",
+      organisation_id: governor.organisation_id as string,
+      reps: governor.reps || [],
+    }))
+    .sort((a, b) => (a.name < b.name ? -1 : 1));
+  const modifiedPresidents = presidentEntities
+    .map((president) => ({
+      id: president.id,
+      name: president.name,
+      governor_id: president.governor_id || "",
+      shepherd_id: president.shepherd_id || "",
+      division_id: president.division_id || "",
+      organisation_id: president.organisation_id as string,
+      reps: president.reps || [],
+    }))
+    .sort((a, b) => (a.name < b.name ? -1 : 1));
+
+  return {
+    AppOrganisationId: organisation?.id || "",
+    organisation,
+    modifiedDivisions,
+    modifiedChapters,
+    modifiedUsers,
+    modifiedPresidents,
+    modifiedGovernors,
+    modifiedShepherds,
+  };
 };
 
 export const generateUniqueCode = ({ first_name, last_name }: { first_name: string; last_name: string }): string => {

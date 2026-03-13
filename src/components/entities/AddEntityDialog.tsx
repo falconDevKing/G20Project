@@ -35,7 +35,6 @@ import { createEntity } from "@/services/tools";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
 import FormTooltip from "../FormTooltips";
 import { refreshLoggedInUser } from "@/services/auth";
-import { PartnerSearchSelect } from "./PartnerSearchSelect";
 import { fetchUsersByEntity } from "@/services/appData";
 
 type FormValues = z.infer<typeof genericToolsSchema>;
@@ -74,7 +73,6 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
       governor_id: "",
       country: "",
       base_currency: "",
-      rep_partner_id: "",
     },
   });
 
@@ -131,14 +129,14 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
-                    <Input className="focus-visible:ring-0 focus-visible:ring-offset-0" placeholder={`Enter name`} {...field} />
+                    <Input className="focus-visible:ring-0 focus-visible:ring-offset-0 dark:border-white/60" placeholder={`Enter name`} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {["Chapter"].includes(label) && (
+            {["Chapter", "Shepherd"].includes(label) && (
               <FormField
                 control={form.control}
                 name={"division_id"}
@@ -234,31 +232,6 @@ export default function AddEntityDialog({ label }: Readonly<AddEntityProps>) {
                           ))}
                         </SelectContent>
                       </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            {["Shepherd", "Governor", "President"].includes(label) && (
-              <FormField
-                control={form.control}
-                name={"rep_partner_id"}
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center gap-1">
-                      <FormLabel className="text-[#111c30]  dark:text-white font-normal text-base">Rep Partner</FormLabel>
-                      <span className="text-red-500 text-base">*</span>
-                    </div>
-                    <FormControl>
-                      <PartnerSearchSelect
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        placeholder="Search and select rep partner"
-                        // hosId={["Governor", "President"].includes(label) ? selectedHoS || "" : ""}
-                        // governorId={label === "President" ? selectedGovernor || "" : ""}
-                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

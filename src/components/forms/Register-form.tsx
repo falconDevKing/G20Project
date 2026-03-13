@@ -9,12 +9,12 @@ import { useState } from "react";
 import { registerSchema } from "@/lib/schemas";
 import { CardWrapper } from "../Card-wapper";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { signIn, signUp } from "aws-amplify/auth";
+import { signUp } from "aws-amplify/auth";
 import { v4 as uuidV4 } from "uuid";
 import { RegisterNextStep, SelectOptions } from "@/interfaces/register";
 
 import { UserPermissionType } from "../../../API";
-import { createUniqueCode, createUser } from "@/services/auth";
+import { createUniqueCode, createUser, getLoggedInUser, logInuser } from "@/services/auth";
 import { useNavigate } from "react-router";
 import { useAppSelector } from "@/redux/hooks";
 import { initialiseOptions, monthsOfTheYearOptions, RemissionDayOptions } from "@/lib/utils";
@@ -44,6 +44,10 @@ export const RegisterForm = () => {
       division_id: "",
 
       chapter_id: "",
+      married: undefined,
+      anniversary_day: "",
+      anniversary_month: "",
+      president_id: "",
       password: "",
       phone_number: "",
       birth_day: "",
@@ -55,10 +59,31 @@ export const RegisterForm = () => {
   const [isPending, setIsPending] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const married = form.watch("married");
+  const selectedDivisionId = form.watch("division_id");
+  const selectedPresidentId = form.watch("president_id");
+  const filteredPresidents = (appState.presidentEntities || [])
+    .filter((president) => (selectedDivisionId ? president.division_id === selectedDivisionId : true))
+    .sort((a, b) => (a.name < b.name ? -1 : 1));
+  const selectedPresident = (appState.presidentEntities || []).find((president) => president.id === selectedPresidentId);
 
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     try {
-      const { last_name, first_name, email, division_id, chapter_id, password, phone_number, birth_day, birth_month } = values;
+      const {
+        last_name,
+        first_name,
+        email,
+        division_id,
+        chapter_id,
+        married,
+        anniversary_day,
+        anniversary_month,
+        president_id,
+        password,
+        phone_number,
+        birth_day,
+        birth_month,
+      } = values;
 
       // Additional form input check to avoid spamming
       if (values) {
@@ -100,6 +125,14 @@ export const RegisterForm = () => {
                   .date(parseInt(birth_day))
                   .toISOString()
               : null,
+          married: married === "Yes",
+          marriage_anniversary:
+            married === "Yes" && anniversary_month && anniversary_day
+              ? dayjs()
+                  .month(parseInt(anniversary_month) - 1)
+                  .date(parseInt(anniversary_day))
+                  .format("YYYY-MM-DD")
+              : null,
           cognito_user_id: user_id,
           g20_active: false,
           proposed_payment_scheduled: false,
@@ -110,6 +143,9 @@ export const RegisterForm = () => {
           division_id,
 
           chapter_id,
+          president_id: president_id || null,
+          governor_id: selectedPresident?.governor_id || null,
+          shepherd_id: selectedPresident?.shepherd_id || null,
           remission_start_date: new Date().toISOString().split("T")[0],
         };
 
@@ -125,16 +161,26 @@ export const RegisterForm = () => {
           await sendWelcomeMessage({ to: phone_number, name: first_name, ggp_code: unique_code });
         }
 
-        // CHECK COGNITO AUTH STATUS
+        let loggedInUser = await getLoggedInUser(email.replace(/\s+/g, ""));
+        if (!loggedInUser) {
+          try {
+            loggedInUser = await logInuser(email.replace(/\s+/g, ""), password);
+          } catch (autoSignInError) {
+            console.log("post registration auto sign in error", autoSignInError);
+          }
+        }
+
+        if (loggedInUser) {
+          SuccessHandler("Registration Successful");
+          navigate("/update", { state: { fromRegistration: true } });
+          return;
+        }
+
         switch (nextStep.signUpStep) {
           case RegisterNextStep.DONE:
-            SuccessHandler("Registration Successful");
-            await signIn({ username: email.replace(/\s+/g, ""), password });
-            navigate("/update");
-            break;
           case RegisterNextStep.COMPLETE_AUTO_SIGN_IN:
             SuccessHandler("Registration Successful");
-            navigate("/update");
+            navigate("/update", { state: { fromRegistration: true } });
             break;
           case RegisterNextStep.CONFIRM_SIGN_UP:
             SuccessHandler("Registration Successful");
@@ -289,6 +335,7 @@ export const RegisterForm = () => {
                       onValueChange={(value) => {
                         field.onChange(value);
                         form.setValue("chapter_id", "");
+                        form.setValue("president_id", "");
                       }}
                     >
                       <SelectTrigger className=" h-12" enforceWhite>
@@ -346,66 +393,195 @@ export const RegisterForm = () => {
             />
           </div>
 
-          <div className="w-full grid grid-cols-1">
-            <div className="w-full">
-              <div className="flex items-center gap-1 pb-2 w-full">
-                <FormLabel className="text-[#111c30] font-normal text-base">Birth Day</FormLabel>
-                <span className="text-red-500 text-base">*</span>
-              </div>
-              <div className="flex gap-x-1 w-full">
-                <FormField
-                  control={form.control}
-                  name="birth_month"
-                  render={({ field }) => (
-                    <FormItem className="w-full flex-1">
-                      <FormControl>
-                        <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger className="w-full h-12" enforceWhite>
-                            <SelectValue placeholder="Birth Month" />
-                          </SelectTrigger>
-                          <SelectContent className="shad-select-content">
-                            {monthsOfTheYearOptions.map((month: any) => (
-                              <SelectItem key={month.value} value={month.value}>
-                                <div className="flex items-center cursor-pointer gap-3">
-                                  <p>{month.name}</p>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          <div className="lg:grid grid-cols-2 gap-2 space-y-3 md:space-y-0">
+            <FormField
+              control={form.control}
+              name="president_id"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-1">
+                    <FormLabel className="text-[#111c30] font-normal text-base">House</FormLabel>
+                  </div>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={!selectedDivisionId}>
+                      <SelectTrigger className="h-12" enforceWhite>
+                        <SelectValue placeholder={selectedDivisionId ? "Select a House (Optional)" : "Select your Division first"} />
+                      </SelectTrigger>
+                      <SelectContent className="shad-select-content">
+                        {filteredPresidents.map((president) => (
+                          <SelectItem key={president.id} value={president.id}>
+                            <div className="flex items-center cursor-pointer gap-3">
+                              <p>{president.name}</p>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <>
+              <div className="w-full grid grid-cols-1">
+                <div className="w-full">
+                  <div className="flex items-center gap-1 pb-2 w-full">
+                    <FormLabel className="text-[#111c30] font-normal text-base">Birth Day</FormLabel>
+                    <span className="text-red-500 text-base">*</span>
+                  </div>
+                  <div className="flex gap-x-1 w-full">
+                    <FormField
+                      control={form.control}
+                      name="birth_month"
+                      render={({ field }) => (
+                        <FormItem className="w-full flex-1">
+                          <FormControl>
+                            <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
+                              <SelectTrigger className="w-full h-12" enforceWhite>
+                                <SelectValue placeholder="Birth Month" />
+                              </SelectTrigger>
+                              <SelectContent className="shad-select-content">
+                                {monthsOfTheYearOptions.map((month: any) => (
+                                  <SelectItem key={month.value} value={month.value}>
+                                    <div className="flex items-center cursor-pointer gap-3">
+                                      <p>{month.name}</p>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="birth_day"
-                  render={({ field }) => (
-                    <FormItem className="w-full flex-1">
-                      <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                          <SelectTrigger className="w-full h-12" allowDark={false} enforceWhite>
-                            <SelectValue placeholder="Birth Day" />
-                          </SelectTrigger>
-                          <SelectContent className="shad-select-content">
-                            {RemissionDayOptions.map((RemissionDay: string) => (
-                              <SelectItem key={RemissionDay} value={RemissionDay}>
-                                <div className="flex items-center cursor-pointer gap-3">
-                                  <p>{RemissionDay}</p>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="birth_day"
+                      render={({ field }) => (
+                        <FormItem className="w-full flex-1">
+                          <FormControl>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                              <SelectTrigger className="w-full h-12" allowDark={false} enforceWhite>
+                                <SelectValue placeholder="Birth Day" />
+                              </SelectTrigger>
+                              <SelectContent className="shad-select-content">
+                                {RemissionDayOptions.map((RemissionDay: string) => (
+                                  <SelectItem key={RemissionDay} value={RemissionDay}>
+                                    <div className="flex items-center cursor-pointer gap-3">
+                                      <p>{RemissionDay}</p>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
+            </>
+          </div>
+
+          <div className={`md:grid ${married === "Yes" ? "md:grid-cols-2" : "md:grid-cols-1"} gap-2 space-y-3 md:space-y-0`}>
+            <FormField
+              control={form.control}
+              name="married"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-1">
+                    <FormLabel className="text-[#111c30] font-normal text-base">Married</FormLabel>
+                    <span className="text-red-500 text-base">*</span>
+                  </div>
+                  <FormControl>
+                    <Select disabled={isPending} value={field.value} defaultValue={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="h-12" enforceWhite>
+                        <SelectValue placeholder="Select an option" />
+                      </SelectTrigger>
+                      <SelectContent className="shad-select-content">
+                        {[
+                          { name: "Yes", value: "Yes" },
+                          { name: "No", value: "No" },
+                        ].map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            <div className="flex items-center cursor-pointer gap-3">
+                              <p>{option.name}</p>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {married === "Yes" && (
+              <div className="">
+                <div className="flex items-center gap-1 pb-2">
+                  <FormLabel className="text-[#111c30] font-normal text-base">Wedding Anniversary</FormLabel>
+                  <span className="text-red-500 text-base">*</span>
+                </div>
+                <div className="flex gap-x-1">
+                  <FormField
+                    control={form.control}
+                    name="anniversary_month"
+                    render={({ field }) => (
+                      <FormItem className="w-full flex-1">
+                        <FormControl>
+                          <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
+                            <SelectTrigger className="w-full h-12" enforceWhite>
+                              <SelectValue placeholder="Anniversary Month" />
+                            </SelectTrigger>
+                            <SelectContent className="shad-select-content">
+                              {monthsOfTheYearOptions.map((month: SelectOptions) => (
+                                <SelectItem key={month.value} value={month.value as string}>
+                                  <div className="flex items-center cursor-pointer gap-3">
+                                    <p>{month.name}</p>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="anniversary_day"
+                    render={({ field }) => (
+                      <FormItem className="w-full flex-1">
+                        <FormControl>
+                          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                            <SelectTrigger className="w-full h-12" enforceWhite>
+                              <SelectValue placeholder="Day" />
+                            </SelectTrigger>
+                            <SelectContent className="shad-select-content">
+                              {RemissionDayOptions.map((day: string) => (
+                                <SelectItem key={day} value={day}>
+                                  <div className="flex items-center cursor-pointer gap-3">
+                                    <p>{day}</p>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className=" grid grid-cols-1 space-y-3 md:space-y-0  md:grid-cols-2 gap-x-2">

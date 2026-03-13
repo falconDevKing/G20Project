@@ -10,10 +10,10 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        custom: "bg-GGP-darkGold text-white hover:bg-GGP-darkGold/90",
-        // custom: "bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-GGP-lightGold to-GGP-darkGold text-GGP-dark hover:from-GGP-darkGold hover:to-GGP-lightGold",
+        custom: "bg-G20-darkGold text-white hover:bg-G20-darkGold/90",
+        // custom: "bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-G20-lightGold to-G20-darkGold text-G20-dark hover:from-G20-darkGold hover:to-G20-lightGold",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline2: "border border-gray-600/60 bg-background shadow-sm hover:bg-GGP-darkGold/25 hover:text-accent-foreground",
+        outline2: "border border-gray-600/60 bg-background shadow-sm hover:bg-G20-darkGold/25 hover:text-accent-foreground",
         outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",

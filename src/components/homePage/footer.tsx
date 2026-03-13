@@ -1,26 +1,39 @@
+import { useAppSelector } from "@/redux/hooks";
+
 type ContactCard = { title: string; lines: string[]; hrefs?: { label: string; href: string }[] };
 
-const contacts: ContactCard[] = [
-  {
-    title: "Contact",
-    lines: ["info@globalgospelpartnership.org"],
-    hrefs: [{ label: "Email", href: "mailto:info@globalgospelpartnership.org" }],
-  },
-  {
-    title: "Address",
-    lines: ["Capital House, 47 Rushey Green, London, SE6 4AS"],
-  },
-  {
-    title: "Phone",
-    lines: [],
-    hrefs: [
-      { label: "Call +44 7840 303 710", href: "tel:+447840303710" },
-      { label: "Call +44 7727 683 097", href: "tel:+447727683097" },
-    ],
-  },
-];
+const locationPhoneNumber: Record<string, string> = {
+  NGN: "+234 906 671 0879",
+  CAD: "+1 647-803-5088",
+  USD: "+1 469-597-6952",
+  GBP: "+44 7840 303 710, +44 7727 683 097",
+  GHS: "+233 500 599002",
+  ZAR: "+27 747 784040",
+  EUR: "+44 7840 303 710, +44 7727 683 097",
+  USDAF: "+1 469-597-6952",
+};
 
 const Footer = () => {
+  const { locationCurrency, fallbackCurrency } = useAppSelector((state) => state?.app);
+  const contacts: ContactCard[] = [
+    {
+      title: "Contact",
+      lines: ["info@globalgospelpartnership.org"],
+      hrefs: [{ label: "Email", href: "mailto:info@globalgospelpartnership.org" }],
+    },
+    {
+      title: "Address",
+      lines: ["Partnership Office,", "The Ark of Light for all Nations.", "Plot 11 Kudirat Abiola Way, Alausa, Ikeja, Lagos, Nigeria"],
+    },
+    {
+      title: "Phone",
+      lines: [],
+      hrefs: (locationPhoneNumber[locationCurrency] || locationPhoneNumber[fallbackCurrency])
+        .split(", ")
+        .map((phone) => ({ label: `Call ${phone}`, href: `tel:${phone}` })),
+    },
+  ];
+
   return (
     <footer id="contact" className="border-t border-[#29334a] bg-[#0f1728] px-24">
       <div className="mx-auto px-4 py-14 sm:px-6 lg:px-8">
@@ -47,7 +60,7 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="mt-12 border-t border-[#29334a] pt-8 text-center text-sm text-[#9eb0d2]">© {new Date().getFullYear()}. All rights reserved.</div>
+        <div className="mt-12 border-t border-[#29334a] pt-8 text-center text-sm text-[#9eb0d2]">ï¿½ {new Date().getFullYear()}. All rights reserved.</div>
       </div>
     </footer>
   );

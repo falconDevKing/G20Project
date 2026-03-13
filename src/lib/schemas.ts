@@ -10,6 +10,10 @@ export const registerSchema = z
     // partner_type: z.string().min(1, { message: "You must select a Partner Type" }),
     birth_day: z.string().min(1, { message: "You must select a birth day" }),
     birth_month: z.string().min(1, { message: "You must select a birth month Type" }),
+    married: z.enum(["Yes", "No"], { message: "Please select an option" }),
+    anniversary_day: z.string().optional(),
+    anniversary_month: z.string().optional(),
+    president_id: z.string().optional(),
     // date_of_birth: z
     //   .string()
     //   .min(1, { message: "Your Birth date is required" }) // Now required as a string
@@ -35,6 +39,15 @@ export const registerSchema = z
     confirm_password: z.string().min(8, { message: "Confirm password is required" }),
     accept_terms: z.boolean().refine((val) => val === true, { message: "You must accept the terms and conditions" }),
   })
+  .superRefine((data, ctx) => {
+    if (data.married === "Yes" && (!data.anniversary_day || !data.anniversary_month)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Marriage anniversary is required",
+        path: ["anniversary_day"],
+      });
+    }
+  })
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match",
     path: ["confirm_password"],
@@ -42,11 +55,18 @@ export const registerSchema = z
 
 export const g20UpdateAuthSchema = z
   .object({
-    married: z.enum(["Yes", "No"], { message: "Please select an option" }),
-    // marriage_anniversary: z.string().optional(),
-
+    first_name: z.string().min(1, { message: "First name is required" }),
+    last_name: z.string().min(1, { message: "Last name is required" }),
+    phone_number: z
+      .string()
+      .min(1, { message: "Phone Number is required" })
+      .refine((phone) => /^\+\d{10,15}$/.test(phone), "Invalid phone number"),
+    birth_day: z.string().min(1, { message: "You must select a birth day" }),
+    birth_month: z.string().min(1, { message: "You must select a birth month" }),
+    married: z.enum(["Yes", "No"]).optional(),
     anniversary_day: z.string().optional(),
     anniversary_month: z.string().optional(),
+    require_married: z.boolean().default(true),
 
     g20_category: z.string().min(1, { message: "You must select a G20 Category" }),
     g20_amount: z.coerce.number().int().positive("Amount is required"),
@@ -59,7 +79,15 @@ export const g20UpdateAuthSchema = z
     }),
   })
   .superRefine((data, ctx) => {
-    if (data.married === "Yes" && (!data.anniversary_day || !data.anniversary_month)) {
+    if (data.require_married && !data.married) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Please select an option",
+        path: ["married"],
+      });
+    }
+
+    if (data.require_married && data.married === "Yes" && (!data.anniversary_day || !data.anniversary_month)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Marriage anniversary is required",

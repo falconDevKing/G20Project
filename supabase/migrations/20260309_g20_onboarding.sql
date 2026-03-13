@@ -6,7 +6,7 @@ alter table public.partner
   add column if not exists married boolean,
   add column if not exists voluntary_participation boolean,
   add column if not exists attestation boolean,
-  add column if not exists marriage_anniversary date,
+  add column if not exists marriage_anniversary text,
   add column if not exists g20_category text,
   add column if not exists g20_amount bigint,
   add column if not exists motivation text;
@@ -18,7 +18,7 @@ create table if not exists public.proposed_payment_schedule (
   schedule_year int not null,
   schedule_index int not null,
   proposed_amount bigint not null,
-  proposed_date date not null,
+  proposed_date timestamp with time zone null,
   unique_code text,
   organisation_id uuid,
   division_id uuid,

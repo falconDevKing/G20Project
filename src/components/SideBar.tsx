@@ -13,17 +13,15 @@ export const SideBar = () => {
 
   const permission_type = auth.userDetails.permission_type;
   const opsPermissionType = auth.userDetails.ops_permission_type;
-  const isAdmin =
-    ["chapter", "division", "organisation"].includes(permission_type || "") || ["shepherd", "governor", "president"].includes(opsPermissionType || "");
-  const isChapterAdmin = permission_type === "chapter";
+  const isAdmin = ["division", "organisation"].includes(permission_type || "") || ["shepherd", "governor", "president"].includes(opsPermissionType || "");
 
   // const [search, setSearch] = useState("");
   const SideBarLink = AdminViews;
   const filteredLinks = SideBarLink.filter((link) => link.name && (isAdmin ? true : !!link?.allowIndividual));
-  const filteredAdminLinks = filteredLinks.filter((link) => link.name && (isChapterAdmin ? !!link?.allowChapter : true));
+  const filteredAdminLinks = filteredLinks.filter((link) => link.name);
 
   return (
-    <section className="fixed top-0 left-0 lg:w-[312px] w-full h-screen flex flex-col justify-between bg-[#1E1E1E] px-6 py-2 max-lg:hidden border-r dark border-gray-100/10 z-20">
+    <section className="fixed top-0 left-0 lg:w-[312px] w-full h-screen flex flex-col justify-between bg-G20-surface px-6 py-2 max-lg:hidden border-r dark border-gray-100/10 z-20">
       {/* Logo */}
       <Link to={"/"} className="flex items-center gap-3 p-2 z-80">
         <img src={Logo} alt="GGP Logo" className="h-[80px] w-auto" />

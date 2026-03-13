@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { AuthInput } from "../ui/authInput";
 
 import Logo from "../../assets/G20_logo.png";
+import dayjs from "dayjs";
 
 const breakdownOptions = Array.from({ length: 12 }, (_, index) => index + 1);
 
@@ -205,8 +206,9 @@ export const ProposedScheduleForm = () => {
             </div>
           </div>
 
-          <div className="text-xs text-gray-500">
-            Proposed Dates can only be selected from {minDate} to {maxDate}.
+          <div className="text-sm text-gray-500">
+            Proposed Dates can only be selected from <>{dayjs(minDate).format("MMMM DD")} to</>
+            <>{dayjs(maxDate).format("MMMM DD")}.</>
           </div>
 
           <Button disabled={isPending} className="w-full text-sm cursor-pointer" size="lg" variant="custom" type="submit">

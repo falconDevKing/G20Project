@@ -23,3 +23,10 @@ GENERATED ALWAYS AS (
     ) || COALESCE(unique_code, ''::text)
   )
 ) STORED;
+
+-- Add generated marriage_anniversary_mmdd to partner
+ALTER TABLE public.partner
+ADD COLUMN IF NOT EXISTS marriage_anniversary_mmdd text
+GENERATED ALWAYS AS (
+  substring(marriage_anniversary FROM 6 FOR 5)
+) STORED;

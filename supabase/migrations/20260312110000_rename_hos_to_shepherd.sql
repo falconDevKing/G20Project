@@ -35,7 +35,7 @@ create trigger trg_shepherd_updated_at
 before update on public.shepherd
 for each row execute function public.set_updated_at();
 
-drop function if exists public.validate_governor_hierarchy();
+-- drop function if exists public.validate_governor_hierarchy();
 create or replace function public.validate_governor_hierarchy()
 returns trigger
 language plpgsql
@@ -57,7 +57,7 @@ begin
 end;
 $$;
 
-drop function if exists public.validate_president_hierarchy();
+-- drop function if exists public.validate_president_hierarchy();
 create or replace function public.validate_president_hierarchy()
 returns trigger
 language plpgsql
@@ -84,7 +84,7 @@ begin
 end;
 $$;
 
-drop function if exists public.validate_partner_operational_assignment();
+-- drop function if exists public.validate_partner_operational_assignment();
 create or replace function public.validate_partner_operational_assignment()
 returns trigger
 language plpgsql

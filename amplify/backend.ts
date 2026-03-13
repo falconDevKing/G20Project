@@ -12,11 +12,13 @@ import { storage } from "./storage/resource";
 
 import { sendEmail } from "./functions/sendEmail/resource";
 import { userBirthdayMail } from "./functions/userBirthdayMail/resource";
+import { userWeddingAnniversaryMail } from "./functions/userWeddingAnniversaryMail/resource";
 import { adminBirthdayMail } from "./functions/adminBirthdayMail/resource";
 import { updateUserStatus } from "./functions/updateUserStatus/resource";
 import { sendUserMessages } from "./functions/sendUserMessages/resource";
 import { createPendingPayments } from "./functions/createPendingPayments/resource";
 import { processPendingPayments } from "./functions/processPendingPayments/resource";
+import { sendProposedPaymentReminders } from "./functions/sendProposedPaymentReminders/resource";
 import { handleChargedPayments } from "./functions/handleChargedPayments/resource";
 import { migrateChapterMembers } from "./functions/migrateChapterMembers/resource";
 import { triggerChapterMembersMigraton } from "./functions/triggerChapterMembersMigraton/resource";
@@ -26,10 +28,12 @@ import { backUpData } from "./functions/backUpData/resource";
 
 import { backUpBucketStack } from "./subStacks/backupStack";
 import { configureUserBirthdayWorkflow } from "./subStacks/userBirthdayWorkFlow";
+import { configureUserWeddingAnniversaryWorkflow } from "./subStacks/userWeddingAnniversaryWorkFlow";
 import { configureUpdateUserStatusWorkflow } from "./subStacks/updateUserStatusWorkFlow";
 import { configureAdminBirthdayWorkflow } from "./subStacks/adminBirthdayWorkFlow";
 import { configureCreatePendingPaymentsWorkflow } from "./subStacks/createPendingPaymentsWorkFlow";
 import { configureProcessPendingPaymentsWorkflow } from "./subStacks/processPendingPaymentsWorkFlow";
+import { configureProposedPaymentRemindersWorkflow } from "./subStacks/proposedPaymentRemindersWorkFlow";
 import { configureMigrateChapterMembersWorkflow } from "./subStacks/migrateChapterMembersWorkFlow";
 import { sendWhatsapp } from "./functions/sendWhatsapp/resource";
 import { handleStripeWebhook } from "./functions/handleStripeWebhook/resource";
@@ -49,11 +53,13 @@ const backend = defineBackend({
   sendEmail,
   sendWhatsapp,
   userBirthdayMail,
+  userWeddingAnniversaryMail,
   adminBirthdayMail,
   updateUserStatus,
   sendUserMessages,
   createPendingPayments,
   processPendingPayments,
+  sendProposedPaymentReminders,
   handleChargedPayments,
   migrateChapterMembers,
   postPaymentProcessor,
@@ -72,11 +78,13 @@ const lambdaNames: lambdaResourcesKeys[] = [
   "sendEmail",
   "sendWhatsapp",
   "userBirthdayMail",
+  "userWeddingAnniversaryMail",
   "adminBirthdayMail",
   "updateUserStatus",
   "sendUserMessages",
   "createPendingPayments",
   "processPendingPayments",
+  "sendProposedPaymentReminders",
   "handleChargedPayments",
   "migrateChapterMembers",
   "postPaymentProcessor",
@@ -113,10 +121,12 @@ handlePaymentsBELambda.addFunctionUrl({
 });
 
 const userBirthdayMailLambda = backend.userBirthdayMail.resources.lambda as NodejsFunction;
+const userWeddingAnniversaryMailLambda = backend.userWeddingAnniversaryMail.resources.lambda as NodejsFunction;
 const adminBirthdayMailLambda = backend.adminBirthdayMail.resources.lambda as NodejsFunction;
 const updateUserStatusLambda = backend.updateUserStatus.resources.lambda as NodejsFunction;
 const createPendingPaymentsLambda = backend.createPendingPayments.resources.lambda as NodejsFunction;
 const processPendingPaymentsLambda = backend.processPendingPayments.resources.lambda as NodejsFunction;
+const sendProposedPaymentRemindersLambda = backend.sendProposedPaymentReminders.resources.lambda as NodejsFunction;
 const migrateChapterMembersLambda = backend.migrateChapterMembers.resources.lambda as NodejsFunction;
 const triggerChapterMembersMigratonLambda = backend.triggerChapterMembersMigraton.resources.lambda as NodejsFunction;
 const postPaymentReceiverLambda = backend.postPaymentReceiver.resources.lambda as NodejsFunction;
@@ -132,6 +142,12 @@ configureUserBirthdayWorkflow({
   stack: customResourceStack,
   stackName: projectName,
   userBirthdayMailLambda,
+});
+
+configureUserWeddingAnniversaryWorkflow({
+  stack: customResourceStack,
+  stackName: projectName,
+  userWeddingAnniversaryMailLambda,
 });
 
 configureUpdateUserStatusWorkflow({
@@ -156,6 +172,12 @@ configureProcessPendingPaymentsWorkflow({
   stack: customResourceStack,
   stackName: projectName,
   processPendingPaymentsLambda,
+});
+
+configureProposedPaymentRemindersWorkflow({
+  stack: customResourceStack,
+  stackName: projectName,
+  sendProposedPaymentRemindersLambda,
 });
 
 const { migrateChapterMembersStateMachine } = configureMigrateChapterMembersWorkflow({

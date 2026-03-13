@@ -15,7 +15,7 @@ const Users = () => {
   const userDetails = useAppSelector((state) => state.auth.userDetails);
 
   const permission_type = userDetails.permission_type || "";
-  const { modifiedDivisions, modifiedChapters } = initialiseDataList(appState);
+  const { modifiedDivisions, modifiedChapters, modifiedShepherds, modifiedGovernors, modifiedPresidents } = initialiseDataList(appState);
 
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openMigrate, setOpenMigrate] = useState(false);
@@ -77,7 +77,15 @@ const Users = () => {
           data={tableData}
           customText=""
           count={tableDataCount}
-          columns={userColumns(modifiedDivisions, modifiedChapters, openMigrateDialog, openUpdateDialog)}
+          columns={userColumns(
+            modifiedDivisions,
+            modifiedChapters,
+            openMigrateDialog,
+            openUpdateDialog,
+            modifiedShepherds,
+            modifiedGovernors,
+            modifiedPresidents,
+          )}
           openMigrateDialog={openMigrateDialog}
           openUpdateDialog={openUpdateDialog}
           page={page}
@@ -88,21 +96,9 @@ const Users = () => {
         />
       </ContainerFluid>
 
-      <UpdateUserDialog
-        userData={user}
-        open={openUpdate}
-        setOpen={setOpenUpdate}
-        setUser={setUser}
-        setRefreshData={setRefreshData}
-      />
+      <UpdateUserDialog userData={user} open={openUpdate} setOpen={setOpenUpdate} setUser={setUser} setRefreshData={setRefreshData} />
 
-      <MigrateUserDialog
-        userData={user}
-        open={openMigrate}
-        setOpen={setOpenMigrate}
-        setUser={setUser}
-        setRefreshData={setRefreshData}
-      />
+      <MigrateUserDialog userData={user} open={openMigrate} setOpen={setOpenMigrate} setUser={setUser} setRefreshData={setRefreshData} />
     </div>
   );
 };

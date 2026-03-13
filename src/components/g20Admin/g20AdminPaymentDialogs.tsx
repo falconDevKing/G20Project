@@ -63,10 +63,7 @@ export const G20AdminPaymentEntryDialog = ({ mode, onSaved }: G20AdminPaymentEnt
         return;
       }
 
-      const { data } = await SupabaseClient.from("partner")
-        .select("first_name,last_name")
-        .eq("unique_code", partnerCode)
-        .maybeSingle();
+      const { data } = await SupabaseClient.from("partner").select("first_name,last_name").eq("unique_code", partnerCode).maybeSingle();
 
       setPartnerName(data ? `${data.first_name || ""} ${data.last_name || ""}`.trim() : "");
     };
@@ -84,7 +81,7 @@ export const G20AdminPaymentEntryDialog = ({ mode, onSaved }: G20AdminPaymentEnt
         .maybeSingle();
 
       if (partnerError || !partner) {
-        throw new Error("Partner not found for the supplied personal code.");
+        throw new Error("Honourable not found for the supplied personal code.");
       }
 
       const { currency } = findChapterDetails(partner.chapter_id);
@@ -313,10 +310,7 @@ export const G20ApprovePaymentDialog = ({ open, setOpen, payment, onSaved }: G20
         return;
       }
 
-      const { data } = await SupabaseClient.from("partner")
-        .select("first_name,last_name")
-        .eq("unique_code", partnerCode)
-        .maybeSingle();
+      const { data } = await SupabaseClient.from("partner").select("first_name,last_name").eq("unique_code", partnerCode).maybeSingle();
 
       setPartnerName(data ? `${data.first_name || ""} ${data.last_name || ""}`.trim() : "");
     };
@@ -357,7 +351,7 @@ export const G20ApprovePaymentDialog = ({ open, setOpen, payment, onSaved }: G20
         .maybeSingle();
 
       if (partnerError || !partner) {
-        throw new Error("Partner not found for the supplied personal code.");
+        throw new Error("Honourable not found for the supplied personal code.");
       }
 
       let proofFilePath = payment?.proof_file_path || null;

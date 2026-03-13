@@ -5,7 +5,7 @@ export type StringRange = { from?: string; to?: string };
 export type FilterType = {
   field: string; // e.g. "status", "payment_date", "name_code"
   operator: Operator; // "Equals" | "Contains" | "Within"
-  value: string | StringRange | DateRange; // string for text; {from,to} for dates
+  value: string | StringRange | DateRange | null; // string for text; {from,to} for dates
 };
 
 export const filterFieldsOptions = [

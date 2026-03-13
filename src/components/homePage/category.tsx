@@ -1,4 +1,5 @@
-import ProphetPortrait from "@/assets/generalAppAssets/prophet.png";
+// import ProphetPortrait from "@/assets/generalAppAssets/prophet.png";
+import ProphetPortrait from "@/assets/heroImages/newProphetPortrait.jpeg";
 import { GhostButton, PrimaryButton } from "../customIcons";
 import SectionShell from "./sectionShell";
 import { CheckCircle } from "lucide-react";

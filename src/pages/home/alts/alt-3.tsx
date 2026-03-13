@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CheckCircle } from "lucide-react";
 import G20Logo from "@/assets/generalAppAssets/G20_logo.png";
-import HeroImage from "@/assets/generalAppAssets/GGP-hero.png";
+import HeroImage from "@/assets/generalAppAssets/ggp-hero.png";
 import AboutImage from "@/assets/generalAppAssets/G20_Table.jpg";
 import RequirementsImage from "@/assets/generalAppAssets/requirements.png";
 
@@ -64,8 +64,12 @@ export default function G20LandingAlt3() {
             </div>
           </a>
           <div className="flex gap-2">
-            <a href="/login" className="rounded-md border border-[#5a679d] bg-[#202b5b] px-4 py-2 text-sm font-semibold text-[#e1e9ff]">Login</a>
-            <a href="/register" className="rounded-md border border-[#b10f2e] bg-[#d4183f] px-4 py-2 text-sm font-semibold text-white">Join the G20</a>
+            <a href="/login" className="rounded-md border border-[#5a679d] bg-[#202b5b] px-4 py-2 text-sm font-semibold text-[#e1e9ff]">
+              Login
+            </a>
+            <a href="/register" className="rounded-md border border-[#b10f2e] bg-[#d4183f] px-4 py-2 text-sm font-semibold text-white">
+              Join the G20
+            </a>
           </div>
         </div>
       </header>
@@ -78,11 +82,16 @@ export default function G20LandingAlt3() {
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#ff7f95]">House of Greats</p>
             <h1 className="mt-3 max-w-2xl text-4xl font-bold text-[#ffe3b4] sm:text-5xl">Stand with the mandate of taking the Gospel to all Nations.</h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[#dce5ff]">
-              The G20 is a select group of men and women committed to standing with Prophet Isaiah Macwealth in fulfilling the divine mandate of global Gospel advancement.
+              The G20 is a select group of men and women committed to standing with Prophet Isaiah Macwealth in fulfilling the divine mandate of global Gospel
+              advancement.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <a href="/register" className="rounded-md border border-[#b10f2e] bg-[#d4183f] px-5 py-3 text-sm font-semibold text-white">Sign up</a>
-              <a href="/login" className="rounded-md border border-[#5a679d] bg-[#202b5b] px-5 py-3 text-sm font-semibold text-[#e1e9ff]">Login</a>
+              <a href="/register" className="rounded-md border border-[#b10f2e] bg-[#d4183f] px-5 py-3 text-sm font-semibold text-white">
+                Sign up
+              </a>
+              <a href="/login" className="rounded-md border border-[#5a679d] bg-[#202b5b] px-5 py-3 text-sm font-semibold text-[#e1e9ff]">
+                Login
+              </a>
             </div>
           </div>
         </section>
@@ -117,7 +126,8 @@ export default function G20LandingAlt3() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#ff7f95]">Who we are</p>
             <h2 className="mt-3 text-4xl font-bold text-[#ffe3b4]">About G20</h2>
             <p className="mt-4 text-lg leading-8 text-[#dce5ff]">
-              In this generation, the G20 represents a new company of giants, men and women who are strong and discerning, recognising their God-given advantage and positioned to advance the cause of the Gospel.
+              In this generation, the G20 represents a new company of giants, men and women who are strong and discerning, recognising their God-given advantage
+              and positioned to advance the cause of the Gospel.
             </p>
             <p className="mt-4 text-lg leading-8 text-[#dce5ff]">
               A select group of men and women committed to standing with the Prophet in fulfilling the divine mandate of taking the Gospel to all nations.
@@ -160,7 +170,9 @@ export default function G20LandingAlt3() {
             <h3 className="text-3xl font-bold text-[#ffe3b4]">Benefits of Partnership</h3>
             <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
               {benefits.map((b) => (
-                <div key={b} className="rounded-xl border border-[#4b578f] bg-[#1c2452] p-4 text-[#dce5ff]">{b}</div>
+                <div key={b} className="rounded-xl border border-[#4b578f] bg-[#1c2452] p-4 text-[#dce5ff]">
+                  {b}
+                </div>
               ))}
             </div>
           </div>

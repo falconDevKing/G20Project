@@ -97,7 +97,8 @@ export const DynamicFilter = ({
   const hasPstScope = ["division", "chapter"].includes(opsPermission);
   const hasOpsScope = ["shepherd", "governor", "president"].includes(opsPermission);
   const pstScopeField = pstPermission === "division" ? "division_id" : pstPermission === "chapter" ? "chapter_id" : "";
-  const opsScopeField = opsPermission === "shepherd" ? "shepherd_id" : opsPermission === "governor" ? "governor_id" : opsPermission === "president" ? "president_id" : "";
+  const opsScopeField =
+    opsPermission === "shepherd" ? "shepherd_id" : opsPermission === "governor" ? "governor_id" : opsPermission === "president" ? "president_id" : "";
 
   const filterOperatorsOptions = filterOperatorsOptionsCreator(pstPermission);
   const isPendingRemissions = paymentType === "pendingRemissions";
@@ -235,7 +236,7 @@ export const DynamicFilter = ({
     }
 
     // filter admin scope
-    if (hasPstScope || hasOpsScope) {
+    if ((hasPstScope || hasOpsScope) && pstPermission !== "organisation") {
       const scopeFilters = [];
 
       if (hasPstScope && pstScopeField && user[pstScopeField]) scopeFilters.push(`${pstScopeField}.eq.${user[pstScopeField]}`);
@@ -254,11 +255,16 @@ export const DynamicFilter = ({
       const operator = filter.operator;
       const value = filter.value;
 
-      if (!value) continue;
+      if (value === undefined) continue;
       if (typeof value === "string" && (!value.trim() || value === "all")) continue;
 
       switch (operator) {
         case "Equals": {
+          if (value === null) {
+            query = query.is(resolvedField, null);
+            break;
+          }
+
           // string equality
           const r = value as DateRange;
           if (field === "birth_day_mmdd") {
@@ -343,6 +349,11 @@ export const DynamicFilter = ({
           break;
         }
         case "Not Equals": {
+          if (value === null) {
+            query = query.not(resolvedField, "is", null);
+            break;
+          }
+
           // string equality
           if (typeof value === "string") {
             query = query.neq(resolvedField, value);
@@ -389,7 +400,7 @@ export const DynamicFilter = ({
   useEffect(() => {
     filterData();
   }, [
-    filterData,
+    // filterData,
     refreshData,
     name_Code_Value,
     outsideSelectedDivision,
@@ -466,7 +477,7 @@ export const DynamicFilter = ({
               </Select>
 
               <>
-                {isPendingRemissions ? (
+                {isPendingRemissions || ["PartnerAssignment", "PartnerSearchSelect"].includes(paymentType) ? (
                   ""
                 ) : (
                   <Select
@@ -508,7 +519,7 @@ export const DynamicFilter = ({
                   </Select>
                 )}
 
-                {filterType === "Partner" && paymentType !== "PartnerSearchSelect" && (
+                {filterType === "Partner" && !["PartnerAssignment", "PartnerSearchSelect"].includes(paymentType) && (
                   <Select
                     onValueChange={(value) => {
                       updateEqualsFilter("g20_active_recurring_remission", value);

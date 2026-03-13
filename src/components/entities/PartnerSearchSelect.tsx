@@ -95,26 +95,8 @@ export const PartnerSearchSelect = ({ value, onChange, placeholder = "Search par
           <ChevronDown className="h-4 w-4 opacity-60" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[min(96vw,678px)] p-3">
+      <PopoverContent className="w-[min(96vw,674px)] p-3">
         <div className="space-y-3">
-          <DynamicFilter
-            name="Filter Partners"
-            filterType="Partner"
-            allow="Admin"
-            paymentType="PartnerSearchSelect"
-            tableName="partner"
-            updateTableData={(data) => setUsers(data as PartnerRowType[])}
-            updateTableDataCount={setTableDataCount}
-            page={page}
-            pageSize={pageSize}
-            setPage={setPage}
-            refreshData={refreshData}
-            showPills={false}
-            showSearch
-            expandable
-            lockedFilters={lockedFilters}
-          />
-
           <div className="md:grid grid-cols-2 lg:grid-cols-3 gap-2 max-h-72 overflow-y-auto rounded-md bg-white dark:bg-[#1E1E1E]">
             {options.length ? (
               options.map((option) => (
@@ -138,6 +120,24 @@ export const PartnerSearchSelect = ({ value, onChange, placeholder = "Search par
           <div className="text-xs text-muted-foreground">
             Showing top {options.length} matches of {tableDataCount} partner(s)
           </div>
+
+          <DynamicFilter
+            name="Filter Partners"
+            filterType="Partner"
+            allow="Admin"
+            paymentType="PartnerSearchSelect"
+            tableName="partner"
+            updateTableData={(data) => setUsers(data as PartnerRowType[])}
+            updateTableDataCount={setTableDataCount}
+            page={page}
+            pageSize={pageSize}
+            setPage={setPage}
+            refreshData={refreshData}
+            showPills={false}
+            showSearch
+            expandable
+            lockedFilters={lockedFilters}
+          />
         </div>
       </PopoverContent>
     </Popover>

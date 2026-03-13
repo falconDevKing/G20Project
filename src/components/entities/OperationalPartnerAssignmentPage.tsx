@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useAppSelector } from "@/redux/hooks";
 import { initialiseAdminOptions } from "@/lib/utils";
 import { DynamicFilter } from "@/components/dynamicFilters/DynamicFilters";
+import { FilterType } from "@/components/dynamicFilters/filterOptions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,6 +11,7 @@ import { SimpleTable } from "@/components/dashboard/SimpleTable";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
 import { assignPartnersToOperationalHierarchy, fetchFilteredPartnerIds } from "@/services/tools";
 import { PartnerRowType } from "@/supabase/modifiedSupabaseTypes";
+import { findChapterDetails, findDivisionDetails } from "@/services/payment";
 
 export const OperationalPartnerAssignmentPage = () => {
   const appState = useAppSelector((state) => state.app);
@@ -27,7 +29,10 @@ export const OperationalPartnerAssignmentPage = () => {
   const [governorId, setGovernorId] = useState("");
   const [presidentId, setPresidentId] = useState("");
 
-  const scopedGovernorOptions = useMemo(() => GovernorOptions.filter((governor) => (shepherdId ? governor.shepherd_id === shepherdId : true)), [GovernorOptions, shepherdId]);
+  const scopedGovernorOptions = useMemo(
+    () => GovernorOptions.filter((governor) => (shepherdId ? governor.shepherd_id === shepherdId : true)),
+    [GovernorOptions, shepherdId],
+  );
   const scopedPresidentOptions = useMemo(
     () =>
       PresidentOptions.filter((president) => (shepherdId ? president.shepherd_id === shepherdId : true)).filter((president) =>
@@ -35,6 +40,7 @@ export const OperationalPartnerAssignmentPage = () => {
       ),
     [PresidentOptions, shepherdId, governorId],
   );
+  const lockedFilters = useMemo<FilterType[]>(() => [{ field: "president_id", operator: "Equals", value: null }], []);
   const toggleId = (id: string) => {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((existingId) => existingId !== id) : [...prev, id]));
   };
@@ -45,7 +51,11 @@ export const OperationalPartnerAssignmentPage = () => {
         id: "pick",
         header: "Pick",
         cell: ({ row }) => (
-          <Checkbox checked={selectedIds.includes(row.original.id)} onCheckedChange={() => toggleId(row.original.id)} className="dark:border-G20-darkGold" />
+          <Checkbox
+            checked={selectedIds.includes(row.original.id)}
+            // onCheckedChange={() => toggleId(row.original.id)}
+            className="dark:border-G20-darkGold"
+          />
         ),
       },
       {
@@ -64,28 +74,41 @@ export const OperationalPartnerAssignmentPage = () => {
         cell: ({ row }) => <div className="truncate max-w-[240px]">{row.original.email || "---"}</div>,
       },
       {
-        id: "shepherd",
-        header: "Current Shepherd",
-        cell: ({ row }) => ShepherdOptions.find((shepherd) => shepherd.value === row.original.shepherd_id)?.name || "---",
+        accessorKey: "division_id",
+        header: "Division",
+        cell: ({ row }) => <div>{findDivisionDetails(row.original.division_id || "").divisionName || "---"}</div>,
       },
       {
-        id: "governor",
-        header: "Current Governor",
-        cell: ({ row }) => GovernorOptions.find((governor) => governor.value === row.original.governor_id)?.name || "---",
+        accessorKey: "chapter_id",
+        header: "Chapter",
+        cell: ({ row }) => <div>{findChapterDetails(row.original.chapter_id || "").chapterName || "---"}</div>,
       },
-      {
-        id: "president",
-        header: "Current President",
-        cell: ({ row }) => PresidentOptions.find((president) => president.value === row.original.president_id)?.name || "---",
-      },
+      // {
+      //   id: "shepherd",
+      //   header: "Current Shepherd",
+      //   cell: ({ row }) => ShepherdOptions.find((shepherd) => shepherd.value === row.original.shepherd_id)?.name || "---",
+      // },
+      // {
+      //   id: "governor",
+      //   header: "Current Governor",
+      //   cell: ({ row }) => GovernorOptions.find((governor) => governor.value === row.original.governor_id)?.name || "---",
+      // },
+      // {
+      //   id: "president",
+      //   header: "Current President",
+      //   cell: ({ row }) => PresidentOptions.find((president) => president.value === row.original.president_id)?.name || "---",
+      // },
     ],
-    [PresidentOptions, GovernorOptions, ShepherdOptions, selectedIds],
+    [
+      //PresidentOptions, GovernorOptions, ShepherdOptions,
+      selectedIds,
+    ],
   );
 
   const assignByIds = async (partnerIds: string[]) => {
     try {
-      if (!shepherdId && !governorId && !presidentId) {
-        ErrorHandler("Please select Rep before assigning.");
+      if (!presidentId) {
+        ErrorHandler("Please select a President before assigning partners.");
         return;
       }
       if (!partnerIds.length) {
@@ -119,7 +142,7 @@ export const OperationalPartnerAssignmentPage = () => {
   const assignAllFiltered = async () => {
     try {
       setIsPending(true);
-      const partnerIds = await fetchFilteredPartnerIds(filterData as any[]);
+      const partnerIds = await fetchFilteredPartnerIds([...(lockedFilters as any[]), ...(filterData as any[])]);
       if (!partnerIds.length) {
         ErrorHandler("No partners found for current filters.");
         return;
@@ -137,9 +160,9 @@ export const OperationalPartnerAssignmentPage = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="md:text-2xl text-lg font-bold dark:text-white text-GGP-dark">Assign Partners To Operational Reps</h1>
+        <h1 className="md:text-2xl text-lg font-bold dark:text-white text-GGP-dark">Assign Partners To Houses</h1>
         <p className="max-w-[760px] font-light text-base dark:text-white text-GGP-dark/75">
-          Select Shepherd and optional Governor/President, then assign selected partners or all currently filtered partners.
+          Select a President, then assign selected partners or all currently filtered partners that do not already have a president.
         </p>
       </div>
 
@@ -176,7 +199,7 @@ export const OperationalPartnerAssignmentPage = () => {
           }}
         >
           <SelectTrigger className="shad-select-trigger">
-            <SelectValue placeholder="Select Governor (Optional)" />
+            <SelectValue placeholder="Select Governor" />
           </SelectTrigger>
           <SelectContent className="shad-select-content">
             {scopedGovernorOptions.map((governor) => (
@@ -190,19 +213,15 @@ export const OperationalPartnerAssignmentPage = () => {
         <Select
           value={presidentId}
           onValueChange={(value) => {
-            if (!shepherdId) {
-              const selectedPresident = scopedPresidentOptions.find((gov) => gov.value === value);
-              setShepherdId(selectedPresident?.shepherd_id || "");
-            }
-            if (!shepherdId) {
-              const selectedPresident = scopedPresidentOptions.find((gov) => gov.value === value);
-              setGovernorId(selectedPresident?.governor_id || "");
-            }
+            const selectedPresident =
+              scopedPresidentOptions.find((president) => president.value === value) || PresidentOptions.find((president) => president.value === value);
+            setShepherdId(selectedPresident?.shepherd_id || "");
+            setGovernorId(selectedPresident?.governor_id || "");
             setPresidentId(value);
           }}
         >
           <SelectTrigger className="shad-select-trigger">
-            <SelectValue placeholder="Select President (Optional)" />
+            <SelectValue placeholder="Select President" />
           </SelectTrigger>
           <SelectContent className="shad-select-content">
             {scopedPresidentOptions.map((president) => (
@@ -215,7 +234,7 @@ export const OperationalPartnerAssignmentPage = () => {
       </div>
 
       <div className="flex gap-2 justify-end">
-        <Button variant="outline" onClick={assignAllFiltered} disabled={isPending}>
+        <Button variant="outline" onClick={assignAllFiltered} disabled={isPending} className="border-G20-darkGold">
           {isPending ? "Assigning..." : "Assign All Filtered"}
         </Button>
         <Button variant="custom" onClick={assignSelected} disabled={isPending || !selectedIds.length}>
@@ -237,9 +256,21 @@ export const OperationalPartnerAssignmentPage = () => {
         refreshData={refreshData}
         showSearch
         expandable
+        lockedFilters={lockedFilters}
       />
 
-      <SimpleTable columns={columns} data={tableData} count={tableDataCount} page={page} setPage={setPage} pageSize={pageSize} setPageSize={setPageSize} />
+      <SimpleTable
+        columns={columns}
+        data={tableData}
+        count={tableDataCount}
+        page={page}
+        setPage={setPage}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        onRowClick={(partner) => {
+          toggleId(partner.id);
+        }}
+      />
     </div>
   );
 };

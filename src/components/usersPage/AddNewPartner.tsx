@@ -146,7 +146,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
       }
 
       form.reset();
-      SuccessHandler("Partner created successfully");
+      SuccessHandler("Honourable created successfully");
       await fetchUsersByEntity();
       setIsPending(false);
       setOpen(false);

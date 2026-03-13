@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
 
-import G20Crest from "@/assets/generalAppAssets/G20_logo.png";
-import HeroBackgroundOne from "@/assets/generalAppAssets/GGP-hero.png";
-import HeroBackgroundTwo from "@/assets/generalAppAssets/Prop2.jpg";
-import HeroBackgroundThree from "@/assets/generalAppAssets/Prop3.jpg";
-import HeroBackgroundFour from "@/assets/generalAppAssets/gp-bg.webp";
-import HeroBackgroundFive from "@/assets/generalAppAssets/Prop 4.jpg";
-import HeroBackgroundSix from "@/assets/generalAppAssets/Prop 5.jpg";
-import HeroBackgroundSeven from "@/assets/generalAppAssets/Prop 6.jpg";
-import HeroBackgroundEight from "@/assets/generalAppAssets/Prop 7.jpg";
-import HeroBackgroundNine from "@/assets/generalAppAssets/Prop 8.jpg";
-import HeroBackgroundTen from "@/assets/generalAppAssets/Prop 9.jpg";
+import G20Crest from "@/assets/heroImages/G20_logo.png";
+import HOGCrest from "@/assets/heroImages/HOG_logo.png";
+import MMWCrest from "@/assets/heroImages/MMW_logo.png";
+// import HeroBackgroundOne from "@/assets/heroImages/G20 BANNER.jpeg";
+import HeroBackgroundOne from "@/assets/heroImages/newBgPic2.jpeg";
+import HeroBackgroundTwo from "@/assets/heroImages/newBgPic6.jpeg";
+import HeroBackgroundThree from "@/assets/heroImages/newBgPic8.jpeg";
+import HeroBackgroundFour from "@/assets/heroImages/newBgPic9.jpeg";
+import HeroBackgroundFive from "@/assets/heroImages/newBgPic14.jpeg";
+import HeroBackgroundSix from "@/assets/heroImages/newBgPic15.jpeg";
+import HeroBackgroundSeven from "@/assets/heroImages/Prop 9.jpg";
+import HeroBackgroundEight from "@/assets/heroImages/Prop 3.jpg";
+import HeroBackgroundNine from "@/assets/heroImages/Prop 7.jpg";
+import HeroBackgroundTen from "@/assets/heroImages/Prop 6.jpg";
+import HeroBackgroundEleven from "@/assets/heroImages/newBgPic11.jpeg";
 
 import { GhostButton, PrimaryButton } from "../customIcons";
 
@@ -25,15 +29,20 @@ const heroImages = [
   HeroBackgroundEight,
   HeroBackgroundNine,
   HeroBackgroundTen,
+  HeroBackgroundEleven,
 ];
+
+const crestImages = [G20Crest, HOGCrest, MMWCrest];
 
 const Hero = () => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [crestImageIndex, setCrestImageIndex] = useState(0);
 
   useEffect(() => {
     const imageRotationInterval = window.setInterval(() => {
-      setActiveImageIndex((currentIndex) => (currentIndex + 1) % heroImages.length);
-    }, 3000);
+      setActiveImageIndex(() => Math.floor(Math.random() * heroImages.length));
+      setCrestImageIndex((currentIndex) => (currentIndex + 1) % crestImages.length);
+    }, 5000);
 
     return () => window.clearInterval(imageRotationInterval);
   }, []);
@@ -52,7 +61,7 @@ const Hero = () => {
             }`}
           />
         ))}
-        <div className="absolute inset-0 bg-[#0b1120]/35" />
+        <div className="absolute inset-0 bg-[#0b1120]/40" />
       </div>
 
       <div className="relative mx-auto px-4 py-14 sm:px-6 sm:py-12 lg:px-8">
@@ -101,9 +110,19 @@ const Hero = () => {
 
           <div className="relative mx-auto w-full max-w-md">
             <div className="relative rounded-3xl border border-[#2f3c57] bg-[#111c31] p-8">
-              <div className="mx-auto grid place-items-center">
-                <img src={G20Crest} alt="G20 crest" className="h-48 w-48 object-contain" />
+              <div className="w-full flex justify-center">
+                {crestImages.map((image, index) => (
+                  <img
+                    key={image}
+                    src={image}
+                    alt="G20 crest"
+                    aria-hidden="true"
+                    className={`h-48 w-48 object-contain transition-opacity duration-[1500ms] ease-in-out ${index === crestImageIndex ? "" : "hidden"}`}
+                  />
+                ))}
               </div>
+              {/* <img src={G20Crest} alt="G20 crest" className="h-48 w-48 object-contain" /> */}
+
               <div className="mt-6 text-center">
                 <p className="text-xs font-semibold tracking-[0.22em] text-[#d6b260] uppercase">Who we are</p>
                 <p className="mt-2 text-xl font-semibold text-[#f8f1e3]">The House of Greats</p>

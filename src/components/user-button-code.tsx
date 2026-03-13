@@ -75,19 +75,6 @@ export const UserButtonCode = ({ position = "justify-between" }: { position?: st
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      {/* Avatar */}
-      {/* <Link to="/profile">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-16 w-16 ">
-            <AvatarImage src={fileUrlToUse} alt={user?.first_name} />
-            <AvatarFallback className="font-semibold uppercase bg-white text-black">{userInitials}</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="text-white font-semibold text-sm">Unique Partner Code</span>
-            <span className="text-base font-normal tracking-tighter dark:max-sm:text-[#344054] text-[#344054]">{user?.unique_code}</span>
-          </div>
-        </div>
-      </Link> */}
     </div>
   );
 };

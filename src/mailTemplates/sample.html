@@ -3,16 +3,14 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap"
-      rel="stylesheet"
-    />
+
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
     <style>
       @media screen and (max-width: 576px) {
         table {
@@ -21,32 +19,16 @@
         }
 
         td {
-          padding: 40px 0px 0px !important;
+          padding: 32px 0px 0px !important;
         }
 
-        .banner-icon {
-          padding: 0px !important;
-        }
-
-        .banner-text {
-          padding: 16px 24px !important;
-        }
-
-        .banner-text > p {
-          font-size: 20px !important;
+        p {
+          font-size: 16px !important;
         }
 
         .button,
         .button > a {
           width: 100% !important;
-        }
-
-        td > a {
-          font-size: 14px !important;
-        }
-
-        p {
-          font-size: 16px !important;
         }
       }
     </style>
@@ -67,49 +49,80 @@
         border-collapse: collapse;
       "
     >
+      <!-- LOGO -->
       <tr>
-        <td class="banner-icon">
+        <td style="text-align: center">
           <img
             src="https://ohip-public.s3.eu-west-1.amazonaws.com/G20_logo.png"
             alt="Logo"
-            width="296"
-            height="180"
+            width="200"
+            height="160"
             style="display: block; padding: 0.5rem 0.75rem; margin: 0 auto"
           />
         </td>
       </tr>
 
+      <!-- BANNER -->
+      <tr>
+        <td
+          style="
+            background: url(https://ohip-public.s3.eu-west-1.amazonaws.com/BirthdayAlertBanner.png);
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            padding: 60px 42px;
+            height: 120px;
+          "
+        ></td>
+      </tr>
+
+      <!-- TITLE -->
       <tr>
         <td>
-          <p style="font-weight: 700; line-height: 28px; color: #84693c; text-align: center; padding-top: 24px">
-            <span style="font-weight: 700; font-size: 2rem">SUBSCRIPTION PAUSE REQUEST</span>
-          </p>
+          <p style="font-weight: 700; font-size: 28px; line-height: 30px; color: #84693c; text-align: center; padding-top: 24px">Happy Wedding Anniversary!</p>
         </td>
       </tr>
+
+      <!-- MESSAGE -->
       <tr>
-        <td style="padding: 40px 40px 20px; line-height: 24px; font-size: 16px; color: #253858; font-style: normal; font-weight: 400">
-          <p>Hello,</p>
+        <td style="padding: 40px; line-height: 26px; font-size: 1.25rem; color: #253858; font-weight: 400; text-align: center">
+          <p>Dear ${first_name},</p>
 
-          <p>
-            This is a notification that ${userName} from ${chapterName}, ${divisionName} has requested a pause in their subscription with the following reason.
-          </p>
+          <p>Today we celebrate with you as you mark another beautiful milestone in your marriage.</p>
 
-          <p>Reason: ${reason}</p>
+          <p>Congratulations on your continued years of love, commitment, and partnership together.</p>
 
-          <p>
-            Help reach out to them to get more context, and when the subscription is to be paused, kindly navagate to ${toolsUrl} to pause the subscription.
-          </p>
+          <p>Your union is a testimony of God’s grace, faithfulness, and the beauty of walking together in love and purpose.</p>
 
-          <p>Thank you for supporting excellence and integrity in our stewardship.</p>
+          <p>May the Lord continue to strengthen your bond, increase your joy, and fill your home with peace, favour, and abundance in the years ahead.</p>
         </td>
       </tr>
 
+      <!-- BLESSING CARD -->
+      <tr>
+        <td style="padding: 0px 40px; line-height: 32px; color: #253858">
+          <div style="margin: 20px; padding: 24px; border: 1px solid #e6e8f0; border-radius: 8px; text-align: center">
+            <div style="font-weight: 600; font-size: 18px; padding-bottom: 16px">A Blessing for Your Marriage</div>
+
+            <p style="font-size: 18px; line-height: 28px; color: #253858">“What therefore God hath joined together, let not man put asunder.”</p>
+
+            <p style="color: #8083a3; font-size: 16px">— Mark 10:9</p>
+          </div>
+
+          <p style="text-align: center">
+            Thank you for being part of the Global Gospel Partnership family. We rejoice with you today and pray for many more blessed years together.
+          </p>
+        </td>
+      </tr>
+
+      <!-- FOOTER -->
       <tr>
         <td style="text-align: center; padding: 24px 40px; line-height: 32px">
           <p style="padding: 0px; color: #253858; font-style: normal; font-weight: 400">
             Warmest Regards, <br />
-            <span style="font-weight: bold">GGP Team</span>
+            <span style="font-weight: bold">G20 Team</span>
           </p>
+
           <p style="font-weight: 400; color: #8083a3; margin-top: 8px; text-align: center; font-size: 20px">
             <span style="display: inline-block; vertical-align: middle; margin-right: 20px; margin-bottom: 8px">
               <img
@@ -121,6 +134,7 @@
               />
               <a href="https://www.globalgospelpartnership.org" style="color: #cc9e35; text-decoration: none"> www.globalgospelpartnership.org </a>
             </span>
+
             <span style="display: inline-block; vertical-align: middle; margin-right: 20px; margin-bottom: 8px">
               <img
                 src="https://ohip-public.s3.eu-west-1.amazonaws.com/mail.png"
@@ -131,10 +145,11 @@
               />
               <a href="mailto:support@globalgospelpartnership.org" style="color: #cc9e35; text-decoration: none"> support@globalgospelpartnership.org </a>
             </span>
+
             <span style="display: inline-block; vertical-align: middle; margin-right: 20px; margin-bottom: 8px">
               <img
                 src="https://ohip-public.s3.eu-west-1.amazonaws.com/credit-card.png"
-                alt="Mail"
+                alt="Payment"
                 width="20"
                 height="20"
                 style="vertical-align: middle; margin-right: 6px"
@@ -144,8 +159,10 @@
               </a>
             </span>
           </p>
+
           <br />
-          <p style="font-weight: 400; color: #8083a3; margin-top: -16px; font-size: 20px">
+
+          <p style="font-weight: 400; color: #8083a3; margin-top: -16px">
             © GGP |
             <a href="mailto:info@globalgospelpartnership.org" style="color: #8083a3; text-decoration: none"> info@globalgospelpartnership.org </a>
             <br />

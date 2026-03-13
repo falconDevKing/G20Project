@@ -35,7 +35,7 @@ export const LandingNavbar = () => {
     <nav className="sticky top-0 z-40 bg-GGP-darkGold/95 backdrop-blur lg:px-8">
       <ContainerFluid className="py-2 lg:py-0">
         <div className="flex items-center justify-between">
-          <Link to="/history" className="flex items-center gap-3 pl-2">
+          <Link to="/dashboard" className="flex items-center gap-3 pl-2">
             <img src={Logo} alt="GGP Logo" className="h-[108px] w-auto" />
           </Link>
 
@@ -48,7 +48,7 @@ export const LandingNavbar = () => {
             ))}
             <VisitorOnlinePayment />
             <Button className="bg-[#E7000B] hover:bg-[#E7000B]/90 text-lg" size="lg2" variant="destructive" asChild>
-              <Link to="/login" >Login to Dashboard</Link>
+              <Link to="/login">Login to Dashboard</Link>
             </Button>
           </div>
 
@@ -62,14 +62,14 @@ export const LandingNavbar = () => {
               </Button> */}
 
               <Sheet open={open} onOpenChange={setOpen}>
-
                 <div className="flex align-middle gap-2">
                   <div className="mb-1">
                     <Button size={"lg2"} className="w-full h-10 max-h-10 bg-[#E7000B] hover:bg-[#E7000B]/90 text-md" asChild>
-                      <Link to="/login" className="text-lg text-white">Login</Link>
+                      <Link to="/login" className="text-lg text-white">
+                        Login
+                      </Link>
                     </Button>
                   </div>
-
 
                   <SheetTrigger asChild>
                     <button aria-label="Open menu" className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[#E7000B] text-white">
@@ -94,7 +94,9 @@ export const LandingNavbar = () => {
                     <VisitorOnlinePayment />
                     <div className="pt-1">
                       <Button size={"lg2"} className="w-full bg-[#E7000B] hover:bg-[#E7000B]/90 text-md" asChild>
-                        <Link to="/login" className="text-lg text-white">Login to Dashboard</Link>
+                        <Link to="/login" className="text-lg text-white">
+                          Login to Dashboard
+                        </Link>
                       </Button>
                     </div>
                   </div>
