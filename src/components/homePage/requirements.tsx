@@ -1,7 +1,8 @@
 import SectionShell from "./sectionShell";
-import { GhostButton, PrimaryButton } from "../customIcons";
+import { PrimaryButton } from "../customIcons";
 import BannerPicture from "@/assets/generalAppAssets/requirements.png";
 import { CheckCircle } from "lucide-react";
+import { OfflineBankDetails } from "./offlinePaymentDetails";
 
 const requirementsLeft: string[] = [
   "Be a born-again believer, transformed by the Spirit and committed to the Lordship of Christ.",
@@ -52,9 +53,7 @@ const Requirements = () => {
 
           <div className="mt-7 flex flex-wrap gap-2">
             <PrimaryButton href="/register">Join now</PrimaryButton>
-            <GhostButton href="/paymentButton" className="hidden sm:inline-flex">
-              Give now
-            </GhostButton>
+            <OfflineBankDetails />
           </div>
         </div>
       </div>

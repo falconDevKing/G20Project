@@ -1,4 +1,5 @@
 import HandshakePicture from "@/assets/generalAppAssets/shake.png";
+import { OfflineBankDetails } from "./offlinePaymentDetails";
 
 const Banner = () => {
   return (
@@ -29,6 +30,7 @@ const Banner = () => {
               >
                 Give Now
               </a>
+              <OfflineBankDetails />
             </div>
           </div>
         </div>

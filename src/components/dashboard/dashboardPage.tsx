@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DynamicFilter } from "@/components/dynamicFilters/DynamicFilters";
-import { CombinedOnlinePayment } from "@/components/paymentHistoryTable/CombinedOnlinePayment";
+// import { CombinedOnlinePayment } from "@/components/paymentHistoryTable/CombinedOnlinePayment";
 
 import { G20DashboardHeader } from "./g20DashboardHeader";
 import { SimpleTable } from "./SimpleTable";
@@ -29,6 +29,7 @@ import { getNextOct30Window } from "@/services/proposedSchedule";
 import type { G20PaymentRowType, PartnerRowType } from "@/supabase/modifiedSupabaseTypes";
 import { CapitaliseText } from "@/lib/textUtils";
 import { findChapterDetails } from "@/services/payment";
+import { OfflineBankDetails } from "../homePage/offlinePaymentDetails";
 
 const ApprovedByCell = ({ approvedBy, status }: { approvedBy: string; status: string }) => {
   const label = approvedBy || status || "-";
@@ -194,7 +195,8 @@ export default function DashboardCom() {
           </div>
 
           <div className="flex flex-wrap justify-start xl:justify-end gap-2">
-            <CombinedOnlinePayment filterData={() => setRefreshKey((prev) => prev + 1)} forUser />
+            {/* <CombinedOnlinePayment filterData={() => setRefreshKey((prev) => prev + 1)} forUser /> */}
+            <OfflineBankDetails squared />
             <G20LogOfflinePayment onSaved={async () => setRefreshKey((prev) => prev + 1)} />
             {isAdmin ? (
               <Button variant="custom" size="lg" disabled={!isAdmin}>

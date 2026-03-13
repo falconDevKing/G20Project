@@ -1,6 +1,7 @@
 import React from "react";
 import SectionShell from "./sectionShell";
-import { CheckCircle, GhostButton, IconBox, PrimaryButton } from "../customIcons";
+import { CheckCircle, IconBox, PrimaryButton } from "../customIcons";
+import { OfflineBankDetails } from "./offlinePaymentDetails";
 
 type Feature = { title: string; body: string; icon?: React.ReactNode };
 
@@ -61,7 +62,7 @@ const Benefits = () => {
 
       <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <PrimaryButton href="/register">Sign up today</PrimaryButton>
-        <GhostButton href="/paymentButton">Give Now</GhostButton>
+        <OfflineBankDetails />
       </div>
     </SectionShell>
   );

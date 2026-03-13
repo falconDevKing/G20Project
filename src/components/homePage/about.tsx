@@ -2,7 +2,8 @@
 import G20ParliamentTable from "@/assets/heroImages/newG20ParliamentTable.jpeg";
 
 import SectionShell from "./sectionShell";
-import { GhostButton, PrimaryButton } from "../customIcons";
+import { PrimaryButton } from "../customIcons";
+import { OfflineBankDetails } from "./offlinePaymentDetails";
 
 type Quote = { text: string; ref: string };
 
@@ -67,9 +68,7 @@ const About = () => {
 
           <div className="mt-5 gap-4 flex flex-wrap">
             <PrimaryButton href="/register">Sign up</PrimaryButton>
-            <GhostButton href="/paymentButton" className="hidden sm:inline-flex">
-              Give now
-            </GhostButton>
+            <OfflineBankDetails />
           </div>
         </div>
       </div>
@@ -117,9 +116,7 @@ const About = () => {
 
       <div className="mt-12 flex justify-center w-full gap-8">
         <PrimaryButton href="/register">Join the G20</PrimaryButton>
-        <GhostButton href="/login" className="hidden sm:inline-flex">
-          Give now
-        </GhostButton>
+        <OfflineBankDetails />
       </div>
     </SectionShell>
   );

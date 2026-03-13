@@ -1,8 +1,9 @@
 // import ProphetPortrait from "@/assets/generalAppAssets/prophet.png";
 import ProphetPortrait from "@/assets/heroImages/newProphetPortrait.jpeg";
-import { GhostButton, PrimaryButton } from "../customIcons";
+import { GhostButton } from "../customIcons";
 import SectionShell from "./sectionShell";
 import { CheckCircle } from "lucide-react";
+import { OfflineBankDetails } from "./offlinePaymentDetails";
 
 type Category = { title: string; amount: string; subtitle?: string };
 
@@ -44,9 +45,7 @@ const Category = () => {
           <p className="mt-7 text-md text-[#d6e2f8]">Top G20 partners will serve as executives of the House of Greats for the upcoming year.</p>
 
           <div className="mt-7 gap-4 flex flex-wrap">
-            <PrimaryButton href="/paymentButton" hideArrow>
-              Give Now
-            </PrimaryButton>
+            <OfflineBankDetails showBg="gold" />
             <GhostButton href="/login" className="hidden sm:inline-flex" showArrow>
               Sign up
             </GhostButton>
