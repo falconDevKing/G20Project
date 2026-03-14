@@ -14,6 +14,13 @@ export const registerSchema = z
     anniversary_day: z.string().optional(),
     anniversary_month: z.string().optional(),
     president_id: z.string().optional(),
+    g20_category: z.string().min(1, { message: "You must select a G20 Category" }),
+    g20_amount: z.coerce.number().int().positive("Amount is required"),
+    voluntary_participation: z.enum(["Yes", "No"], { message: "Please select an option" }),
+    motivation: z.string().min(50, { message: "Motivation statement too short. Please elaborate (at least 50 characters)" }),
+    attestation: z.boolean().refine((val) => val === true, {
+      message: "You must acknowledge the attestation",
+    }),
     // date_of_birth: z
     //   .string()
     //   .min(1, { message: "Your Birth date is required" }) // Now required as a string
@@ -73,7 +80,7 @@ export const g20UpdateAuthSchema = z
     g20_amount: z.coerce.number().int().positive("Amount is required"),
 
     voluntary_participation: z.enum(["Yes", "No"], { message: "Please select an option" }),
-    motivation: z.string().min(50, { message: "You must put in your motivation statement of more thann 50 characters" }),
+    motivation: z.string().min(50, { message: "Motivation statement too short. Please elaborate (at least 50 characters)" }),
 
     attestation: z.boolean().refine((val) => val === true, {
       message: "You must acknowledge the attestation",

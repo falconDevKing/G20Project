@@ -72,14 +72,12 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
       birth_month: "",
     },
   });
-  const selectedDivision = form.watch("division_id");
   const selectedChapter = form.watch("chapter_id");
   const g20CategoryOptions = getG20CategoryOptions({
     chapterId: selectedChapter,
     locationCurrency: appState.locationCurrency,
     fallbackCurrency: appState.fallbackCurrency,
   });
-  const presidentOptionsToUse = PresidentOptions.filter((president) => (selectedDivision ? president.division_id === selectedDivision : true));
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
     try {
@@ -369,7 +367,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                             <SelectValue placeholder="Select House" />
                           </SelectTrigger>
                           <SelectContent className="shad-select-content">
-                            {presidentOptionsToUse.map((president) => (
+                            {PresidentOptions.map((president) => (
                               <SelectItem key={president.value} value={president.value}>
                                 <div className="flex items-center cursor-pointer gap-3">
                                   <p>{president.name}</p>

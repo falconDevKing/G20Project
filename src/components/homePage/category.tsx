@@ -27,7 +27,7 @@ const Category = () => {
     >
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-stretch">
         <div className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-5 sm:p-6">
-          <div className="space-y-5">
+          <div className="space-y-5 mt-2">
             {categories.map((c) => (
               <div key={c.title} className="flex gap-4">
                 <div className="pt-1 text-[#d2ae63]">
@@ -43,7 +43,7 @@ const Category = () => {
             ))}
           </div>
 
-          <p className="mt-7 text-sm text-[#d6e2f8] sm:text-md">Top G20 partners will serve as executives of the House of Greats for the upcoming year.</p>
+          <p className="mt-7 text-md text-[#d6e2f8] sm:text-md">Top G20 partners will serve in the Upper House of the House of Greats for the upcoming year.</p>
 
           <div className="mt-7 grid grid-cols-2 sm:flex gap-3 sm:flex-row sm:flex-wrap">
             <OfflineBankDetails showBg="gold" fullWidthOnMobile />

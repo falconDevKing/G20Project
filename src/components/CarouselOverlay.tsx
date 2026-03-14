@@ -13,7 +13,7 @@ const carouselItems = [
     church: "Senior Pastor - Gospel Pillars Intl. Church",
     // image: "/images/GlobeWithHands.svg",
     // image: "/images/G20_Table.jpg",
-    image: "/auth/G20 BANNER LEFT.jpeg",
+    image: "/auth/G20 BANNER LEFT TEXT.jpeg",
     // image: "/auth/newG20ParliamentTable.jpeg",
   },
   {
@@ -36,7 +36,8 @@ const carouselItems = [
       </div>
     ),
     pictureStyle: "cover",
-    image: "/auth/newG20ParliamentTable.jpeg",
+    image: "/auth/newBgPic9.jpeg",
+    // image: "/auth/newG20ParliamentTable.jpeg",
   },
   // {
   //   captionText: "Empower thousands of families through charity fairs and outreach initiatives.",

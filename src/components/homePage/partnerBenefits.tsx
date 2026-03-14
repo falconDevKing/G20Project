@@ -32,12 +32,12 @@ const partnerBenefits: PartnerBenefit[] = [
     body: "Your partnership places you under a covering of consistent prayers, including dedicated prayers from the Prophet's office.",
   },
   {
-    title: "Special birthday celebration",
-    body: "Partners receive a special personalised birthday celebration and prayers as an expression of honour and appreciation.",
+    title: "Special Celebrations",
+    body: "Partners receive a special personalised birthday celebration and wedding anniversary celebrations with prayers as an expression of honour and appreciation.",
   },
   {
-    title: "Recognition and awards",
-    body: "Your impact is valued and celebrated, with outstanding partners recognised during annual honour moments.",
+    title: "Recognition and Awards",
+    body: "Your impact is valued and celebrated, with outstanding partners recognised during the Golden Eagles Award Night.",
   },
 ];
 

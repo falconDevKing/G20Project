@@ -3,7 +3,7 @@ import { sendMailWithoutKeys } from "../../utils/sendMailWithoutKeys";
 import ProposedPaymentReminderTemplate from "./proposedPaymentReminderTemplate";
 
 const PAGE_SIZE = 1000;
-const REMINDER_OFFSETS = [14, 7, 3, 1] as const;
+const REMINDER_OFFSETS = [14, 7, 3, 2, 1] as const;
 
 type ProposedReminderRow = {
   id: string;

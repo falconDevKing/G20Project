@@ -58,11 +58,11 @@ const About = () => {
         </div>
 
         <div className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-5 sm:p-6">
-          <p className="text-sm leading-7 text-[#d3dff5] sm:text-md">
+          <p className="text-sm leading-7 text-[#d3dff5] sm:text-lg">
             In this generation, the G20 represents a new company of giants, men and women who are strong and discerning, recognising their God-given advantage
             and positioned to advance the cause of the Gospel.
           </p>
-          <p className="py-5 text-sm leading-7 text-[#d3dff5] sm:py-6 sm:text-md">
+          <p className="py-5 text-sm leading-7 text-[#d3dff5] sm:py-6 sm:text-lg">
             A select group of men and women committed to standing with the Prophet in fulfilling the divine mandate of taking the Gospel to all nations.
           </p>
 
@@ -85,7 +85,7 @@ const About = () => {
         ))}
 
         <div className="relative min-h-[160px] rounded-3xl border border-[#34415b] bg-[#1b2842] p-5 sm:p-8">
-          <p className="text-sm leading-7 text-[#dbe5f7] sm:text-md sm:leading-8">
+          <p className="text-sm  leading-7 text-[#dbe5f7] sm:text-lg sm:leading-8">
             As <span className="font-semibold text-[#f0cf86]">David had mighty men</span> who stood with him to fulfil God's word,
             <span className="font-semibold text-[#f0cf86]"> Jesus also had devoted men and women</span> who laboured with Him, ensuring His mission of reaching
             and saving the lost was accomplished.

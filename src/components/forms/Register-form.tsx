@@ -27,6 +27,9 @@ import Logo from "../../assets/G20_logo.png";
 import dayjs from "dayjs";
 import { sendWelcomeMessage } from "@/services/twilioMessaging";
 import { AuthInput } from "../ui/authInput";
+import { AuthTextArea } from "../ui/textArea";
+import { getG20CategoryOptions } from "@/lib/g20Categories";
+import { G20ForcedToDoSoOpions } from "@/constants/index";
 
 export const RegisterForm = () => {
   const navigate = useNavigate();
@@ -42,12 +45,16 @@ export const RegisterForm = () => {
       first_name: "",
       email: "",
       division_id: "",
-
       chapter_id: "",
       married: undefined,
       anniversary_day: "",
       anniversary_month: "",
       president_id: "",
+      g20_category: "",
+      g20_amount: 0,
+      voluntary_participation: "Yes",
+      motivation: "",
+      attestation: false,
       password: "",
       phone_number: "",
       birth_day: "",
@@ -60,12 +67,15 @@ export const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const married = form.watch("married");
-  const selectedDivisionId = form.watch("division_id");
+  const selectedChapterId = form.watch("chapter_id");
   const selectedPresidentId = form.watch("president_id");
-  const filteredPresidents = (appState.presidentEntities || [])
-    .filter((president) => (selectedDivisionId ? president.division_id === selectedDivisionId : true))
-    .sort((a, b) => (a.name < b.name ? -1 : 1));
+  const allPresidents = [...(appState.presidentEntities || [])].sort((a, b) => (a.name < b.name ? -1 : 1));
   const selectedPresident = (appState.presidentEntities || []).find((president) => president.id === selectedPresidentId);
+  const g20CategoryOptions = getG20CategoryOptions({
+    chapterId: selectedChapterId,
+    locationCurrency: appState.locationCurrency,
+    fallbackCurrency: appState.fallbackCurrency,
+  });
 
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     try {
@@ -79,18 +89,28 @@ export const RegisterForm = () => {
         anniversary_day,
         anniversary_month,
         president_id,
+        g20_category,
+        g20_amount,
+        voluntary_participation,
+        motivation,
+        attestation,
         password,
         phone_number,
         birth_day,
         birth_month,
       } = values;
 
+      if (voluntary_participation === "No") {
+        ErrorHandler("Giving is voluntary. Please review the membership requirements before proceeding.");
+        // window.location.assign("/#requirements");
+        return;
+      }
+
       // Additional form input check to avoid spamming
       if (values) {
         setIsPending(true);
 
         // TODO: CHECK IF USER EXISTS
-
         const unique_code = await createUniqueCode({ first_name, last_name });
 
         // SIGN UP USER ON COGNITO
@@ -134,7 +154,7 @@ export const RegisterForm = () => {
                   .format("YYYY-MM-DD")
               : null,
           cognito_user_id: user_id,
-          g20_active: false,
+          g20_active: true,
           proposed_payment_scheduled: false,
           g20_status: "passive" as const,
           permission_type: UserPermissionType.individual,
@@ -146,6 +166,11 @@ export const RegisterForm = () => {
           president_id: president_id || null,
           governor_id: selectedPresident?.governor_id || null,
           shepherd_id: selectedPresident?.shepherd_id || null,
+          g20_category,
+          g20_amount: Math.round(g20_amount),
+          voluntary_participation: true,
+          motivation,
+          attestation,
           remission_start_date: new Date().toISOString().split("T")[0],
         };
 
@@ -172,7 +197,7 @@ export const RegisterForm = () => {
 
         if (loggedInUser) {
           SuccessHandler("Registration Successful");
-          navigate("/update", { state: { fromRegistration: true } });
+          navigate("/proposed-schedule", { state: { fromRegistration: true } });
           return;
         }
 
@@ -180,7 +205,7 @@ export const RegisterForm = () => {
           case RegisterNextStep.DONE:
           case RegisterNextStep.COMPLETE_AUTO_SIGN_IN:
             SuccessHandler("Registration Successful");
-            navigate("/update", { state: { fromRegistration: true } });
+            navigate("/proposed-schedule", { state: { fromRegistration: true } });
             break;
           case RegisterNextStep.CONFIRM_SIGN_UP:
             SuccessHandler("Registration Successful");
@@ -335,7 +360,6 @@ export const RegisterForm = () => {
                       onValueChange={(value) => {
                         field.onChange(value);
                         form.setValue("chapter_id", "");
-                        form.setValue("president_id", "");
                       }}
                     >
                       <SelectTrigger className=" h-12" enforceWhite>
@@ -403,12 +427,12 @@ export const RegisterForm = () => {
                     <FormLabel className="text-[#111c30] font-normal text-base">House</FormLabel>
                   </div>
                   <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={!selectedDivisionId}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                       <SelectTrigger className="h-12" enforceWhite>
-                        <SelectValue placeholder={selectedDivisionId ? "Select a House (Optional)" : "Select your Division first"} />
+                        <SelectValue placeholder="Select a House (Optional)" />
                       </SelectTrigger>
                       <SelectContent className="shad-select-content">
-                        {filteredPresidents.map((president) => (
+                        {allPresidents.map((president) => (
                           <SelectItem key={president.id} value={president.id}>
                             <div className="flex items-center cursor-pointer gap-3">
                               <p>{president.name}</p>
@@ -584,6 +608,114 @@ export const RegisterForm = () => {
             )}
           </div>
 
+          <div className="lg:grid grid-cols-2 gap-2 space-y-3 md:space-y-0">
+            <FormField
+              control={form.control}
+              name="g20_category"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-1">
+                    <FormLabel className="text-[#111c30] font-normal text-base">G20 Category</FormLabel>
+                    <span className="text-red-500 text-base">*</span>
+                  </div>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                      <SelectTrigger className="h-12" enforceWhite>
+                        <SelectValue placeholder="Select your G20 Category" />
+                      </SelectTrigger>
+                      <SelectContent className="shad-select-content">
+                        {g20CategoryOptions.map((option: SelectOptions) => (
+                          <SelectItem key={option.value} value={option.value as string}>
+                            <div className="flex items-center cursor-pointer gap-3">
+                              <p>{option.name}</p>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="g20_amount"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-1">
+                    <FormLabel className="text-[#111c30] font-normal text-base">G20 Amount</FormLabel>
+                    <span className="text-red-500 text-base">*</span>
+                  </div>
+                  <FormControl>
+                    <AuthInput
+                      disabled={isPending}
+                      type="number"
+                      min={0}
+                      className="focus-visible:ring-0 h-12 focus-visible:ring-offset-0"
+                      {...field}
+                      placeholder="e.g 100000"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="voluntary_participation"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-1">
+                  <FormLabel className="text-[#111c30] font-normal text-base">Are you doing this of your own accord?</FormLabel>
+                  <span className="text-red-500 text-base">*</span>
+                </div>
+                <FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <SelectTrigger enforceWhite>
+                      <SelectValue placeholder="Select your voluntary giving status" />
+                    </SelectTrigger>
+                    <SelectContent className="shad-select-content">
+                      {G20ForcedToDoSoOpions.map((option: SelectOptions) => (
+                        <SelectItem key={option.value} value={option.value as string}>
+                          <div className="flex items-center cursor-pointer gap-3">
+                            <p>{option.name}</p>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="motivation"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-1">
+                  <FormLabel className="text-[#111c30] font-normal text-base">What is your conviction about giving to advance God's kingsom?</FormLabel>
+                  <span className="text-red-500 text-base">*</span>
+                </div>
+                <FormControl>
+                  <AuthTextArea
+                    className="focus-visible:ring-0 focus-visible:ring-offset-0 min-h-32"
+                    {...field}
+                    placeholder="Why do you want to be a member of the House of Great?"
+                    rows={4}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className=" grid grid-cols-1 space-y-3 md:space-y-0  md:grid-cols-2 gap-x-2">
             <FormField
               control={form.control}
@@ -650,7 +782,26 @@ export const RegisterForm = () => {
             />
           </div>
 
-          <div className=" py-2">
+          <div className="py-4 flex flex-col gap-2">
+            <FormField
+              control={form.control}
+              name="attestation"
+              render={({ field }) => (
+                <FormItem className="flex space-x-3 space-y-0 items-center py-2">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <div className="space-y-1 leading-none text-sm">
+                    <div className="text-[#111c30]">
+                      I acknowledge that my giving is an expression of my love for Christ and a commitment to the advancement of the Kingdom of God. I confirm
+                      that all seed or offerings given were voluntary, made without any form of coercion, pressure, or manipulation, and given willingly from a
+                      heart of faithfulness and devotion to God.
+                    </div>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="accept_terms"

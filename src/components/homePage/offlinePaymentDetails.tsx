@@ -11,10 +11,12 @@ export const OfflineBankDetails = ({
   showBg,
   squared,
   fullWidthOnMobile = false,
+  className,
 }: {
   showBg?: "gold" | "white";
   squared?: boolean;
   fullWidthOnMobile?: boolean;
+  className?: string;
 }) => {
   const [openOffline, setOpenOffline] = useState(false);
 
@@ -26,7 +28,7 @@ export const OfflineBankDetails = ({
             <Button
               size={"lg"}
               variant="custom"
-              className={cn("w-full md:w-auto", fullWidthOnMobile ? "sm:w-auto" : "")}
+              className={cn("w-full md:w-auto", fullWidthOnMobile ? "sm:w-auto" : "", className)}
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -49,6 +51,7 @@ export const OfflineBankDetails = ({
                     : "border border-[#c39a41] bg-[#182238] text-[#c39a41] hover:bg-[#202f4d] focus:ring-[#6d7fa8]",
                 "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0a0f1a]",
                 fullWidthOnMobile ? "w-full sm:w-auto" : "",
+                className,
               )}
               onClick={(e) => {
                 e.stopPropagation();

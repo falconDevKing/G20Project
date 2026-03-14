@@ -32,7 +32,7 @@ const Faqs = () => {
   const faqs: FAQ[] = [
     {
       q: "What is G20?",
-      a: "G20 is a higher-tier partnership community within the broader global vision, designed for men and women committed to bearing greater financial responsibility for major Gospel projects, kingdom expansion, and strategic impact.",
+      a: "G20 is a elite partnership community within a global vision, designed for men and women committed to bearing greater financial responsibility for major gospel projects, kingdom expansion, ministry programs, crusades, charity effort and other strategic impact.",
     },
     {
       q: "Who can become a G20 partner?",
@@ -40,7 +40,7 @@ const Faqs = () => {
     },
     {
       q: "Do I need to be a member of Gospel Pillars Ministry to become a G20 partner?",
-      a: "No. G20 welcomes partners from different regions and backgrounds who believe in the vision and want to stand with the mandate.",
+      a: "No. G20 welcomes partners from different regions and backgrounds who believe in the vision and want to stand with the mandate of spreading the Gospel to the nations of the world and helping the less privileged.",
     },
     {
       q: "How much do I need to give to be a partner?",
@@ -48,11 +48,11 @@ const Faqs = () => {
     },
     {
       q: "What happens to my partnership seed?",
-      a: "Your giving supports major Gospel projects, media outreach, strategic kingdom assignments, and humanitarian impact connected to the wider vision.",
+      a: "Your giving supports major gospel projects, ministry programs, media outreaches, strategic kingdom assignments, and humanitarian impact connected to the wider vision.",
     },
     {
-      q: "How often do I give: monthly or one-time?",
-      a: "G20 is built around an annual commitment, but remittance can be fulfilled in scheduled payments through the platform based on the structure approved for your partnership.",
+      q: "How often do I give?",
+      a: "G20 is built around an annual commitment, but remittance can be fulfilled in scheduled payments through the platform based on the structure you set for your partnership.",
     },
     {
       q: "How do I make my partnership payments?",

@@ -132,9 +132,9 @@ export const ProfileDisplay = ({
             <ProfileInfoItem label="Date of Birth" value={formattedDob || "Not provided"} />
             <ProfileInfoItem label="Gender" value={userProfile.gender || ""} />
             <ProfileInfoItem label="Nationality" value={nationalityLabel || ""} />
-            <ProfileInfoItem label="Address" value={userProfile.address || "Not provided"} className="md:col-span-2 xl:col-span-1" />
             <ProfileInfoItem label="Married" value={userProfile.married ? "Yes" : "Not yet"} />
             <ProfileInfoItem label="Marriage Anniversary" value={formattedAnniversary || "---"} />
+            <ProfileInfoItem label="Address" value={userProfile.address || "Not provided"} className="md:col-span-2 xl:col-span-3" />
           </div>
         </section>
 

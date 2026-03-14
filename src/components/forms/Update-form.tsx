@@ -88,12 +88,18 @@ export const UpdateForm = () => {
       const resolvedMarried = shouldShowMarriageFields ? values.married === "Yes" : userDetails?.married;
       const resolvedAnniversary = shouldShowMarriageFields
         ? values.married === "Yes" && values.anniversary_month && values.anniversary_day
-          ? dayjs().month(parseInt(values.anniversary_month) - 1).date(parseInt(values.anniversary_day)).format("YYYY-MM-DD")
+          ? dayjs()
+              .month(parseInt(values.anniversary_month) - 1)
+              .date(parseInt(values.anniversary_day))
+              .format("YYYY-MM-DD")
           : null
         : userDetails?.marriage_anniversary || null;
       const resolvedDateOfBirth =
         values.birth_month && values.birth_day
-          ? dayjs().month(parseInt(values.birth_month) - 1).date(parseInt(values.birth_day)).toISOString()
+          ? dayjs()
+              .month(parseInt(values.birth_month) - 1)
+              .date(parseInt(values.birth_day))
+              .toISOString()
           : userDetails?.date_of_birth || null;
       const selectedPresident = PresidentOptions.find((president) => president.value === values.president_id);
 
@@ -394,35 +400,6 @@ export const UpdateForm = () => {
           <div className="lg:grid grid-cols-2 gap-2 space-y-3 md:space-y-0">
             <FormField
               control={form.control}
-              name="president_id"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center gap-1">
-                    <FormLabel className="text-[#111c30] font-normal text-base">House</FormLabel>
-                  </div>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                      <SelectTrigger className="h-12" enforceWhite>
-                        <SelectValue placeholder="Select House" />
-                      </SelectTrigger>
-                      <SelectContent className="shad-select-content">
-                        {PresidentOptions.map((president) => (
-                          <SelectItem key={president.value} value={president.value}>
-                            <div className="flex items-center cursor-pointer gap-3">
-                              <p>{president.name}</p>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="g20_category"
               render={({ field }) => (
                 <FormItem>
@@ -461,43 +438,78 @@ export const UpdateForm = () => {
                     <span className="text-red-500 text-base">*</span>
                   </div>
                   <FormControl>
-                    <AuthInput type="number" min={0} className="focus-visible:ring-0 border-gray-600/90 focus-visible:ring-offset-0" {...field} placeholder="e.g 100000" />
+                    <AuthInput
+                      type="number"
+                      min={0}
+                      className="focus-visible:ring-0 border-gray-600/90 focus-visible:ring-offset-0"
+                      {...field}
+                      placeholder="e.g 100000"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="president_id"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-1">
+                    <FormLabel className="text-[#111c30] font-normal text-base">House</FormLabel>
+                  </div>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                      <SelectTrigger className="h-12" enforceWhite>
+                        <SelectValue placeholder="Select House" />
+                      </SelectTrigger>
+                      <SelectContent className="shad-select-content">
+                        {PresidentOptions.map((president) => (
+                          <SelectItem key={president.value} value={president.value}>
+                            <div className="flex items-center cursor-pointer gap-3">
+                              <p>{president.name}</p>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="voluntary_participation"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-1">
+                    <FormLabel className="text-[#111c30] font-normal text-base">Are you doing this of your own accord?</FormLabel>
+                    <span className="text-red-500 text-base">*</span>
+                  </div>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                      <SelectTrigger enforceWhite>
+                        <SelectValue placeholder="Select your voluntary giving status" />
+                      </SelectTrigger>
+                      <SelectContent className="shad-select-content">
+                        {G20ForcedToDoSoOpions.map((option: SelectOptions) => (
+                          <SelectItem key={option.value} value={option.value as string}>
+                            <div className="flex items-center cursor-pointer gap-3">
+                              <p>{option.name}</p>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-
-          <FormField
-            control={form.control}
-            name="voluntary_participation"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center gap-1">
-                  <FormLabel className="text-[#111c30] font-normal text-base">Are you doing this of your own accord?</FormLabel>
-                  <span className="text-red-500 text-base">*</span>
-                </div>
-                <FormControl>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                    <SelectTrigger enforceWhite>
-                      <SelectValue placeholder="Select your voluntary giving status" />
-                    </SelectTrigger>
-                    <SelectContent className="shad-select-content">
-                      {G20ForcedToDoSoOpions.map((option: SelectOptions) => (
-                        <SelectItem key={option.value} value={option.value as string}>
-                          <div className="flex items-center cursor-pointer gap-3">
-                            <p>{option.name}</p>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           <FormField
             control={form.control}
@@ -509,7 +521,12 @@ export const UpdateForm = () => {
                   <span className="text-red-500 text-base">*</span>
                 </div>
                 <FormControl>
-                  <AuthTextArea className="focus-visible:ring-0 focus-visible:ring-offset-0" {...field} placeholder="Why do you want to be a member of the House of Great?" rows={6} />
+                  <AuthTextArea
+                    className="focus-visible:ring-0 focus-visible:ring-offset-0"
+                    {...field}
+                    placeholder="Why do you want to be a member of the House of Great?"
+                    rows={6}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

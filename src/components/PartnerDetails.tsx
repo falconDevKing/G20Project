@@ -6,6 +6,7 @@ import { PartnerRowType, PaymentRowType } from "@/supabase/modifiedSupabaseTypes
 import dayjs from "dayjs";
 import { findChapterDetails, findDivisionDetails } from "@/services/payment";
 import { CapitaliseWords } from "@/lib/textUtils";
+import { useAppSelector } from "@/redux/hooks";
 
 interface PartnerDetailsType {
   open: boolean;
@@ -22,7 +23,7 @@ const titleise = (key: string) =>
 
 const DefaultNA = <span className="text-muted-foreground">---</span>;
 
-const formatValue = (value: any, key: string): React.ReactNode => {
+const formatValue = (value: any, key: string, showAmount?: boolean): React.ReactNode => {
   const dateFormat = key === "birth_day_mmdd" ? "DD-MMM" : key === "date_of_birth" ? "MMM DD" : key === "remission_period" ? "MMM YYYY" : "MMM DD, YYYY";
   const transformNationality = (nationality: string) => (nationality === "NG" ? "Nigerian" : "International");
   const valueToUse =
@@ -34,6 +35,9 @@ const formatValue = (value: any, key: string): React.ReactNode => {
           ? transformNationality(value)
           : value;
 
+  if (key === "g20_amount") {
+    return showAmount ? valueToUse : "---";
+  }
   if (valueToUse === null || valueToUse === undefined || valueToUse === "") return DefaultNA;
   if (valueToUse instanceof Date || key.includes("date")) return dayjs(valueToUse).format(dateFormat);
   if (typeof valueToUse === "boolean") return valueToUse ? "Yes" : "No";
@@ -46,6 +50,11 @@ const formatValue = (value: any, key: string): React.ReactNode => {
 };
 
 export const PartnerPaymentDetails = ({ open, setOpen, details, order }: PartnerDetailsType) => {
+  const user = useAppSelector((state) => state.auth.userDetails);
+  const pstPermission = String(user.permission_type || "").toLowerCase();
+  const opsPermission = String(user.ops_permission_type || "").toLowerCase();
+  const showAmount = pstPermission === "organisation" || opsPermission === "shepherd";
+
   //  <SheetTrigger asChild>
   //   {/* <img src={"/hamburger.svg"} className="cursor-pointer " width={35} height={35} alt="hamburger" /> */}
   //   <Eye size={24} className=" text-[#1E1E1E] max-md:dark:text-[#1E1E1E] dark:text-white" />
@@ -64,7 +73,7 @@ export const PartnerPaymentDetails = ({ open, setOpen, details, order }: Partner
           <div className={`grid grid-cols-2 gap-4`}>
             {detailsData.map(([key, value]) => {
               const label = titleise(key);
-              const rendered = formatValue(value, key);
+              const rendered = formatValue(value, key, showAmount);
 
               return (
                 <div

@@ -207,7 +207,7 @@ export const ProposedScheduleForm = () => {
           </div>
 
           <div className="text-sm text-gray-500">
-            Proposed Dates can only be selected from <>{dayjs(minDate).format("MMMM DD")} to</>
+            Proposed Dates can only be selected from <>{dayjs(minDate).format("MMMM DD")}</> to
             <>{dayjs(maxDate).format("MMMM DD")}.</>
           </div>
 
