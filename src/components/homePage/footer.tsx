@@ -35,14 +35,14 @@ const Footer = () => {
   ];
 
   return (
-    <footer id="contact" className="border-t border-[#29334a] bg-[#0f1728] px-24">
-      <div className="mx-auto px-4 py-14 sm:px-6 lg:px-8">
+    <footer id="contact" className="border-t border-[#29334a] bg-[#0f1728] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-7xl py-12 sm:py-14">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
           {contacts.map((c) => (
             <div key={c.title} className="rounded-2xl border border-[#2e3a55] bg-[#111c31] p-5">
               <p className="text-lg font-semibold text-[#f8f1e3]">{c.title}</p>
               <div className="mt-4 space-y-2 text-sm text-[#c8d5ef]">
-                {c?.lines.map((line) => (
+                {c.lines.map((line) => (
                   <p key={line}>{line}</p>
                 ))}
               </div>
@@ -60,7 +60,9 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="mt-12 border-t border-[#29334a] pt-8 text-center text-sm text-[#9eb0d2]">� {new Date().getFullYear()}. All rights reserved.</div>
+        <div className="mt-12 border-t border-[#29334a] pt-8 text-center text-sm text-[#9eb0d2]">
+          {String.fromCharCode(169)} {new Date().getFullYear()}. All rights reserved.
+        </div>
       </div>
     </footer>
   );

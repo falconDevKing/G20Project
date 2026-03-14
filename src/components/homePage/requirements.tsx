@@ -27,11 +27,11 @@ const Requirements = () => {
     >
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div className="relative overflow-hidden rounded-3xl border border-[#2e3a55] bg-[#111c31]">
-          <img src={BannerPicture} alt="Requirements graphic" className="object-cover max-h-[600px] mx-auto" />
+          <img src={BannerPicture} alt="Requirements graphic" className="mx-auto h-[260px] w-full object-cover sm:h-[360px] lg:max-h-[600px]" />
           <div className="absolute inset-0 bg-[#0b1120]/30" />
         </div>
 
-        <div className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-6">
+        <div className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-5 sm:p-6">
           <div className="grid grid-cols-1 gap-6">
             <div className="space-y-4">
               {requirementsLeft.map((r) => (
@@ -39,7 +39,7 @@ const Requirements = () => {
                   <span className="pt-0.5 text-[#d2ae63]">
                     <CheckCircle />
                   </span>
-                  <p className="text-md text-[#d6e2f8]">{r}</p>
+                  <p className="text-sm text-[#d6e2f8] sm:text-md">{r}</p>
                 </div>
               ))}
             </div>
@@ -51,9 +51,11 @@ const Requirements = () => {
             </p>
           </div>
 
-          <div className="mt-7 flex flex-wrap gap-2">
-            <PrimaryButton href="/register">Join now</PrimaryButton>
-            <OfflineBankDetails />
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <PrimaryButton href="/register" fullWidthOnMobile>
+              Join now
+            </PrimaryButton>
+            <OfflineBankDetails fullWidthOnMobile />
           </div>
         </div>
       </div>

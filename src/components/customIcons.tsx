@@ -29,18 +29,24 @@ export const PrimaryButton = ({
   children,
   className = "",
   hideArrow = false,
+  fullWidthOnMobile = false,
+  onClick,
 }: {
   href: string;
   children: React.ReactNode;
   className?: string;
   hideArrow?: boolean;
+  fullWidthOnMobile?: boolean;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }) => (
   <a
     href={href}
+    onClick={onClick}
     className={cn(
-      "inline-flex items-center justify-center gap-2 rounded-full border border-[#8e6f2a] bg-[#c39a41] px-6 py-3 text-md font-semibold text-[#17120a]",
+      "inline-flex items-center justify-center gap-2 rounded-full border border-[#8e6f2a] bg-[#c39a41] px-6 py-3 text-sm font-semibold text-[#17120a] sm:text-md",
       "shadow-[0_10px_24px_rgba(20,16,8,0.45)]",
       "hover:bg-[#d2ab58] focus:outline-none focus:ring-2 focus:ring-[#d2ab58] focus:ring-offset-2 focus:ring-offset-[#0a0f1a]",
+      fullWidthOnMobile ? "w-full sm:w-auto" : "",
       className,
     )}
   >
@@ -54,19 +60,25 @@ export const GhostButton = ({
   children,
   className = "",
   showArrow = false,
+  fullWidthOnMobile = false,
+  onClick,
 }: {
   href: string;
   children: React.ReactNode;
   className?: string;
   showArrow?: boolean;
+  fullWidthOnMobile?: boolean;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }) => (
   <a
     href={href}
+    onClick={onClick}
     className={cn(
-      "inline-flex items-center justify-center rounded-full px-6 py-3 text-md font-semibold gap-2",
+      "inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold gap-2 sm:text-md",
       // "border border-[#4a5875] bg-[#182238] text-[#d6e2ff] hover:bg-[#202f4d]",
       "border border-[#c39a41] bg-[#182238] text-[#c39a41] hover:bg-[#202f4d]",
       "focus:outline-none focus:ring-2 focus:ring-[#6d7fa8] focus:ring-offset-2 focus:ring-offset-[#0a0f1a]",
+      fullWidthOnMobile ? "w-full sm:w-auto" : "",
       className,
     )}
   >

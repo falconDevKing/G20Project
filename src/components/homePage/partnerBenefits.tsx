@@ -51,7 +51,7 @@ const PartnerBenefits = () => {
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {partnerBenefits.map((benefit) => (
-          <div key={benefit.title} className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-6">
+          <div key={benefit.title} className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-5 sm:p-6">
             <div className="flex gap-4">
               <div className="pt-1 text-[#d2ae63]">
                 <CheckCircle className="h-5 w-5" />

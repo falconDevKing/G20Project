@@ -53,37 +53,39 @@ const About = () => {
     <SectionShell id="about" eyebrow="Who we are" title="About G20" className="bg-[#0c1423]">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
         <div className="relative overflow-hidden rounded-3xl border border-[#2e3a55] bg-[#111c31]">
-          <img src={G20ParliamentTable} alt="G20 gathering" className="h-[428px] w-full object-cover" />
+          <img src={G20ParliamentTable} alt="G20 gathering" className="h-[260px] w-full object-cover sm:h-[340px] lg:h-[428px]" />
           <div className="absolute inset-0 bg-[#0b1120]/30" />
         </div>
 
-        <div className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-6">
-          <p className="text-md leading-7 text-[#d3dff5]">
+        <div className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-5 sm:p-6">
+          <p className="text-sm leading-7 text-[#d3dff5] sm:text-md">
             In this generation, the G20 represents a new company of giants, men and women who are strong and discerning, recognising their God-given advantage
             and positioned to advance the cause of the Gospel.
           </p>
-          <p className="text-md leading-7 text-[#d3dff5] py-6">
+          <p className="py-5 text-sm leading-7 text-[#d3dff5] sm:py-6 sm:text-md">
             A select group of men and women committed to standing with the Prophet in fulfilling the divine mandate of taking the Gospel to all nations.
           </p>
 
-          <div className="mt-5 gap-4 flex flex-wrap">
-            <PrimaryButton href="/register">Sign up</PrimaryButton>
-            <OfflineBankDetails />
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <PrimaryButton href="/register" fullWidthOnMobile>
+              Sign up
+            </PrimaryButton>
+            <OfflineBankDetails fullWidthOnMobile />
           </div>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
         {quotesDavid.map((q) => (
-          <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-6">
+          <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-5 sm:p-6">
             <div className="absolute left-0 top-0 h-full w-1 bg-[#d0aa56]" />
-            <p className="text-lg leading-7 text-[#f0cf86]">"{q.text}"</p>
+            <p className="text-base leading-7 text-[#f0cf86] sm:text-lg">"{q.text}"</p>
             <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9] italic">{q.ref}</p>
           </div>
         ))}
 
-        <div className="relative min-h-[160px] rounded-3xl border border-[#34415b] bg-[#1b2842] p-8">
-          <p className="text-base leading-8 text-[#dbe5f7]">
+        <div className="relative min-h-[160px] rounded-3xl border border-[#34415b] bg-[#1b2842] p-5 sm:p-8">
+          <p className="text-sm leading-7 text-[#dbe5f7] sm:text-base sm:leading-8">
             As <span className="font-semibold text-[#f0cf86]">David had mighty men</span> who stood with him to fulfil God's word,
             <span className="font-semibold text-[#f0cf86]"> Jesus also had devoted men and women</span> who laboured with Him, ensuring His mission of reaching
             and saving the lost was accomplished.
@@ -98,25 +100,27 @@ const About = () => {
           </div>
         ))}
 
-        <div className="relative min-h-[160px] rounded-3xl border border-[#34415b] bg-[#1b2842] p-8">
-          <p className="text-lg leading-8 text-[#dbe5f7]">
+        <div className="relative min-h-[160px] rounded-3xl border border-[#34415b] bg-[#1b2842] p-5 sm:p-8">
+          <p className="text-base leading-7 text-[#dbe5f7] sm:text-lg sm:leading-8">
             In every generation, God raises men and women <span className="font-semibold text-[#f0cf86]">who stand with divine assignments.</span>
           </p>
-          <p className="text-xl text-right font-semibold text-[#f0cf86]">Will you be one of them?</p>
+          <p className="mt-4 text-right text-lg font-semibold text-[#f0cf86] sm:text-xl">Will you be one of them?</p>
         </div>
 
         {quotesPaul.map((q) => (
-          <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-6">
+          <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-5 sm:p-6">
             <div className="absolute left-0 top-0 h-full w-1 bg-[#d0aa56]" />
-            <p className="text-lg leading-7 text-[#f0cf86] ">"{q.text}"</p>
+            <p className="text-base leading-7 text-[#f0cf86] sm:text-lg ">"{q.text}"</p>
             <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9] italic">{q.ref}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-12 flex justify-center w-full gap-8">
-        <PrimaryButton href="/register">Join the G20</PrimaryButton>
-        <OfflineBankDetails />
+      <div className="mt-12 flex w-full flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+        <PrimaryButton href="/register" fullWidthOnMobile>
+          Join the G20
+        </PrimaryButton>
+        <OfflineBankDetails fullWidthOnMobile />
       </div>
     </SectionShell>
   );

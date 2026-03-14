@@ -48,7 +48,7 @@ const Benefits = () => {
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {benefits.map((b) => (
-          <div key={b.title} className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-6">
+          <div key={b.title} className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-5 sm:p-6">
             <div className="flex items-start gap-4">
               <IconBox>{b.icon ?? <CheckCircle />}</IconBox>
               <div>
@@ -60,9 +60,11 @@ const Benefits = () => {
         ))}
       </div>
 
-      <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <PrimaryButton href="/register">Sign up today</PrimaryButton>
-        <OfflineBankDetails />
+      <div className="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+        <PrimaryButton href="/register" fullWidthOnMobile>
+          Sign up today
+        </PrimaryButton>
+        <OfflineBankDetails fullWidthOnMobile />
       </div>
     </SectionShell>
   );

@@ -2,7 +2,7 @@ import { LogOut } from "lucide-react";
 import { LogoutButton } from "../forms/logout-button";
 import { Link } from "react-router";
 
-import G20Logo from "@/assets/generalAppAssets/G20_Logo.png";
+import G20Logo from "@/assets/generalAppAssets/G20_logo.png";
 import { UserButtonCode } from "../user-button-code";
 
 const DashboardHeader = () => {

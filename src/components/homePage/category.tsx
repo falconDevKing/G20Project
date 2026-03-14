@@ -25,7 +25,7 @@ const Category = () => {
       className="bg-[#0a1220]"
     >
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-stretch">
-        <div className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-6">
+        <div className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-5 sm:p-6">
           <div className="space-y-5">
             {categories.map((c) => (
               <div key={c.title} className="flex gap-4">
@@ -33,8 +33,8 @@ const Category = () => {
                   <CheckCircle />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-md font-semibold text-[#f0cf86]">{c.title}</p>
-                  <p className="mt-1 text-md text-[#d6e2f8]">
+                  <p className="text-sm font-semibold text-[#f0cf86] sm:text-md">{c.title}</p>
+                  <p className="mt-1 text-sm text-[#d6e2f8] sm:text-md">
                     {c.amount} {c.subtitle ? <span className="text-[#aebcda]">({c.subtitle})</span> : null}
                   </p>
                 </div>
@@ -42,18 +42,18 @@ const Category = () => {
             ))}
           </div>
 
-          <p className="mt-7 text-md text-[#d6e2f8]">Top G20 partners will serve as executives of the House of Greats for the upcoming year.</p>
+          <p className="mt-7 text-sm text-[#d6e2f8] sm:text-md">Top G20 partners will serve as executives of the House of Greats for the upcoming year.</p>
 
-          <div className="mt-7 gap-4 flex flex-wrap">
-            <OfflineBankDetails showBg="gold" />
-            <GhostButton href="/login" className="hidden sm:inline-flex" showArrow>
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <OfflineBankDetails showBg="gold" fullWidthOnMobile />
+            <GhostButton href="/login" showArrow fullWidthOnMobile>
               Sign up
             </GhostButton>
           </div>
         </div>
 
         <div className="relative overflow-hidden rounded-3xl border border-[#2e3a55] bg-[#111c31]">
-          <img src={ProphetPortrait} alt="Leader portrait" className="w-full max-h-[560px] object-cover" />
+          <img src={ProphetPortrait} alt="Leader portrait" className="h-[280px] w-full object-cover sm:h-[420px] lg:max-h-[560px]" />
           <div className="absolute inset-0 bg-[#0b1120]/30" />
         </div>
       </div>

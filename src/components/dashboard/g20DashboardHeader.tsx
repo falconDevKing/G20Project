@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { ChevronDown, LogOut, Moon, Sun, User, LayoutDashboard } from "lucide-react";
 
-import G20Logo from "@/assets/generalAppAssets/G20_Logo.png";
+import G20Logo from "@/assets/generalAppAssets/G20_logo.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/themeProvider/theme-provider";
