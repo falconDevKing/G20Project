@@ -9,7 +9,7 @@ import MMWCrest from "@/assets/heroImages/MMW_logo.png";
 import HeroBackgroundOne from "@/assets/heroImages/newBgPic2.jpeg";
 import HeroBackgroundTwo from "@/assets/heroImages/newBgPic6.jpeg";
 import HeroBackgroundThree from "@/assets/heroImages/newBgPic8.jpeg";
-import HeroBackgroundFour from "@/assets/heroImages/newBgPic10.jpeg";
+import HeroBackgroundFour from "@/assets/heroImages/newBgPic100.jpeg";
 import HeroBackgroundFive from "@/assets/heroImages/newBgPic14.jpeg";
 import HeroBackgroundSix from "@/assets/heroImages/newBgPic15.jpeg";
 import HeroBackgroundSeven from "@/assets/heroImages/Prop 9.jpg";
