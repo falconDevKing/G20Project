@@ -19,13 +19,7 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-  origin: [
-    "http://localhost:5173",
-    "https://globalgospelpartnership.org",
-    "https://globalgospelpartnership.com",
-    "https://www.globalgospelpartnership.org",
-    "https://www.globalgospelpartnership.com",
-  ],
+  origin: ["http://localhost:5173", "https://g20partnership.org", "https://www.g20partnership.org"],
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };

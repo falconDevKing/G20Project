@@ -41,9 +41,9 @@ export const AdminViews = [
   { name: "Remission Management", route: "/remissions", icon: WalletMinimal, allowIndividual: false, allowChapter: true },
   { name: "Pending Remissions", route: "/pending-remissions", icon: Banknote, allowIndividual: false, allowChapter: true },
   { name: "Proposal Management", route: "/proposal-management", icon: NotebookTabs, allowIndividual: false, allowChapter: true },
-  { name: "Partner Management", route: "/users", icon: Users, allowIndividual: false, allowChapter: true },
+  { name: "Manage Honourables", route: "/users", icon: Users, allowIndividual: false, allowChapter: true },
   // { name: "Partner Signup", route: "/signup", icon: UserPlus , allowIndividual: false },
-  { name: "Partner Messaging", route: "/message", icon: Mails, allowIndividual: false, allowChapter: false },
+  { name: "Message Honourables", route: "/message", icon: Mails, allowIndividual: false, allowChapter: false },
   { name: "Tools", route: "/tools", icon: BadgePlus, allowIndividual: false, allowChapter: false },
 ];
 
@@ -411,13 +411,95 @@ export const GGPCategories: GGPCategoriesType = {
   },
 };
 
-export const G20Categories: SelectOptions[] = [
-  { name: "Bronze (1 - 2 Million Naira)", value: "Bronze" },
-  { name: "Silver (2 - 5 Million Naira)", value: "Silver" },
-  { name: "Gold (5 - 10 Million Naira)", value: "Gold" },
-  { name: "Diamond (10 - 25 Million Naira)", value: "Diamond" },
-  { name: "Platinum (Above 25 Million Naira)", value: "Platinum" },
-];
+export const G20Categories = {
+  NGN: [
+    { rank: "Bronze", amount: "₦1,000,000 - ₦2,000,000" },
+    { rank: "Silver", amount: "₦2,000,000 - ₦5,000,000" },
+    { rank: "Gold", amount: "₦5,000,000 - ₦10,000,000" },
+    { rank: "Diamond", amount: "₦10,000,000 - ₦25,000,000" },
+    { rank: "Platinum", amount: "Above ₦25,000,000" },
+  ],
+
+  GBP: [
+    { rank: "Bronze", amount: "£700 - £1,500" },
+    { rank: "Silver", amount: "£1,500 - £3,000" },
+    { rank: "Gold", amount: "£3,000 - £6,000" },
+    { rank: "Diamond", amount: "£6,000 - £15,000" },
+    { rank: "Platinum", amount: "Above £15,000" },
+  ],
+
+  USD: [
+    { rank: "Bronze", amount: "$1000 - $2,000" },
+    { rank: "Silver", amount: "$2,000 - $4,000" },
+    { rank: "Gold", amount: "$4,000 - $10,000" },
+    { rank: "Diamond", amount: "$10,000 - $20,000" },
+    { rank: "Platinum", amount: "Above $20,000" },
+  ],
+
+  CAD: [
+    { rank: "Bronze", amount: "CA$1,000 - CA$2,000" },
+    { rank: "Silver", amount: "CA$2,000 - CA$5,000" },
+    { rank: "Gold", amount: "CA$5,000 - CA$10,000" },
+    { rank: "Diamond", amount: "CA$10,000 - CA$25,000" },
+    { rank: "Platinum", amount: "Above CA$25,000" },
+  ],
+
+  GHS: [
+    { rank: "Bronze", amount: "GH₵10,000 - GH₵20,000" },
+    { rank: "Silver", amount: "GH₵20,000 - GH₵40,000" },
+    { rank: "Gold", amount: "GH₵40,000 - GH₵80,000" },
+    { rank: "Diamond", amount: "GH₵80,000 - GH₵200,000" },
+    { rank: "Platinum", amount: "Above GH₵200,000" },
+  ],
+
+  ZAR: [
+    { rank: "Bronze", amount: "R15,000 - R25,000" },
+    { rank: "Silver", amount: "R25,000 - R65,000" },
+    { rank: "Gold", amount: "R65,000 - R150,000" },
+    { rank: "Diamond", amount: "R150,000 - R320,000" },
+    { rank: "Platinum", amount: "Above R320,000" },
+  ],
+
+  EUR: [
+    { rank: "Bronze", amount: "€700 - €1,500" },
+    { rank: "Silver", amount: "€1,500 - €3,500" },
+    { rank: "Gold", amount: "€3,500 - €6,500" },
+    { rank: "Diamond", amount: "€6,500 - €16,000" },
+    { rank: "Platinum", amount: "Above €16,000" },
+  ],
+
+  MXN: [
+    { rank: "Bronze", amount: "MX$15,000 - MX$30,000" },
+    { rank: "Silver", amount: "MX$30,000 - MX$65,000" },
+    { rank: "Gold", amount: "MX$65,000 - MX$130,000" },
+    { rank: "Diamond", amount: "MX$130,000 - MX$325,000" },
+    { rank: "Platinum", amount: "Above MX$325,000" },
+  ],
+
+  PHP: [
+    { rank: "Bronze", amount: "₱50,000 - ₱100,000" },
+    { rank: "Silver", amount: "₱100,000 - ₱250,000" },
+    { rank: "Gold", amount: "₱250,000 - ₱450,000" },
+    { rank: "Diamond", amount: "₱450,000 - ₱1,000,000" },
+    { rank: "Platinum", amount: "Above ₱1,000,000" },
+  ],
+
+  AED: [
+    { rank: "Bronze", amount: "AED 2,700 - AED 5,500" },
+    { rank: "Silver", amount: "AED 5,500 - AED 15,000" },
+    { rank: "Gold", amount: "AED 15,000 - AED 30,000" },
+    { rank: "Diamond", amount: "AED 30,000 - AED 70,000" },
+    { rank: "Platinum", amount: "Above AED 70,000" },
+  ],
+
+  USDAF: [
+    { rank: "Bronze", amount: "$750 - $1,500" },
+    { rank: "Silver", amount: "$1,500 - $3,600" },
+    { rank: "Gold", amount: "$3,600 - $7,200" },
+    { rank: "Diamond", amount: "$7,200 - $18,000" },
+    { rank: "Platinum", amount: "Above $18,000" },
+  ],
+} as const;
 export const G20RemissionStatusOptions: SelectOptions[] = [
   {
     name: "Yes",

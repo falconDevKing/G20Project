@@ -5,6 +5,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import dayjs from "dayjs";
 import { CapitaliseText } from "@/lib/textUtils";
 import { numberWithCurrencyFormatter } from "@/lib/numberUtils";
+import { findChapterDetails } from "@/services/payment";
+import { getG20CategoryLabel } from "@/lib/g20Categories";
 
 export type DummyObject = Record<string, any>;
 
@@ -251,7 +253,7 @@ export const userColumns: (
   return [
     {
       accessorKey: "name",
-      header: "Name",
+      header: "Honourable",
       cell: ({ row }) => {
         return (
           <div className="capitalize flex flex-col align-middle">
@@ -278,11 +280,18 @@ export const userColumns: (
         const pstPermissions = row.original.permission_type;
         const opsPermission = row.original.ops_permission_type;
         const showAmount = pstPermissions === "organisation" || opsPermission === "shepherd";
+        const categoryLabel = getG20CategoryLabel(String(G20Category || ""), { chapterId: row.original.chapter_id });
 
         return (
           <div className="capitalize flex flex-col align-middle">
-            <span>{`${G20Category || "---"}`}</span>
-            {showAmount ? <span className="text-xs">({`${numberWithCurrencyFormatter("NGN", row?.original?.g20_amount)}`})</span> : ""}
+            <span>{categoryLabel || "---"}</span>
+            {showAmount && row?.original?.g20_amount ? (
+              <span className="text-xs">
+                ({`${numberWithCurrencyFormatter(findChapterDetails(row.original.chapter_id)?.currency || "NGN", row?.original?.g20_amount)}`})
+              </span>
+            ) : (
+              ""
+            )}
           </div>
         );
       },
@@ -295,7 +304,7 @@ export const userColumns: (
         return (
           <div className="capitalize flex flex-col align-middle">
             <span>{chapters.find((chapter) => chapter.id === row.getValue("chapter_id"))?.name || ""}</span>
-            <span className="text-[10px]">({divisions.find((division) => division.id === row.original.division_id)?.name || ""})</span>
+            <span className="text-[10px]">{divisions.find((division) => division.id === row.original.division_id)?.name || ""}</span>
           </div>
         );
       },

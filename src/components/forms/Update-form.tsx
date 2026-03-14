@@ -10,7 +10,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { updateUser } from "@/services/auth";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
 import { monthsOfTheYearOptions, RemissionDayOptions } from "@/lib/utils";
-import { G20Categories, G20ForcedToDoSoOpions } from "@/constants/index";
+import { G20ForcedToDoSoOpions } from "@/constants/index";
 import { SelectOptions } from "@/interfaces/register";
 
 import { CardWrapper } from "../Card-wapper";
@@ -22,15 +22,19 @@ import { AuthTextArea } from "@/components/ui/textArea";
 import { AuthInput } from "../ui/authInput";
 
 import Logo from "../../assets/G20_logo.png";
+import { getG20CategoryOptions } from "@/lib/g20Categories";
+import { initialiseAdminOptions } from "@/lib/utils";
 
 export const UpdateForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const authState = useAppSelector((state) => state.auth);
+  const appState = useAppSelector((state) => state.app);
   const isAuthenticated = authState.authenticated;
   const userDetails = useAppSelector((state) => state.auth.userDetails);
   const email = userDetails?.email || "";
+  const { PresidentOptions } = initialiseAdminOptions(appState);
   const fromRegistration = Boolean((location.state as { fromRegistration?: boolean } | null)?.fromRegistration);
   const shouldShowPreview = !fromRegistration;
   const shouldShowMarriageFields = !fromRegistration && userDetails?.married == null;
@@ -47,6 +51,7 @@ export const UpdateForm = () => {
       anniversary_day: "",
       anniversary_month: "",
       require_married: true,
+      president_id: "",
       g20_category: "",
       g20_amount: 0,
       voluntary_participation: "Yes",
@@ -58,12 +63,23 @@ export const UpdateForm = () => {
   const [isPending, setIsPending] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const married = form.watch("married");
+  const g20CategoryOptions = getG20CategoryOptions({
+    chapterId: userDetails?.chapter_id,
+    locationCurrency: appState.locationCurrency,
+    fallbackCurrency: appState.fallbackCurrency,
+  });
 
   const onSubmit = async (values: z.infer<typeof g20UpdateAuthSchema>) => {
     try {
       if (!email || !userDetails?.id) {
         ErrorHandler("Please login to update your details.");
         navigate("/login?redirectTo=/update");
+        return;
+      }
+
+      if (values.voluntary_participation === "No") {
+        ErrorHandler("Giving is voluntary. Please review the membership requirements before proceeding.");
+        window.location.assign("/#requirements");
         return;
       }
 
@@ -79,6 +95,7 @@ export const UpdateForm = () => {
         values.birth_month && values.birth_day
           ? dayjs().month(parseInt(values.birth_month) - 1).date(parseInt(values.birth_day)).toISOString()
           : userDetails?.date_of_birth || null;
+      const selectedPresident = PresidentOptions.find((president) => president.value === values.president_id);
 
       const updatedUser = await updateUser({
         id: userDetails.id,
@@ -88,6 +105,9 @@ export const UpdateForm = () => {
         date_of_birth: resolvedDateOfBirth,
         married: resolvedMarried,
         marriage_anniversary: resolvedAnniversary,
+        president_id: values.president_id || userDetails?.president_id || null,
+        governor_id: selectedPresident?.governor_id || userDetails?.governor_id || null,
+        shepherd_id: selectedPresident?.shepherd_id || userDetails?.shepherd_id || null,
         g20_category: values.g20_category,
         g20_amount: Math.round(values.g20_amount),
         voluntary_participation: values.voluntary_participation === "Yes",
@@ -138,6 +158,7 @@ export const UpdateForm = () => {
       anniversary_day: userDetails?.marriage_anniversary ? dayjs(userDetails.marriage_anniversary).format("DD") : "",
       anniversary_month: userDetails?.marriage_anniversary ? dayjs(userDetails.marriage_anniversary).format("MM") : "",
       require_married: shouldShowMarriageFields,
+      president_id: userDetails?.president_id || "",
       g20_category: userDetails?.g20_category || "",
       g20_amount: userDetails?.g20_amount || 0,
       voluntary_participation: userDetails?.voluntary_participation ? "Yes" : "No",
@@ -373,6 +394,35 @@ export const UpdateForm = () => {
           <div className="lg:grid grid-cols-2 gap-2 space-y-3 md:space-y-0">
             <FormField
               control={form.control}
+              name="president_id"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-1">
+                    <FormLabel className="text-[#111c30] font-normal text-base">House</FormLabel>
+                  </div>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                      <SelectTrigger className="h-12" enforceWhite>
+                        <SelectValue placeholder="Select House" />
+                      </SelectTrigger>
+                      <SelectContent className="shad-select-content">
+                        {PresidentOptions.map((president) => (
+                          <SelectItem key={president.value} value={president.value}>
+                            <div className="flex items-center cursor-pointer gap-3">
+                              <p>{president.name}</p>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="g20_category"
               render={({ field }) => (
                 <FormItem>
@@ -386,7 +436,7 @@ export const UpdateForm = () => {
                         <SelectValue placeholder="Select your G20 Category" />
                       </SelectTrigger>
                       <SelectContent className="shad-select-content">
-                        {G20Categories.map((option: SelectOptions) => (
+                        {g20CategoryOptions.map((option: SelectOptions) => (
                           <SelectItem key={option.value} value={option.value as string}>
                             <div className="flex items-center cursor-pointer gap-3">
                               <p>{option.name}</p>

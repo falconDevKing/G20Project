@@ -26,8 +26,8 @@ const Requirements = () => {
       className="bg-[#0c1423]"
     >
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="relative overflow-hidden rounded-3xl border border-[#2e3a55] bg-[#111c31]">
-          <img src={BannerPicture} alt="Requirements graphic" className="mx-auto h-[260px] w-full object-cover sm:h-[360px] lg:max-h-[600px]" />
+        <div className="relative overflow-hidden rounded-3xl lg:border border-[#2e3a55] lg:bg-[#111c31]">
+          <img src={BannerPicture} alt="Requirements graphic" className="mx-auto w-full object-cover sm:max-h-[600px] sm:object-contain" />
           <div className="absolute inset-0 bg-[#0b1120]/30" />
         </div>
 
@@ -39,19 +39,19 @@ const Requirements = () => {
                   <span className="pt-0.5 text-[#d2ae63]">
                     <CheckCircle />
                   </span>
-                  <p className="text-sm text-[#d6e2f8] sm:text-md">{r}</p>
+                  <p className="text-sm text-[#d6e2f8] sm:text-lg">{r}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="mt-8 rounded-2xl border border-[#34415b] bg-[#1b2842] p-5">
-            <p className="text-sm text-[#d6e2f8]">
+            <p className="text-sm sm:text-lg text-[#d6e2f8]">
               Minimum annual commitment: <span className="font-semibold text-[#f0cf86]">NGN 1,000,000</span>. Partnership is voluntary, and conviction matters.
             </p>
           </div>
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <div className="mt-7 grid grid-cols-2 sm:flex gap-3 sm:flex-row sm:flex-wrap">
             <PrimaryButton href="/register" fullWidthOnMobile>
               Join now
             </PrimaryButton>

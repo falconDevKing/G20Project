@@ -154,7 +154,7 @@ const PostG20ConfirmationTemplate = function (name: string, code: string, qrCode
           <br />
           <p style="font-weight: 400; color: #8083a3; margin-top: -16px">
             © GGP |
-            <a href="mailto:info@globalgospelpartnership.org" style="color: #8083a3; text-decoration: none"> info@globalgospelpartnership.org </a>
+            <a href="mailto:info@g20partnership.org" style="color: #8083a3; text-decoration: none"> info@g20partnership.org </a>
             <br />
             Together in faith, always Partnering with the Prophet
           </p>

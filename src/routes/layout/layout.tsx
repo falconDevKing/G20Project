@@ -54,7 +54,7 @@ const LayoutRoot = () => {
 
   return (
     // <main className="h-screen w-full overflow-hidden bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-    <main className="h-screen w-full overflow-hidden bg-G20-surface text-[hsl(var(--foreground))]">
+    <main className="h-screen w-full overflow-hidden bg-[#F8F4EA] dark:bg-G20-surface text-[hsl(var(--foreground))]">
       <div className="flex h-[calc(100vh-64px)]">
         {isDashboardPage || isProfilePage ? (
           <section className={`flex-1 ml-0 overflow-y-auto`}>

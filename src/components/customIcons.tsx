@@ -13,7 +13,7 @@ export const CheckCircle = ({ className = "" }: { className?: string }) => (
 );
 
 export const IconBox = ({ children }: { children: React.ReactNode }) => (
-  <span className="grid h-9 w-9 place-items-center rounded-xl border border-[#5b4a22] bg-[#2a2214] text-[#f0d486]">{children}</span>
+  <span className=" flex items-center justify-center p-1 rounded-lg border border-[#5b4a22] bg-[#2a2214] text-[#f0d486]">{children}</span>
 );
 
 export const ShieldAlert = ({ className = "" }: { className?: string }) => (

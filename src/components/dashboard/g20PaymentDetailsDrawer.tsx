@@ -153,19 +153,24 @@ export const G20PaymentDetailsDrawer = ({ open, setOpen, payment, onPaymentUpdat
                 );
               })}
             </div>
-            <div className="flex flex-wrap gap-2 pt-2 dark:text-white">
+            <div className="flex flex-wrap gap-2 pt-2 dark:text-white justify-between">
               {payment.receipt_url ? (
-                <>
-                  <Button variant="outline" onClick={openReceipt}>
+                <div className=" flex flex-wrap gap-2 ">
+                  <Button variant="outline" onClick={openReceipt} className="border-G20-darkGold dark:text-G20-darkGold">
                     Open Receipt
                   </Button>
-                  <Button variant="outline" onClick={downloadReceipt}>
+                  <Button variant="outline" onClick={downloadReceipt} className="border-G20-darkGold dark:text-G20-darkGold">
                     Download Receipt
                   </Button>
-                </>
+                </div>
               ) : null}
 
-              <Button variant="outline" onClick={regenerateReceiptUrl} disabled={isRegeneratingUrl || !payment.proof_file_path}>
+              <Button
+                variant="outline"
+                onClick={regenerateReceiptUrl}
+                disabled={isRegeneratingUrl || !payment.proof_file_path}
+                className="border-G20-darkGold dark:text-G20-darkGold"
+              >
                 {isRegeneratingUrl ? "Generating.." : "Generate New URL"}
               </Button>
             </div>

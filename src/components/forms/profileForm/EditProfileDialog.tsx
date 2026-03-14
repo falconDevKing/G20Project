@@ -3,7 +3,7 @@ import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import { UseFormReturn } from "react-hook-form";
 
-import { Countries, G20Categories } from "../../../constants/index";
+import { Countries } from "../../../constants/index";
 import { SelectOptions } from "@/interfaces/register";
 import { genderOptions, monthsOfTheYearOptions, RemissionDayOptions } from "@/lib/utils";
 import { profileFormSchema } from "@/lib/schemas";
@@ -25,9 +25,10 @@ type EditProfileDialogProps = {
   trigger?: React.ReactNode;
   DivisionOptions: SelectOptions[];
   ChapterOptions: SelectOptions[];
+  g20CategoryOptions: SelectOptions[];
 };
 
-export const EditProfileDialog = ({ open, setOpen, form, isPending, onSubmit, userId, trigger, DivisionOptions, ChapterOptions }: EditProfileDialogProps) => {
+export const EditProfileDialog = ({ open, setOpen, form, isPending, onSubmit, userId, trigger, DivisionOptions, ChapterOptions, g20CategoryOptions }: EditProfileDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
@@ -144,7 +145,7 @@ export const EditProfileDialog = ({ open, setOpen, form, isPending, onSubmit, us
                           <SelectValue placeholder="Select your G20 Category" />
                         </SelectTrigger>
                         <SelectContent className="shad-select-content">
-                          {G20Categories.map((option) => (
+                          {g20CategoryOptions.map((option) => (
                             <SelectItem key={option.value} value={String(option.value)}>
                               {option.name}
                             </SelectItem>

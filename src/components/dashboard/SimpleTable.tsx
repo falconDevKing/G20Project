@@ -5,10 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SelectOptions } from "@/interfaces/register";
 import { pageSizeOptions } from "@/lib/utils";
+import MobileTableCard from "../mobileTableCard";
+import MobileTableHeader from "../mobileTableHeader";
+import useLargeScreen from "@/hooks/checkScreenSize";
 
 type SimpleTableProps<TData extends Record<string, any>> = {
   data: TData[];
   columns: ColumnDef<TData>[];
+  tableType: string;
   count: number;
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
@@ -20,6 +24,7 @@ type SimpleTableProps<TData extends Record<string, any>> = {
 export const SimpleTable = <TData extends Record<string, any>>({
   data,
   columns,
+  tableType,
   count,
   page,
   setPage,
@@ -28,6 +33,7 @@ export const SimpleTable = <TData extends Record<string, any>>({
   onRowClick,
 }: SimpleTableProps<TData>) => {
   const totalPages = Math.max(1, Math.ceil(count / Math.max(1, Number(pageSize))));
+  const isLargeScreen = useLargeScreen();
 
   const table = useReactTable({
     data,
@@ -38,7 +44,7 @@ export const SimpleTable = <TData extends Record<string, any>>({
   return (
     <div className="w-full  md:border border-[#ae9956] dark:bg-[#252525]/35 dark:border-[#EDEDED24] rounded-xl shadow-sm overflow-hidden">
       <Table>
-        <TableHeader>
+        <TableHeader className="hidden md:contents">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="bg-[#FFF8E5] dark:bg-[#CCA33D]">
               {headerGroup.headers.map((header) => (
@@ -49,22 +55,27 @@ export const SimpleTable = <TData extends Record<string, any>>({
             </TableRow>
           ))}
         </TableHeader>
+        <MobileTableHeader tableType={tableType} />
 
         <TableBody>
           {table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                className={`hover:bg-[#FCF9EF]  dark:hover:bg-[#252525]/85 ${onRowClick ? "cursor-pointer" : ""}`}
-                onClick={() => onRowClick?.(row.original)}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="px-7 py-4 text-xs md:text-sm">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
+            table.getRowModel().rows.map((row) =>
+              isLargeScreen ? (
+                <TableRow
+                  key={row.id}
+                  className={`hover:bg-[#FCF9EF]  dark:hover:bg-[#252525]/85 ${onRowClick ? "cursor-pointer" : ""}`}
+                  onClick={() => onRowClick?.(row.original)}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="px-7 py-4 text-xs md:text-sm">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ) : (
+                <MobileTableCard key={row.id} row={row} tableType={tableType} clickHandler={() => onRowClick?.(row.original)} />
+              ),
+            )
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">

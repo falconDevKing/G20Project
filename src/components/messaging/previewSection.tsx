@@ -10,7 +10,7 @@ interface PreviewSectionProps {
   handleSend: () => Promise<void>;
   hasPreviewed: boolean;
   previewHtml: string;
-  subject: string
+  subject: string;
 }
 
 const PreviewSection = ({
@@ -22,7 +22,7 @@ const PreviewSection = ({
   handleSend,
   hasPreviewed,
   previewHtml,
-  subject
+  subject,
 }: PreviewSectionProps) => {
   return (
     <div className="p-1 pl-3 flex flex-col h-full">
@@ -30,7 +30,7 @@ const PreviewSection = ({
       <div className="flex justify-between items-center gap-2 mb-4">
         <div className="text-sm text-gray-700 dark:text-gray-400">
           {!selectAllUsers && selectedUsers.length === 0 ? (
-            <span className="text-red dark:text-white">No users selected</span>
+            <span className="text-red dark:text-white">No honourable selected</span>
           ) : (
             <span>
               Previewing message for <strong>{selectAllUsers ? tableData[0]?.first_name : selectedUsers[0]?.first_name}</strong> —{" "}

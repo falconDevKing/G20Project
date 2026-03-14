@@ -9,32 +9,32 @@ const benefits: Feature[] = [
   {
     title: "Personalised support",
     body: "Enjoy dedicated assistance for enquiries, updates, and partner-related requests from the team.",
-    icon: <CheckCircle className="h-5 w-5" />,
+    icon: <CheckCircle className="h-6 w-6" />,
   },
   {
     title: "Profile management",
     body: "Update your personal details easily and keep your information accurate and current.",
-    icon: <CheckCircle className="h-5 w-5" />,
+    icon: <CheckCircle className="h-6 w-6" />,
   },
   {
     title: "Consistency tracker",
     body: "Monitor your commitment through the year with a visual tracker that helps you stay consistent.",
-    icon: <CheckCircle className="h-5 w-5" />,
-  },
-  {
-    title: "Remission history",
-    body: "Access a complete record of your remissions from the beginning, all in one place.",
-    icon: <CheckCircle className="h-5 w-5" />,
+    icon: <CheckCircle className="h-6 w-6" />,
   },
   {
     title: "Offline payment logging",
     body: "Record and track offline payments directly on the platform for easier reconciliation.",
-    icon: <CheckCircle className="h-5 w-5" />,
+    icon: <CheckCircle className="h-6 w-6" />,
   },
   {
     title: "Automated payment control",
     body: "Manage recurring remissions by updating amounts, changing cards, or pausing and resuming payments when needed.",
-    icon: <CheckCircle className="h-5 w-5" />,
+    icon: <CheckCircle className="h-6 w-6" />,
+  },
+  {
+    title: "Remission history",
+    body: "Access a complete record of your remissions from the beginning, all in one place.",
+    icon: <CheckCircle className="h-6 w-6" />,
   },
 ];
 
@@ -50,10 +50,10 @@ const Benefits = () => {
         {benefits.map((b) => (
           <div key={b.title} className="rounded-3xl border border-[#2e3a55] bg-[#111c31] p-5 sm:p-6">
             <div className="flex items-start gap-4">
-              <IconBox>{b.icon ?? <CheckCircle />}</IconBox>
+              <IconBox>{b.icon ?? <CheckCircle className="h-6 w-6" />}</IconBox>
               <div>
-                <p className="text-sm font-semibold text-[#f0cf86]">{b.title}</p>
-                <p className="mt-2 text-sm leading-6 text-[#d6e2f8]">{b.body}</p>
+                <p className="text-sm sm:text-lg font-semibold text-[#f0cf86]">{b.title}</p>
+                <p className="mt-2 text-sm sm:text-lg leading-6 text-[#d6e2f8]">{b.body}</p>
               </div>
             </div>
           </div>

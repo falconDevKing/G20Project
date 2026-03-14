@@ -50,8 +50,8 @@ const Users = () => {
       <ContainerFluid>
         <div className="flex flex-col lg:flex-row justify-between ">
           <div>
-            <h1 className="pt-2 text-lg font-bold md:text-2xl">Partner Management</h1>
-            <div className="mb-6 text-md"> View, manage and update partner details seamlessly.</div>
+            <h1 className="pt-2 text-lg font-bold md:text-2xl">Honourables Management</h1>
+            <div className="mb-6 text-md"> View, manage and update honourables details seamlessly.</div>
           </div>
           <div>
             <AddNewPartner open={openNewpartner} setOpen={setOpenNewpartner} permission_type={permission_type} />

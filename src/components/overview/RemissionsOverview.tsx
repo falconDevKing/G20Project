@@ -4,7 +4,7 @@ import { Database, SearchX, List, Info } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { WorldCurrenciesOptions } from "@/constants/currencies";
 import { RemissionMetrics } from "@/supabase/rpcTypes";
-import { allChaptersOption, initialiseAdminOptions, initialRemissionsData } from "@/lib/utils";
+import { allChaptersOption, allPresidentsOption, allGovernorsOption, allShepherdsOption, initialiseAdminOptions, initialRemissionsData } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { numberWithCurrencyFormatter } from "@/lib/numberUtils";
 import FetchGBPExchangeRatesValue, { FetchGBPExchangeRates } from "@/lib/fetchGBPExchangeRatesValue";
@@ -32,23 +32,46 @@ export const RemissionsOverview = () => {
   const [conversionRate, setConversionRate] = useState<number>(1);
   const appState = useAppSelector((state) => state.app);
 
-  const { DivisionOptions, ChapterOptions } = initialiseAdminOptions(appState);
+  const user = useAppSelector((state) => state.auth.userDetails);
+  // const pstPermission = String(user.permission_type || "").toLowerCase();
+  const opsPermission = String(user.ops_permission_type || "").toLowerCase();
+
+  const { DivisionOptions, ChapterOptions, ShepherdOptions, GovernorOptions, PresidentOptions } = initialiseAdminOptions(appState);
   const [selectedDivision, setSelectedDivision] = useState<string>(DivisionOptions[0]?.value);
   const [selectedChapter, setSelectedChapter] = useState<string>(ChapterOptions[0]?.value);
+  const [selectedShepherd, setSelectedShepherd] = useState<string>("all");
+  const [selectedGovernor, setSelectedGovernor] = useState<string>("all");
+  const [selectedPresident, setSelectedPresident] = useState<string>("all");
   const [remissionPeriod, setRemissionPeriod] = useState(dayjs().format("MMMM YYYY"));
 
   const [remissionsData, setRemissionsData] = useState<RemissionMetrics>(initialRemissionsData);
 
   const RemissionPeriodOptions = getMonthYearOptionsSinceDec2025();
 
+  const filteredShepherdOptions = ShepherdOptions.filter((shepherd) => (selectedDivision === "all" ? true : shepherd.division_id === selectedDivision));
+  const filteredGovernorOptions = GovernorOptions.filter((governor) => {
+    const matchesDivision = selectedDivision === "all" ? true : governor.division_id === selectedDivision;
+    const matchesShepherd = selectedShepherd === "all" ? true : governor.shepherd_id === selectedShepherd;
+    return matchesDivision && matchesShepherd;
+  });
+  const filteredPresidentOptions = PresidentOptions.filter((president) => {
+    const matchesDivision = selectedDivision === "all" ? true : president.division_id === selectedDivision;
+    const matchesShepherd = selectedShepherd === "all" ? true : president.shepherd_id === selectedShepherd;
+    const matchesGovernor = selectedGovernor === "all" ? true : president.governor_id === selectedGovernor;
+    return matchesDivision && matchesShepherd && matchesGovernor;
+  });
+
   const resetFilter = () => {
     setSelectedDivision(DivisionOptions[0]?.value);
     setSelectedChapter(ChapterOptions[0]?.value);
+    setSelectedShepherd("all");
+    setSelectedGovernor("all");
+    setSelectedPresident("all");
     setRemissionPeriod(RemissionPeriodOptions[0]);
   };
 
   const navToDetails = (filters: Record<string, any>, navTo: string) => {
-    const accessMetrics = { selectedDivision, selectedChapter };
+    const accessMetrics = { selectedDivision, selectedChapter, selectedShepherd, selectedGovernor, selectedPresident };
     navigate(navTo, { state: { metricsFilters: { ...accessMetrics, ...filters } } });
   };
 
@@ -57,6 +80,9 @@ export const RemissionsOverview = () => {
       input_division_id: selectedDivision === "all" ? null : selectedDivision || null,
       input_chapter_id: selectedChapter === "all" ? null : selectedChapter || null,
       input_remission_period: remissionPeriod || RemissionPeriodOptions[0],
+      input_shepherd_id: selectedShepherd === "all" ? null : selectedShepherd || null,
+      input_governor_id: selectedGovernor === "all" ? null : selectedGovernor || null,
+      input_president_id: selectedPresident === "all" ? null : selectedPresident || null,
     });
 
     if (data && !error) {
@@ -142,7 +168,7 @@ export const RemissionsOverview = () => {
 
   useEffect(() => {
     fetchRemissionsStat();
-  }, [selectedDivision, selectedChapter, remissionPeriod]);
+  }, [selectedDivision, selectedChapter, selectedShepherd, selectedGovernor, selectedPresident, remissionPeriod]);
 
   useEffect(() => {
     recomputeMonthlyRemissionsValue();
@@ -173,38 +199,132 @@ export const RemissionsOverview = () => {
         </Select>
 
         <div className="sm:grid sm:grid-cols-2 xl:flex xl:flex-wrap space-y-2 sm:space-y-0 gap-4 mb-4 justify-end items-center my-2 xl:my-0">
-          <Select
-            onValueChange={(value) => {
-              setSelectedDivision(value);
-              const filteredChapters = ChapterOptions.filter((chapter) => chapter.filt === value);
-              const finalChapterOptions = filteredChapters?.length > 1 ? [allChaptersOption, ...ChapterOptions] : ChapterOptions;
-              setSelectedChapter(finalChapterOptions[0].value);
-            }}
-            value={selectedDivision}
-          >
-            <SelectTrigger className="w-full  xl:w-40 shad-select-trigger">
-              <SelectValue placeholder="Select Division" />
-            </SelectTrigger>
-            <SelectContent className="shad-select-content">
-              {DivisionOptions.map((division) => (
-                <SelectItem key={division.value || "all"} value={division.value}>
-                  {division.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {!opsPermission ? (
+            <>
+              <Select
+                onValueChange={(value) => {
+                  setSelectedDivision(value);
+                  const filteredChapters = ChapterOptions.filter((chapter) => chapter.filt === value);
+                  const finalChapterOptions = filteredChapters?.length > 1 ? [allChaptersOption, ...ChapterOptions] : ChapterOptions;
+                  setSelectedChapter(finalChapterOptions[0].value);
+                  const nextShepherds = ShepherdOptions.filter((shepherd) => (value === "all" ? true : shepherd.division_id === value));
+                  if (!nextShepherds.some((shepherd) => shepherd.value === selectedShepherd)) setSelectedShepherd("all");
+                  const nextGovernors = GovernorOptions.filter((governor) => {
+                    const matchesDivision = value === "all" ? true : governor.division_id === value;
+                    const matchesShepherd = selectedShepherd === "all" ? true : governor.shepherd_id === selectedShepherd;
+                    return matchesDivision && matchesShepherd;
+                  });
+                  if (!nextGovernors.some((governor) => governor.value === selectedGovernor)) setSelectedGovernor("all");
+                  const nextPresidents = PresidentOptions.filter((president) => {
+                    const matchesDivision = value === "all" ? true : president.division_id === value;
+                    const matchesShepherd = selectedShepherd === "all" ? true : president.shepherd_id === selectedShepherd;
+                    const matchesGovernor = selectedGovernor === "all" ? true : president.governor_id === selectedGovernor;
+                    return matchesDivision && matchesShepherd && matchesGovernor;
+                  });
+                  if (!nextPresidents.some((president) => president.value === selectedPresident)) setSelectedPresident("all");
+                }}
+                value={selectedDivision}
+              >
+                <SelectTrigger className="w-full  xl:w-40 shad-select-trigger">
+                  <SelectValue placeholder="Select Division" />
+                </SelectTrigger>
+                <SelectContent className="shad-select-content">
+                  {DivisionOptions.map((division) => (
+                    <SelectItem key={division.value || "all"} value={division.value}>
+                      {division.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-          <Select onValueChange={setSelectedChapter} value={selectedChapter}>
+              <Select onValueChange={setSelectedChapter} value={selectedChapter}>
+                <SelectTrigger className="xl:w-40 w-full shad-select-trigger">
+                  <SelectValue placeholder="Select Chapter" />
+                </SelectTrigger>
+                <SelectContent className="shad-select-content">
+                  {(ChapterOptions.filter((chapter) => chapter.filt === selectedDivision)?.length > 1
+                    ? [allChaptersOption, ...ChapterOptions.filter((chapter) => chapter.filt === selectedDivision)]
+                    : ChapterOptions.filter((chapter) => chapter.filt === selectedDivision)
+                  ).map((chapter) => (
+                    <SelectItem key={chapter.value || "all"} value={chapter.value}>
+                      {chapter.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
+          ) : (
+            ""
+          )}
+          {opsPermission ? (
+            <>
+              <Select
+                onValueChange={(value) => {
+                  setSelectedShepherd(value);
+                  const nextGovernors = GovernorOptions.filter((governor) => {
+                    const matchesDivision = selectedDivision === "all" ? true : governor.division_id === selectedDivision;
+                    const matchesShepherd = value === "all" ? true : governor.shepherd_id === value;
+                    return matchesDivision && matchesShepherd;
+                  });
+                  if (!nextGovernors.some((governor) => governor.value === selectedGovernor)) setSelectedGovernor("all");
+                  const nextPresidents = PresidentOptions.filter((president) => {
+                    const matchesDivision = selectedDivision === "all" ? true : president.division_id === selectedDivision;
+                    const matchesShepherd = value === "all" ? true : president.shepherd_id === value;
+                    const matchesGovernor = selectedGovernor === "all" ? true : president.governor_id === selectedGovernor;
+                    return matchesDivision && matchesShepherd && matchesGovernor;
+                  });
+                  if (!nextPresidents.some((president) => president.value === selectedPresident)) setSelectedPresident("all");
+                }}
+                value={selectedShepherd}
+              >
+                <SelectTrigger className="xl:w-40 w-full shad-select-trigger">
+                  <SelectValue placeholder="Select Shepherd" />
+                </SelectTrigger>
+                <SelectContent className="shad-select-content">
+                  {[allShepherdsOption, ...filteredShepherdOptions].map((shepherd) => (
+                    <SelectItem key={`shepherd-${shepherd.value}`} value={shepherd.value}>
+                      {shepherd.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                onValueChange={(value) => {
+                  setSelectedGovernor(value);
+                  const nextPresidents = PresidentOptions.filter((president) => {
+                    const matchesDivision = selectedDivision === "all" ? true : president.division_id === selectedDivision;
+                    const matchesShepherd = selectedShepherd === "all" ? true : president.shepherd_id === selectedShepherd;
+                    const matchesGovernor = value === "all" ? true : president.governor_id === value;
+                    return matchesDivision && matchesShepherd && matchesGovernor;
+                  });
+                  if (!nextPresidents.some((president) => president.value === selectedPresident)) setSelectedPresident("all");
+                }}
+                value={selectedGovernor}
+              >
+                <SelectTrigger className="xl:w-40 w-full shad-select-trigger">
+                  <SelectValue placeholder="Select Governor" />
+                </SelectTrigger>
+                <SelectContent className="shad-select-content">
+                  {[allGovernorsOption, ...filteredGovernorOptions].map((governor) => (
+                    <SelectItem key={`governor-${governor.value}`} value={governor.value}>
+                      {governor.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
+          ) : (
+            ""
+          )}
+          <Select onValueChange={setSelectedPresident} value={selectedPresident}>
             <SelectTrigger className="xl:w-40 w-full shad-select-trigger">
-              <SelectValue placeholder="Select Chapter" />
+              <SelectValue placeholder="Select President" />
             </SelectTrigger>
             <SelectContent className="shad-select-content">
-              {(ChapterOptions.filter((chapter) => chapter.filt === selectedDivision)?.length > 1
-                ? [allChaptersOption, ...ChapterOptions.filter((chapter) => chapter.filt === selectedDivision)]
-                : ChapterOptions.filter((chapter) => chapter.filt === selectedDivision)
-              ).map((chapter) => (
-                <SelectItem key={chapter.value || "all"} value={chapter.value}>
-                  {chapter.name}
+              {[allPresidentsOption, ...filteredPresidentOptions].map((president) => (
+                <SelectItem key={`president-${president.value}`} value={president.value}>
+                  {president.name}
                 </SelectItem>
               ))}
             </SelectContent>

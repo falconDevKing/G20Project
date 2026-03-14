@@ -35,7 +35,7 @@ export const Footer = () => {
   };
 
   const CONTACT = {
-    email: "info@globalgospelpartnership.org",
+    email: "info@g20partnership.org",
     address: locationAddress[locationCurrency] || locationAddress[fallbackCurrency],
     phone: locationPhoneNumber[locationCurrency] || locationPhoneNumber[fallbackCurrency],
   };

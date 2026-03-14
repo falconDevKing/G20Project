@@ -124,6 +124,9 @@ export const initialiseOptions = (appState: {
 
 export const allDivisionsOption = { value: "all", name: "All Divisions" };
 export const allChaptersOption = { value: "all", name: "All Chapters", filt: "all", currency: "GBP" };
+export const allShepherdsOption = { value: "all", name: "All Shepherds", filt: "all", currency: "GBP" };
+export const allGovernorsOption = { value: "all", name: "All Governors", filt: "all", currency: "GBP" };
+export const allPresidentsOption = { value: "all", name: "All Presidents", filt: "all", currency: "GBP" };
 
 export const initialiseAdminOptions = (appState: {
   adminDivisions: DivisionRowType[];

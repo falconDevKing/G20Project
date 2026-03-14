@@ -13,8 +13,8 @@ const carouselItems = [
     church: "Senior Pastor - Gospel Pillars Intl. Church",
     // image: "/images/GlobeWithHands.svg",
     // image: "/images/G20_Table.jpg",
-    // image: "/auth/G20 BANNER.jpeg",
-    image: "/auth/newG20ParliamentTable.jpeg",
+    image: "/auth/G20 BANNER LEFT.jpeg",
+    // image: "/auth/newG20ParliamentTable.jpeg",
   },
   {
     captionText: "Together with the Prophet, Reaching the Nations",
@@ -36,7 +36,7 @@ const carouselItems = [
       </div>
     ),
     pictureStyle: "cover",
-    image: "/auth/AuthSuit1.jpeg",
+    image: "/auth/newG20ParliamentTable.jpeg",
   },
   // {
   //   captionText: "Empower thousands of families through charity fairs and outreach initiatives.",
@@ -69,7 +69,8 @@ const carouselItems = [
       </div>
     ),
     pictureStyle: "cover",
-    image: "/auth/AuthSuit2.jpeg",
+    image: "/auth/AuthSuit1.jpeg",
+    // image: "/auth/AuthSuit2.jpeg",
   },
   {
     captionText: "Join Prophet Isaiah MacWealth in taking the Gospel to all nations of the earth.",

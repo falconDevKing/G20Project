@@ -68,6 +68,7 @@ export const g20UpdateAuthSchema = z
     anniversary_month: z.string().optional(),
     require_married: z.boolean().default(true),
 
+    president_id: z.string().optional(),
     g20_category: z.string().min(1, { message: "You must select a G20 Category" }),
     g20_amount: z.coerce.number().int().positive("Amount is required"),
 
@@ -180,8 +181,11 @@ export const signupSchema = z.object({
     .refine((phone) => /^\+\d{10,15}$/.test(phone), "Invalid phone number"),
   division_id: z.string().min(1, { message: "You must select a division" }),
   chapter_id: z.string().min(1, { message: "You must select a chapter" }),
+  president_id: z.string().optional(),
   // partner_type: z.string().min(1, { message: "You must select a partner type" }),
   permission_type: z.string().min(1, { message: "You must select a permission level" }),
+  g20_category: z.string().optional(),
+  g20_amount: z.coerce.number().int().nonnegative().optional(),
 
   address: z.string().min(5, "Address must be at least 5 characters").max(120, "Address must be at most 120 characters"),
   birth_day: z.string().min(1, { message: "You must select a birth day" }),
@@ -364,6 +368,9 @@ export const dynamicFilterSchema = z.object({
           "name_code",
           "chapter_id",
           "division_id",
+          "shepherd_id",
+          "governor_id",
+          "president_id",
           "status",
           "birth_day_mmdd",
           "ggp_category",

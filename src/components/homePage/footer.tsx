@@ -18,8 +18,8 @@ const Footer = () => {
   const contacts: ContactCard[] = [
     {
       title: "Contact",
-      lines: ["info@globalgospelpartnership.org"],
-      hrefs: [{ label: "Email", href: "mailto:info@globalgospelpartnership.org" }],
+      lines: ["info@g20partnership.org"],
+      hrefs: [{ label: "Email", href: "mailto:info@g20partnership.org" }],
     },
     {
       title: "Address",

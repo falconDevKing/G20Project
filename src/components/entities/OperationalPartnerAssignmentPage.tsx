@@ -260,6 +260,7 @@ export const OperationalPartnerAssignmentPage = () => {
       />
 
       <SimpleTable
+        tableType="assignment"
         columns={columns}
         data={tableData}
         count={tableDataCount}

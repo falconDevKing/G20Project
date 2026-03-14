@@ -21,7 +21,7 @@ export const OfflineBankDetails = ({
   return (
     <div className={cn(fullWidthOnMobile ? "w-full sm:w-auto" : "")}>
       <AlertDialog open={openOffline} onOpenChange={setOpenOffline}>
-        <AlertDialogTrigger asChild className="my-2 xl:my-0">
+        <AlertDialogTrigger asChild className={"my-0"}>
           {squared ? (
             <Button
               size={"lg"}

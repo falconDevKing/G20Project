@@ -13,6 +13,7 @@ import { getFileUrl } from "@/services/storage";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
 import { PartnerRowType } from "@/supabase/modifiedSupabaseTypes";
 import { Countries } from "../../../constants/index";
+import { getG20CategoryLabel, getG20CategoryOptions } from "@/lib/g20Categories";
 
 import { ProfileCardWrapper } from "./ProfileCard-wapper";
 import { ProfileDisplay } from "./ProfileDisplay";
@@ -34,6 +35,11 @@ export const ProfileForm = () => {
   const [newPasswordVisible, setNewPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [fileUrlToUse, setFileUrlToUse] = useState<string>();
+  const g20CategoryOptions = getG20CategoryOptions({
+    chapterId: userProfile?.chapter_id,
+    locationCurrency: appState.locationCurrency,
+    fallbackCurrency: appState.fallbackCurrency,
+  });
 
   const profileFormInstance = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
@@ -187,7 +193,18 @@ export const ProfileForm = () => {
   const governorName = (appState.governorEntities || []).find((governor) => governor.id === userProfile.governor_id)?.name || "";
   const presidentName = (appState.presidentEntities || []).find((president) => president.id === userProfile.president_id)?.name || "";
   const displayName = `${userProfile.first_name || ""} ${userProfile.last_name || ""}`.trim() || "Partner profile";
-  const roleLabel = userProfile.g20_category || "Partner";
+  const roleLabel =
+    getG20CategoryLabel(userProfile.g20_category, {
+      chapterId: userProfile.chapter_id,
+      locationCurrency: appState.locationCurrency,
+      fallbackCurrency: appState.fallbackCurrency,
+    }) || "Partner";
+  const g20CategoryLabel =
+    getG20CategoryLabel(userProfile.g20_category, {
+      chapterId: userProfile.chapter_id,
+      locationCurrency: appState.locationCurrency,
+      fallbackCurrency: appState.fallbackCurrency,
+    }) || "Not selected";
   const formattedDob = userProfile.date_of_birth ? dayjs(userProfile.date_of_birth).format("DD MMMM") : "";
   const formattedAnniversary = userProfile.marriage_anniversary ? dayjs(userProfile.marriage_anniversary).format("DD MMMM") : "";
 
@@ -205,6 +222,7 @@ export const ProfileForm = () => {
           userId={user.id}
           DivisionOptions={DivisionOptions}
           ChapterOptions={ChapterOptions}
+          g20CategoryOptions={g20CategoryOptions}
         />
 
         <ChangePasswordDialog
@@ -226,6 +244,7 @@ export const ProfileForm = () => {
           fileUrlToUse={fileUrlToUse}
           displayName={displayName}
           roleLabel={roleLabel}
+          g20CategoryLabel={g20CategoryLabel}
           divisionName={divisionName}
           chapterName={chapterName}
           nationalityLabel={nationalityLabel}

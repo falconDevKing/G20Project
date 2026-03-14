@@ -57,8 +57,8 @@ const PartnerBenefits = () => {
                 <CheckCircle className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#f0cf86]">{benefit.title}</p>
-                <p className="mt-2 text-sm leading-6 text-[#d6e2f8]">{benefit.body}</p>
+                <p className="text-base sm:text-lg font-semibold text-[#f0cf86]">{benefit.title}</p>
+                <p className="mt-2 text-md leading-6 text-[#d6e2f8]">{benefit.body}</p>
               </div>
             </div>
           </div>

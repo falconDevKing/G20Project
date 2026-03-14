@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SectionShell from "./sectionShell";
-import { cn } from "@/lib/utils";
 import { ShieldAlert } from "../customIcons";
+import { CirclePlus, CircleX } from "lucide-react";
 
 type FAQ = { q: string; a: string };
 
@@ -60,17 +60,14 @@ const AccordionItem = ({ item, index, openIndex, onToggle }: { item: FAQ; index:
   const isOpen = openIndex === index;
   return (
     <div className="rounded-2xl border border-[#2e3a55] bg-[#111c31]">
-      <button type="button" onClick={() => onToggle(index)} className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left" aria-expanded={isOpen}>
+      <button
+        type="button"
+        onClick={() => onToggle(index)}
+        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+        aria-expanded={isOpen}
+      >
         <span className="text-sm font-semibold text-[#f8f1e3]">{item.q}</span>
-        <span
-          className={cn(
-            "grid h-6 w-6 place-items-center rounded-full border border-[#3b4863] text-[#d6e2f8] transition",
-            isOpen ? "rotate-45 bg-[#1b2842]" : "bg-[#111c31]",
-          )}
-          aria-hidden="true"
-        >
-          +
-        </span>
+        {isOpen ? <CircleX /> : <CirclePlus />}
       </button>
       {isOpen ? <p className="px-5 py-4 pb-5 text-sm leading-6 text-[#cdd9f2]">{item.a}</p> : null}
     </div>

@@ -66,7 +66,7 @@ const About = () => {
             A select group of men and women committed to standing with the Prophet in fulfilling the divine mandate of taking the Gospel to all nations.
           </p>
 
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <div className="mt-5 sm:flex grid grid-cols-2 gap-3 sm:flex-row sm:flex-wrap">
             <PrimaryButton href="/register" fullWidthOnMobile>
               Sign up
             </PrimaryButton>
@@ -85,7 +85,7 @@ const About = () => {
         ))}
 
         <div className="relative min-h-[160px] rounded-3xl border border-[#34415b] bg-[#1b2842] p-5 sm:p-8">
-          <p className="text-sm leading-7 text-[#dbe5f7] sm:text-base sm:leading-8">
+          <p className="text-sm leading-7 text-[#dbe5f7] sm:text-md sm:leading-8">
             As <span className="font-semibold text-[#f0cf86]">David had mighty men</span> who stood with him to fulfil God's word,
             <span className="font-semibold text-[#f0cf86]"> Jesus also had devoted men and women</span> who laboured with Him, ensuring His mission of reaching
             and saving the lost was accomplished.
@@ -95,7 +95,7 @@ const About = () => {
         {quotesJesus.map((q) => (
           <div key={q.ref} className="relative min-h-[160px] overflow-hidden rounded-3xl border border-[#34415b] bg-[#1b2842] p-6">
             <div className="absolute left-0 top-0 h-full w-1 bg-[#d0aa56]" />
-            <p className="text-lg leading-7 text-[#f0cf86]">"{q.text}"</p>
+            <p className="text-base lg:text-lg leading-7 text-[#f0cf86]">"{q.text}"</p>
             <p className="mt-3 text-xs font-semibold tracking-wide text-[#bfcee9] italic">{q.ref}</p>
           </div>
         ))}
@@ -116,7 +116,7 @@ const About = () => {
         ))}
       </div>
 
-      <div className="mt-12 flex w-full flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+      <div className="mt-12 grid grid-cols-2 sm:flex w-full justify-center gap-3 sm:flex-row sm:gap-4">
         <PrimaryButton href="/register" fullWidthOnMobile>
           Join the G20
         </PrimaryButton>

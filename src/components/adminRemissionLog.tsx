@@ -35,7 +35,7 @@ export const AdminRemissionLog = () => {
       },
       {
         id: "user_name",
-        header: "User Name",
+        header: "Honourable",
         cell: ({ row }) => <div>{`${row.original.first_name || ""} ${row.original.last_name || ""}`.trim()}</div>,
       },
       {

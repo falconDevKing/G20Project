@@ -1,26 +1,9 @@
--- G20 admin metrics alignment
-
-alter table public.partner
-  add column if not exists g20_status text;
-
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1
-    FROM pg_constraint
-    WHERE conname = 'ck_partner_g20_status'
-  ) THEN
-    ALTER TABLE public.partner
-      ADD CONSTRAINT ck_partner_g20_status
-      CHECK (g20_status IS NULL OR g20_status IN ('consistent', 'active', 'passive'));
-  END IF;
-END $$;
-
-create index if not exists idx_partner_g20_status on public.partner (g20_status);
-
 create or replace function public.get_g20_partner_metrics_filtered (
   input_division_id uuid default null,
-  input_chapter_id uuid default null
+  input_chapter_id uuid default null,
+  input_shepherd_id uuid default null,
+  input_governor_id uuid default null,
+  input_president_id uuid default null
 ) returns jsonb language plpgsql as $$
 declare
   total_partners integer := 0;
@@ -38,12 +21,18 @@ begin
   from public.partner p
   where (input_division_id is null or p.division_id = input_division_id)
     and (input_chapter_id is null or p.chapter_id = input_chapter_id)
+    and (input_shepherd_id is null or p.shepherd_id = input_shepherd_id)
+    and (input_governor_id is null or p.governor_id = input_governor_id)
+    and (input_president_id is null or p.president_id = input_president_id)
     and coalesce(p.g20_active, false) = true;
 
   select count(*) into consistent_partners
   from public.partner p
   where (input_division_id is null or p.division_id = input_division_id)
     and (input_chapter_id is null or p.chapter_id = input_chapter_id)
+    and (input_shepherd_id is null or p.shepherd_id = input_shepherd_id)
+    and (input_governor_id is null or p.governor_id = input_governor_id)
+    and (input_president_id is null or p.president_id = input_president_id)
     and coalesce(p.g20_active, false) = true
     and lower(coalesce(p.g20_status, '')) = 'consistent';
 
@@ -51,6 +40,9 @@ begin
   from public.partner p
   where (input_division_id is null or p.division_id = input_division_id)
     and (input_chapter_id is null or p.chapter_id = input_chapter_id)
+    and (input_shepherd_id is null or p.shepherd_id = input_shepherd_id)
+    and (input_governor_id is null or p.governor_id = input_governor_id)
+    and (input_president_id is null or p.president_id = input_president_id)
     and coalesce(p.g20_active, false) = true
     and lower(coalesce(p.g20_status, '')) = 'active';
 
@@ -58,6 +50,9 @@ begin
   from public.partner p
   where (input_division_id is null or p.division_id = input_division_id)
     and (input_chapter_id is null or p.chapter_id = input_chapter_id)
+    and (input_shepherd_id is null or p.shepherd_id = input_shepherd_id)
+    and (input_governor_id is null or p.governor_id = input_governor_id)
+    and (input_president_id is null or p.president_id = input_president_id)
     and coalesce(p.g20_active, false) = true
     and (
       p.g20_status is null
@@ -69,6 +64,9 @@ begin
   from public.partner p
   where (input_division_id is null or p.division_id = input_division_id)
     and (input_chapter_id is null or p.chapter_id = input_chapter_id)
+    and (input_shepherd_id is null or p.shepherd_id = input_shepherd_id)
+    and (input_governor_id is null or p.governor_id = input_governor_id)
+    and (input_president_id is null or p.president_id = input_president_id)
     and coalesce(p.g20_active, false) = true
     and lower(coalesce(p.g20_category, '')) = 'bronze';
 
@@ -76,6 +74,9 @@ begin
   from public.partner p
   where (input_division_id is null or p.division_id = input_division_id)
     and (input_chapter_id is null or p.chapter_id = input_chapter_id)
+    and (input_shepherd_id is null or p.shepherd_id = input_shepherd_id)
+    and (input_governor_id is null or p.governor_id = input_governor_id)
+    and (input_president_id is null or p.president_id = input_president_id)
     and coalesce(p.g20_active, false) = true
     and lower(coalesce(p.g20_category, '')) = 'silver';
 
@@ -83,6 +84,9 @@ begin
   from public.partner p
   where (input_division_id is null or p.division_id = input_division_id)
     and (input_chapter_id is null or p.chapter_id = input_chapter_id)
+    and (input_shepherd_id is null or p.shepherd_id = input_shepherd_id)
+    and (input_governor_id is null or p.governor_id = input_governor_id)
+    and (input_president_id is null or p.president_id = input_president_id)
     and coalesce(p.g20_active, false) = true
     and lower(coalesce(p.g20_category, '')) = 'gold';
 
@@ -90,6 +94,9 @@ begin
   from public.partner p
   where (input_division_id is null or p.division_id = input_division_id)
     and (input_chapter_id is null or p.chapter_id = input_chapter_id)
+    and (input_shepherd_id is null or p.shepherd_id = input_shepherd_id)
+    and (input_governor_id is null or p.governor_id = input_governor_id)
+    and (input_president_id is null or p.president_id = input_president_id)
     and coalesce(p.g20_active, false) = true
     and lower(coalesce(p.g20_category, '')) = 'diamond';
 
@@ -97,6 +104,9 @@ begin
   from public.partner p
   where (input_division_id is null or p.division_id = input_division_id)
     and (input_chapter_id is null or p.chapter_id = input_chapter_id)
+    and (input_shepherd_id is null or p.shepherd_id = input_shepherd_id)
+    and (input_governor_id is null or p.governor_id = input_governor_id)
+    and (input_president_id is null or p.president_id = input_president_id)
     and coalesce(p.g20_active, false) = true
     and lower(coalesce(p.g20_category, '')) = 'platinum';
 
@@ -121,7 +131,10 @@ $$;
 create or replace function public.get_g20_remission_metrics_filtered(
   input_division_id uuid default null,
   input_chapter_id uuid default null,
-  input_remission_period text default null
+  input_remission_period text default null,
+  input_shepherd_id uuid default null,
+  input_governor_id uuid default null,
+  input_president_id uuid default null
 )
 returns jsonb
 language sql
@@ -132,16 +145,19 @@ as $$
     from public.g20_payments p
     where (input_division_id is null or p.division_id = input_division_id)
       and (input_chapter_id is null or p.chapter_id = input_chapter_id)
+      and (input_shepherd_id is null or p.shepherd_id = input_shepherd_id)
+      and (input_governor_id is null or p.governor_id = input_governor_id)
+      and (input_president_id is null or p.president_id = input_president_id)
   ),
   paid as (
     select *
     from scoped
-    where lower(coalesce(status, '')) in ('paid')
+    where lower(coalesce(status, '')) in ('paid', 'cleared', 'approved', 'setup')
   ),
   pending as (
     select *
     from scoped
-    where lower(coalesce(status, '')) in ('pending')
+    where lower(coalesce(status, '')) in ('pending', 'due')
   ),
   overall as (
     select
@@ -215,7 +231,10 @@ $$;
 
 create or replace function public.get_g20_partnership_totals(
   p_division_id uuid default null,
-  p_chapter_id uuid default null
+  p_chapter_id uuid default null,
+  p_shepherd_id uuid default null,
+  p_governor_id uuid default null,
+  p_president_id uuid default null
 )
 returns table (
   currency text,
@@ -312,6 +331,9 @@ as $$
    and lower(r.category) = lower(coalesce(p.ggp_category, ''))
   where (p_division_id is null or p.division_id = p_division_id)
     and (p_chapter_id is null or p.chapter_id = p_chapter_id)
+    and (p_shepherd_id is null or p.shepherd_id = p_shepherd_id)
+    and (p_governor_id is null or p.governor_id = p_governor_id)
+    and (p_president_id is null or p.president_id = p_president_id)
     and coalesce(p.g20_active, false) = true
   group by c.base_currency
   order by c.base_currency;

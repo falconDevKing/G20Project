@@ -24,7 +24,7 @@ const LandingHeader = () => {
     <div>
       <header className="sticky top-0 z-50 border-b border-[#29334a] bg-[#0f1728]/95 backdrop-blur">
         <div className="mx-auto flex min-h-[88px] max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-10">
-          <a href="/" className="flex items-center gap-3">
+          <a href="/dashboard" className="flex items-center gap-3">
             <div className="grid h-12 w-10 place-items-center rounded-xl sm:h-13 sm:w-12">
               <span className="text-xs font-bold tracking-wider text-gold-300">
                 <img src={G20Crest} alt="G20 crest Logo" className="h-full w-full object-contain" />
@@ -76,7 +76,7 @@ const LandingHeader = () => {
                 ))}
               </nav>
 
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 sm:justify-between">
                 <OfflineBankDetails fullWidthOnMobile />
                 <GhostButton href="/login" fullWidthOnMobile onClick={closeMobileMenu}>
                   Login

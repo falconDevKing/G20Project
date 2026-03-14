@@ -11,6 +11,7 @@ type ProfileDisplayProps = {
   fileUrlToUse?: string;
   displayName: string;
   roleLabel: string;
+  g20CategoryLabel: string;
   divisionName: string;
   chapterName: string;
   nationalityLabel: string;
@@ -28,6 +29,7 @@ export const ProfileDisplay = ({
   fileUrlToUse,
   displayName,
   roleLabel,
+  g20CategoryLabel,
   divisionName,
   chapterName,
   nationalityLabel,
@@ -146,7 +148,7 @@ export const ProfileDisplay = ({
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <ProfileInfoItem label="G20 Category" value={userProfile.g20_category || "Not selected"} />
+            <ProfileInfoItem label="G20 Category" value={g20CategoryLabel || "Not selected"} />
             <ProfileInfoItem label="G20 Amount" value={userProfile.g20_amount || 0} />
             <ProfileInfoItem label="Motivation" value={userProfile.motivation || "Not provided"} className="md:col-span-2 xl:col-span-2" />
           </div>

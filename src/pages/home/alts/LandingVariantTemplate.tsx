@@ -332,7 +332,7 @@ export default function LandingVariantTemplate({ variant }: { variant: LandingVa
         <div className="mx-auto grid max-w-[1300px] grid-cols-1 gap-6 px-4 py-10 sm:grid-cols-3 sm:px-8">
           <div>
             <p className={`text-xl font-semibold ${t.title}`}>Contact</p>
-            <p className={`mt-2 ${t.body}`}>info@globalgospelpartnership.org</p>
+            <p className={`mt-2 ${t.body}`}>info@g20partnership.org</p>
           </div>
           <div>
             <p className={`text-xl font-semibold ${t.title}`}>Address</p>

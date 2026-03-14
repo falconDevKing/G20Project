@@ -99,7 +99,7 @@ const PostConfirmationTemplate = function (name: string, code: string) {
             </div>
           </div>
 
-          <p>Please keep this handy, it helps us serve you better and ensures smoother engagement with the GGP team. With it you can access your profile and remission history</p>
+          <p>Please keep this handy, it helps us serve you better and ensures smoother engagement with the G20 Team. With it you can access your profile and remission history</p>
 
           <p>🔑 For your first login, you can login with your email or GGP Code and the default password shared below. Kindly do well to change it once you have accessed the platform from your profile page.</p>
           <div class="button" style="width: 70%; margin: auto">
@@ -132,7 +132,7 @@ const PostConfirmationTemplate = function (name: string, code: string) {
         <td style="text-align: left; padding: 24px 40px">
           <p style="padding: 0px; line-height: 32px; font-size: 16px; color: #253858; font-style: normal; font-weight: 400">
             Warmest Regards, <br />
-            GGP Team
+            G20 Team
           </p>
           <p style="font-size: 14px; line-height: 20px; text-align: left; font-weight: 400; color: #8083a3; margin-top: 8px">
             Got questions? <br />
@@ -145,7 +145,7 @@ const PostConfirmationTemplate = function (name: string, code: string) {
           <br />
           <p style="font-size: 12px; line-height: 22px; font-weight: 400; text-align: left; color: #8083a3; margin-top: -16px">
             © GGP |
-            <a href="mailto:info@globalgospelpartnership.org" style="color: #8083a3; text-decoration: none"> info@globalgospelpartnership.org </a>
+            <a href="mailto:info@g20partnership.org" style="color: #8083a3; text-decoration: none"> info@g20partnership.org </a>
             <br />
             Together in faith, always Partnering with the Prophet
           </p>

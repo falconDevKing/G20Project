@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import G20Crest from "@/assets/heroImages/G20_logo.png";
 import HOGCrest from "@/assets/heroImages/HOG_logo.png";
 import MMWCrest from "@/assets/heroImages/MMW_logo.png";
-// import HeroBackgroundOne from "@/assets/heroImages/G20 BANNER.jpeg";
+import HeroBackground from "@/assets/heroImages/G20 BANNER LEFT.jpeg";
 import HeroBackgroundOne from "@/assets/heroImages/newBgPic2.jpeg";
 import HeroBackgroundTwo from "@/assets/heroImages/newBgPic6.jpeg";
 import HeroBackgroundThree from "@/assets/heroImages/newBgPic8.jpeg";
@@ -20,6 +20,7 @@ import { PrimaryButton } from "../customIcons";
 import { OfflineBankDetails } from "./offlinePaymentDetails";
 
 const heroImages = [
+  HeroBackground,
   HeroBackgroundOne,
   HeroBackgroundTwo,
   HeroBackgroundThree,
@@ -78,7 +79,7 @@ const Hero = () => {
               Stand with the mandate of taking the Gospel to all Nations.
             </h1>
 
-            <p className="mt-5 max-w-xl text-sm leading-7 text-[#d3ddf1] sm:text-base">
+            <p className="mt-5 max-w-xl text-base leading-7 text-[#d3ddf1] sm:text-md">
               The G20 is a select group of men and women committed to standing with Prophet Isaiah Macwealth in fulfilling the divine mandate of global Gospel
               advancement, leading to the harvest of 1 billion souls and 3 million Jews conversion.
             </p>
@@ -90,14 +91,14 @@ const Hero = () => {
               <div className="rounded-full border border-[#3c4863] bg-[#1a2945] px-4 py-2 text-sm text-[#d8e2f7]">Conviction-led Partnership</div>
             </div>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div className="mt-8 grid grid-cols-2 sm:flex  gap-3 sm:flex-row sm:flex-wrap">
               <PrimaryButton href="/register" fullWidthOnMobile>
                 Join the G20
               </PrimaryButton>
               <OfflineBankDetails fullWidthOnMobile />
             </div>
 
-            <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
               {[
                 { title: "Purposeful", body: "Giving with clarity, intention, and meaning." },
                 { title: "Impactful", body: "High-capacity partnership for major Gospel projects." },

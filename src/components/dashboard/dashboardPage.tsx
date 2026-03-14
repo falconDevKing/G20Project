@@ -199,7 +199,7 @@ export default function DashboardCom() {
             <OfflineBankDetails squared />
             <G20LogOfflinePayment onSaved={async () => setRefreshKey((prev) => prev + 1)} />
             {isAdmin ? (
-              <Button variant="custom" size="lg" disabled={!isAdmin}>
+              <Button variant="custom" size="lg" disabled={!isAdmin} className="w-full sm:w-auto">
                 <Link to="/overview">Access Admin Views</Link>
               </Button>
             ) : (
@@ -267,6 +267,7 @@ export default function DashboardCom() {
             />
 
             <SimpleTable
+              tableType="remissionsManagement"
               columns={actualPaymentColumns}
               data={actualData}
               count={actualCount}
@@ -298,6 +299,7 @@ export default function DashboardCom() {
             />
 
             <SimpleTable
+              tableType="proposedSchedule"
               columns={proposedScheduleColumns}
               data={proposedData}
               count={proposedCount}

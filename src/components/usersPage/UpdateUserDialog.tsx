@@ -20,11 +20,11 @@ import { SelectOptions } from "@/interfaces/register";
 import { useAppSelector } from "@/redux/hooks";
 import { initialiseOptions } from "@/lib/utils";
 import { SuccessHandler, ErrorHandler } from "@/lib/toastHandlers";
-import { G20Categories } from "@/constants";
 import { addRep, removeRep, updateMember } from "@/services/users";
 import { refreshLoggedInUser } from "@/services/auth";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
+import { getG20CategoryOptions } from "@/lib/g20Categories";
 
 type FormValues = z.infer<typeof updateUserSchema>;
 
@@ -42,6 +42,11 @@ export default function UpdateUserDialog({ userData, open, setOpen, setUser, set
   const { ChapterOptions } = initialiseOptions(appState);
   const oldOpsPermissionType = userData.ops_permission_type || "individual";
   const [isPending, setIsPending] = useState(false);
+  const g20CategoryOptions = getG20CategoryOptions({
+    chapterId: userData?.chapter_id,
+    locationCurrency: appState.locationCurrency,
+    fallbackCurrency: appState.fallbackCurrency,
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(updateUserSchema),
@@ -174,10 +179,10 @@ export default function UpdateUserDialog({ userData, open, setOpen, setUser, set
                     <FormControl>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <SelectTrigger className="shad-select-trigger">
-                          <SelectValue placeholder="Select your GGP Category" />
+                          <SelectValue placeholder="Select your G20 Category" />
                         </SelectTrigger>
                         <SelectContent className="shad-select-content">
-                          {G20Categories.map((G20CategoryOption: SelectOptions) => (
+                          {g20CategoryOptions.map((G20CategoryOption: SelectOptions) => (
                             <SelectItem key={G20CategoryOption.value} value={G20CategoryOption.value as unknown as string}>
                               <div className="flex items-center cursor-pointer gap-3">
                                 <p>{G20CategoryOption.name}</p>

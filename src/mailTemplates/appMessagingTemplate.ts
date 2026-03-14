@@ -69,7 +69,7 @@ const HTML_TEMPLATE = `
         <td style="text-align: left; padding: 24px 40px">
           <p style="padding: 0px; line-height: 32px; font-size: 16px; color: #253858; font-style: normal; font-weight: 400">
             Warm regards, <br />
-            GGP Team
+            G20 Team
           </p>
           <p style="font-size: 14px; line-height: 20px; text-align: left; font-weight: 400; color: #8083a3; margin-top: 8px">
             Questions? Feel free to send us an email (<a href="mailto:support@globalgospelpartnership.org" style="color: #cc9e35; text-decoration: none"> support@globalgospelpartnership.org </a>) or
@@ -79,7 +79,7 @@ const HTML_TEMPLATE = `
           </p>
           <p style="font-size: 12px; line-height: 22px; font-weight: 400; text-align: left; color: #8083a3">
             © GGP |
-            <a href="mailto:info@globalgospelpartnership.org" style="color: #8083a3; text-decoration: none"> info@globalgospelpartnership.org </a>
+            <a href="mailto:info@g20partnership.org" style="color: #8083a3; text-decoration: none"> info@g20partnership.org </a>
           </p>
         </td>
       </tr>
@@ -159,7 +159,7 @@ const HTML_TEMPLATE_DARK = `
         <td style="text-align: left; padding: 24px 40px">
           <p style="padding: 0px; line-height: 32px; font-size: 16px; color: white; font-style: normal; font-weight: 400">
             Warm regards, <br />
-            GGP Team
+            G20 Team
           </p>
           <p style="font-size: 14px; line-height: 20px; text-align: left; font-weight: 400; color: #8083a3; margin-top: 8px">
             Questions? Feel free to send us an email (<a href="mailto:support@globalgospelpartnership.org" style="color: #cc9e35; text-decoration: none"> support@globalgospelpartnership.org </a>) or
@@ -169,7 +169,7 @@ const HTML_TEMPLATE_DARK = `
           </p>
           <p style="font-size: 12px; line-height: 22px; font-weight: 400; text-align: left; color: #8083a3">
             © GGP |
-            <a href="mailto:info@globalgospelpartnership.org" style="color: #8083a3; text-decoration: none"> info@globalgospelpartnership.org </a>
+            <a href="mailto:info@g20partnership.org" style="color: #8083a3; text-decoration: none"> info@g20partnership.org </a>
           </p>
         </td>
       </tr>

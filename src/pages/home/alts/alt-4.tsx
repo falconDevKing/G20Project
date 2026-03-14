@@ -74,8 +74,12 @@ export default function G20LandingAlt4() {
             ))}
           </nav>
           <div className="flex gap-2">
-            <a href="/register" className="rounded-md border border-[#2a210f] bg-[#e9e9ea] px-4 py-2 text-sm font-semibold text-[#8f6a1f]">Give Now</a>
-            <a href="/login" className="rounded-md border border-[#b40622] bg-[#e10628] px-4 py-2 text-sm font-semibold text-white">Login to Dashboard</a>
+            <a href="/register" className="rounded-md border border-[#2a210f] bg-[#e9e9ea] px-4 py-2 text-sm font-semibold text-[#8f6a1f]">
+              Give Now
+            </a>
+            <a href="/login" className="rounded-md border border-[#b40622] bg-[#e10628] px-4 py-2 text-sm font-semibold text-white">
+              Login to Dashboard
+            </a>
           </div>
         </div>
       </header>
@@ -99,7 +103,8 @@ export default function G20LandingAlt4() {
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#f4dc74]">Who we are</p>
             <h2 className="text-5xl font-bold text-[#d4a43e]">About G20</h2>
             <p className="text-xl leading-8 text-[#f0f2f8]">
-              The G20 is a select group of men and women committed to standing with Dr Isaiah Macwealth in fulfilling the divine mandate of taking the Gospel to all nations.
+              The G20 is a select group of men and women committed to standing with Dr Isaiah Macwealth in fulfilling the divine mandate of taking the Gospel to
+              all nations.
             </p>
             {[
               "These also are the chief of the mighty men whom David had, who strengthened themselves with him in his kingdom, with all Israel, to make him king, according to the word of the LORD concerning Israel...",
@@ -137,7 +142,9 @@ export default function G20LandingAlt4() {
           <h3 className="text-4xl font-bold text-[#d4a43e]">Partnership Categories</h3>
           <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
             {categories.map((c) => (
-              <div key={c} className="rounded-xl border border-[#6f5624] bg-[#241b0f] p-4 text-[#f0f2f8]">{c}</div>
+              <div key={c} className="rounded-xl border border-[#6f5624] bg-[#241b0f] p-4 text-[#f0f2f8]">
+                {c}
+              </div>
             ))}
           </div>
         </section>
@@ -187,7 +194,7 @@ export default function G20LandingAlt4() {
         <div className="mx-auto grid max-w-[1320px] grid-cols-1 gap-6 px-4 py-10 sm:grid-cols-3 sm:px-8">
           <div>
             <p className="text-lg font-semibold text-[#d4a43e]">Contact</p>
-            <p className="text-[#f0f2f8]">info@globalgospelpartnership.org</p>
+            <p className="text-[#f0f2f8]">info@g20partnership.org</p>
           </div>
           <div>
             <p className="text-lg font-semibold text-[#d4a43e]">Address</p>

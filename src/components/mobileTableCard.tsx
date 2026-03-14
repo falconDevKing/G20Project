@@ -10,6 +10,8 @@ import CopyAction from "copy-to-clipboard";
 import { SuccessHandler } from "@/lib/toastHandlers";
 import { CapitaliseText } from "@/lib/textUtils";
 import { CurrencyCode, GGPCategories } from "@/constants";
+import { getG20CategoryAmount, getG20CategoryLabel } from "@/lib/g20Categories";
+import { getProposedDisplayStatus } from "@/services/g20Dashboard";
 
 interface MobileTableCardProps {
   row: Record<string, any>;
@@ -39,13 +41,22 @@ const MobileTableCard = ({ row, tableType, openMigrateDialog, openUpdateDialog, 
     g20_category,
     remitted,
     forced,
-    phone_number
+    phone_number,
   } = row.original;
 
-  const { currency: chapterCurrency } = findChapterDetails(chapter_id)
+  const { currency: chapterCurrency } = findChapterDetails(chapter_id);
   const partnershipDetails = GGPCategories[chapterCurrency as CurrencyCode] || GGPCategories["USD"];
   const categories = Object.values(partnershipDetails).flat();
   const categoryRange = categories.find((cat) => cat.rank === ggp_category)?.amount;
+  const g20CategoryLabel = getG20CategoryLabel(g20_category, { chapterId: chapter_id });
+  const g20CategoryAmount = getG20CategoryAmount(g20_category, { chapterId: chapter_id });
+  const proposedStatus =
+    tableType === "proposedSchedule"
+      ? getProposedDisplayStatus({
+          status: row.original.status,
+          proposed_date: row.original.proposed_date,
+        })
+      : "";
 
   return (
     <div className="md:hidden" onClick={clickHandler}>
@@ -80,43 +91,41 @@ const MobileTableCard = ({ row, tableType, openMigrateDialog, openUpdateDialog, 
         <div>
           <div className="border rounded-lg p-2 shadow-md m-1 min-w-[300px]">
             <div className="flex justify-between items-end p-0.5">
-              <div className=" text-sm font-bold flex items-center gap-2">
-                {name}
-              </div>
+              <div className=" text-sm font-bold flex items-center gap-2">{name}</div>
 
               <div className="text-sm">{date_of_birth ? dayjs(date_of_birth).format("MMM DD") : ""}</div>
             </div>
 
             <div className="flex justify-between items-end p-0.5 capitalize">
               <div className=" text-sm flex items-center gap-2">
-                {unique_code || ''}
-                {unique_code ? <div className="cursor-pointer">
-                  <CopyIcon
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      CopyAction(unique_code || "");
-                      SuccessHandler(`User Code copied successfully`);
-                    }}
-                    size={16}
-                  />
-                </div> : ''}
+                {unique_code || ""}
+                {unique_code ? (
+                  <div className="cursor-pointer">
+                    <CopyIcon
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        CopyAction(unique_code || "");
+                        SuccessHandler(`User Code copied successfully`);
+                      }}
+                      size={16}
+                    />
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
-              <div className="text-sm">{phone_number || ''}</div>
+              <div className="text-sm">{phone_number || ""}</div>
             </div>
 
             <div className="flex justify-between items-end p-0.5 py-1 capitalize">
               <div className="text-sm">
                 <div className="capitalize flex  items-center gap-1">
-                  <span>
-                    {`${ggp_category}`}
-                  </span>
-                  <span className='text-xs'>
-                    ({`${categoryRange}`})
-                  </span>
+                  <span>{g20CategoryLabel || "---"}</span>
+                  <span className="text-xs">({`${g20CategoryAmount || categoryRange}`})</span>
                 </div>
               </div>
 
-              <Badge className="text-sm justify-center" variant={status === "consistent" ? "custom" : status === "active" ? "secondary" : "destructive"}>
+              <Badge className="text-sm justify-center" variant={status === "consistent" ? "custom" : status === "active" ? "custom" : "destructive"}>
                 <div className="capitalize">{status}</div>
               </Badge>
             </div>
@@ -180,7 +189,7 @@ const MobileTableCard = ({ row, tableType, openMigrateDialog, openUpdateDialog, 
             </div>
 
             <div className="flex justify-between items-end p-0.5 py-1 capitalize">
-              <div className="text-sm">{g20_category}</div>
+              <div className="text-sm">{g20CategoryLabel || g20_category}</div>
 
               <Badge
                 className="cursor-pointer text-sm bg-GGP-darkGold"
@@ -191,6 +200,38 @@ const MobileTableCard = ({ row, tableType, openMigrateDialog, openUpdateDialog, 
               >
                 Update User
               </Badge>
+            </div>
+          </div>
+        </div>
+      ) : tableType === "assignment" ? (
+        <div>
+          <div className="border rounded-lg p-2 shadow-md m-1 min-w-[300px]">
+            <div className="flex justify-between items-end p-0.5 gap-3">
+              <div className="text-sm font-bold">{name}</div>
+              <div className="text-xs truncate">{row.original.email || "---"}</div>
+            </div>
+
+            <div className="flex justify-between items-end p-0.5 capitalize">
+              <div className="text-sm">{findDivisionDetails(division_id || "")?.divisionName || "---"}</div>
+              <div className="text-sm">{findChapterDetails(chapter_id || "")?.chapterName || "---"}</div>
+            </div>
+          </div>
+        </div>
+      ) : tableType === "proposedSchedule" ? (
+        <div>
+          <div className="border rounded-lg p-2 shadow-md m-1 min-w-[300px]">
+            <div className="flex justify-between items-end p-0.5">
+              <div className="text-sm">{row.original.proposed_date ? dayjs(row.original.proposed_date).format("MMM DD, YYYY") : "---"}</div>
+              <Badge className="capitalize text-xs" variant={proposedStatus === "cleared" ? "secondary" : proposedStatus === "due" ? "custom" : "destructive"}>
+                {proposedStatus || row.original.status || "---"}
+              </Badge>
+            </div>
+            <div className="flex justify-between p-0.5">
+              <div>{row.original.schedule_year || "---"}</div>
+              <div>Line {row.original.schedule_index || "---"}</div>
+            </div>
+            <div className="flex justify-between p-0.5 font-bold">
+              <div>{numberWithCurrencyFormatter(row.original.currency || "NGN", row.original.proposed_amount || 0)}</div>
             </div>
           </div>
         </div>

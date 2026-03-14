@@ -35,6 +35,7 @@ import { sendEmail } from "@/services/sendMail";
 import { fetchUsersByEntity } from "@/services/appData";
 import dayjs from "dayjs";
 import { sendWelcomeMessage, sendDefaultPaswordMessage } from "@/services/twilioMessaging";
+import { getG20CategoryOptions } from "@/lib/g20Categories";
 
 type EditUserProps = {
   open: boolean;
@@ -46,7 +47,7 @@ type EditUserProps = {
 
 export default function AddNewPartner({ open, setOpen, permission_type }: EditUserProps) {
   const appState = useAppSelector((state) => state.app);
-  const { AppOrganisationId, DivisionOptions, ChapterOptions } = initialiseAdminOptions(appState);
+  const { AppOrganisationId, DivisionOptions, ChapterOptions, PresidentOptions } = initialiseAdminOptions(appState);
 
   // const [entity, setUser] = useState<Record<string, any>>({});
   const [isPending, setIsPending] = useState(false);
@@ -60,7 +61,10 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
       email: "",
       division_id: "",
       chapter_id: "",
+      president_id: "",
       permission_type: "individual",
+      g20_category: "",
+      g20_amount: 0,
       address: "",
       gender: "",
       nationality: "",
@@ -68,10 +72,18 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
       birth_month: "",
     },
   });
+  const selectedDivision = form.watch("division_id");
+  const selectedChapter = form.watch("chapter_id");
+  const g20CategoryOptions = getG20CategoryOptions({
+    chapterId: selectedChapter,
+    locationCurrency: appState.locationCurrency,
+    fallbackCurrency: appState.fallbackCurrency,
+  });
+  const presidentOptionsToUse = PresidentOptions.filter((president) => (selectedDivision ? president.division_id === selectedDivision : true));
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
     try {
-      const { first_name, last_name, phone_number, email, division_id, chapter_id, permission_type, address, gender, nationality, birth_day, birth_month } =
+      const { first_name, last_name, phone_number, email, division_id, chapter_id, president_id, permission_type, g20_category, g20_amount, address, gender, nationality, birth_day, birth_month } =
         values;
 
       setIsPending(true);
@@ -100,6 +112,8 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
         },
       });
 
+      const selectedPresident = PresidentOptions.find((president) => president.value === president_id);
+
       // SIGN UP USER ON DDB
       const userData = {
         id: uuidV4(),
@@ -117,7 +131,12 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
         organisation_id: AppOrganisationId,
         division_id,
         chapter_id,
+        president_id: president_id || null,
+        governor_id: selectedPresident?.governor_id || null,
+        shepherd_id: selectedPresident?.shepherd_id || null,
         permission_type,
+        g20_category: g20_category || null,
+        g20_amount: typeof g20_amount === "number" && g20_amount > 0 ? g20_amount : null,
         address,
         gender,
         nationality,
@@ -328,6 +347,91 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                             )}
                           </SelectContent>
                         </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className=" lg:grid grid-cols-2 gap-2 space-y-3 md:space-y-0">
+                <FormField
+                  control={form.control}
+                  name="president_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-1">
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">House</FormLabel>
+                      </div>
+                      <FormControl>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                          <SelectTrigger className="shad-select-trigger">
+                            <SelectValue placeholder="Select House" />
+                          </SelectTrigger>
+                          <SelectContent className="shad-select-content">
+                            {presidentOptionsToUse.map((president) => (
+                              <SelectItem key={president.value} value={president.value}>
+                                <div className="flex items-center cursor-pointer gap-3">
+                                  <p>{president.name}</p>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="g20_category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-1">
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">G20 Category</FormLabel>
+                      </div>
+                      <FormControl>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                          <SelectTrigger className="shad-select-trigger">
+                            <SelectValue placeholder="Select G20 Category" />
+                          </SelectTrigger>
+                          <SelectContent className="shad-select-content">
+                            {g20CategoryOptions.map((option: SelectOptions) => (
+                              <SelectItem key={option.value} value={option.value as string}>
+                                <div className="flex items-center cursor-pointer gap-3">
+                                  <p>{option.name}</p>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className=" lg:grid grid-cols-1 gap-2 space-y-3 md:space-y-0">
+                <FormField
+                  control={form.control}
+                  name="g20_amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-1">
+                        <FormLabel className="text-[#111c30] dark:text-white font-normal text-base">G20 Amount</FormLabel>
+                      </div>
+                      <FormControl>
+                        <Input
+                          disabled={isPending}
+                          type="number"
+                          min={0}
+                          placeholder="e.g 100000"
+                          className=" focus-visible:ring-0 focus-visible:ring-offset-0"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

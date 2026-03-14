@@ -14,7 +14,7 @@ export default function OverviewPage() {
       <Tabs defaultValue="partners" className="w-full">
         <div className="flex flex-col md:flex-row md:justify-between">
           <div>
-            <div className="pt-2 text-2xl lg:text-3xl font-bold dark:text-GGP-darkGold"> Welcome, {user.first_name}.</div>
+            <div className="pt-2 text-2xl lg:text-3xl font-bold dark:text-GGP-darkGold"> Welcome, Honourable {user.first_name}.</div>
             {/* <p className="max-w-[530px] mb-4 font-light text-base dark:text-white text-GGP-dark/75">
             Thank you for your commitment towards your partnership. Below are the records of your remissions.
             </p> */}

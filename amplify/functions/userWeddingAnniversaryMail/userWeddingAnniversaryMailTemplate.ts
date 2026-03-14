@@ -127,7 +127,7 @@ const UserWeddingAnniversaryMailTemplate = function (first_name: string) {
                 height="20"
                 style="vertical-align: middle; margin-right: 6px"
               />
-              <a href="https://www.globalgospelpartnership.org" style="color: #cc9e35; text-decoration: none"> www.globalgospelpartnership.org </a>
+              <a href="https://www.g20partnership.org" style="color: #cc9e35; text-decoration: none"> www.g20partnership.org </a>
             </span>
 
             <span style="display: inline-block; vertical-align: middle; margin-right: 20px; margin-bottom: 8px">
@@ -149,8 +149,8 @@ const UserWeddingAnniversaryMailTemplate = function (first_name: string) {
                 height="20"
                 style="vertical-align: middle; margin-right: 6px"
               />
-              <a href="https://www.globalgospelpartnership.org/remit-partnership" style="color: #cc9e35; text-decoration: none">
-                www.globalgospelpartnership.org/remit-partnership
+              <a href="https://www.g20partnership.org/remit-partnership" style="color: #cc9e35; text-decoration: none">
+                www.g20partnership.org/remit-partnership
               </a>
             </span>
           </p>
@@ -159,7 +159,7 @@ const UserWeddingAnniversaryMailTemplate = function (first_name: string) {
 
           <p style="font-weight: 400; color: #8083a3; margin-top: -16px">
             &copy; GGP |
-            <a href="mailto:info@globalgospelpartnership.org" style="color: #8083a3; text-decoration: none"> info@globalgospelpartnership.org </a>
+            <a href="mailto:info@g20partnership.org" style="color: #8083a3; text-decoration: none"> info@g20partnership.org </a>
             <br />
             Together in faith, always Partnering with the Prophet
           </p>

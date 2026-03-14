@@ -238,7 +238,7 @@ export const handleMailingAndStatusUpdates = async ({
     amount: amount,
     remission_period,
     remissionDate: dayjs().format("MMMM DD, YYYY"),
-    baseUrl: "https://www.globalgospelpartnership.org",
+    baseUrl: "https://www.g20partnership.org",
     chapterName,
     approved_by: "Online Paystack",
   });

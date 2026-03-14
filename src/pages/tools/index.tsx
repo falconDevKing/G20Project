@@ -38,7 +38,7 @@ const ToolsPage = () => {
       href: "/media-assets",
     },
     {
-      title: "Pause Member Subscription",
+      title: "Pause Honourable's Subscription",
       description: (
         <div className="flex items-center gap-2">
           <Input

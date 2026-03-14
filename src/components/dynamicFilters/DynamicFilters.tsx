@@ -20,7 +20,6 @@ import {
   RemissionDayOptions,
   StatusOptions,
 } from "@/lib/utils";
-import { G20Categories } from "@/constants";
 import { isRange, RangePicker } from "./rangePicker";
 import { DateRange } from "react-day-picker";
 import { FilterPills } from "./filterPills";
@@ -29,6 +28,7 @@ import { dummyFunction } from "@/interfaces/tools";
 import { useLocation } from "react-router";
 import dayjs from "dayjs";
 import { AltDayPicker } from "./AltDayPicker";
+import { getG20CategoryOptions } from "@/lib/g20Categories";
 
 interface DynamicFilterProps {
   name?: string;
@@ -111,7 +111,31 @@ export const DynamicFilter = ({
   const defaultFilterValue = (defaultFilterField === "status" ? paymentStatusToUse : "") as filterValue;
   const filteredOptions = [filteredDivision, filteredChapter, filteredStatus].filter((filter) => !!filter);
 
-  const { DivisionOptions, ChapterOptions } = initialiseAdminOptions(appState);
+  const { DivisionOptions, ChapterOptions, ShepherdOptions, GovernorOptions, PresidentOptions } = initialiseAdminOptions(appState);
+  const allRoleOption = { value: "all", name: "All" };
+  const g20CategoryOptions = useMemo(
+    () =>
+      getG20CategoryOptions({
+        locationCurrency: appState.locationCurrency,
+        fallbackCurrency: appState.fallbackCurrency,
+      }),
+    [appState.fallbackCurrency, appState.locationCurrency],
+  );
+
+  const getFilteredGovernors = (shepherdId?: string, divisionId?: string) =>
+    GovernorOptions.filter((governor) => {
+      const matchesShepherd = !shepherdId || shepherdId === "all" ? true : governor.shepherd_id === shepherdId;
+      const matchesDivision = !divisionId || divisionId === "all" ? true : governor.division_id === divisionId;
+      return matchesShepherd && matchesDivision;
+    });
+
+  const getFilteredPresidents = ({ shepherdId, governorId, divisionId }: { shepherdId?: string; governorId?: string; divisionId?: string }) =>
+    PresidentOptions.filter((president) => {
+      const matchesShepherd = !shepherdId || shepherdId === "all" ? true : president.shepherd_id === shepherdId;
+      const matchesGovernor = !governorId || governorId === "all" ? true : president.governor_id === governorId;
+      const matchesDivision = !divisionId || divisionId === "all" ? true : president.division_id === divisionId;
+      return matchesShepherd && matchesGovernor && matchesDivision;
+    });
 
   const [openDialog, setOpenDialog] = useState(false);
   const [filterPillsData, setFilterPillsData] = useState([{ field: "", operator: "", value: "" as filterValue }]);
@@ -393,6 +417,9 @@ export const DynamicFilter = ({
   const name_Code_Value = filters.find((f) => f.field === "name_code")?.value || "";
   const outsideSelectedDivision = filters.find((f) => f.field === "division_id")?.value || "all";
   const outsideSelectedChapter = filters.find((f) => f.field === "chapter_id")?.value || "all";
+  const outsideSelectedShepherd = filters.find((f) => f.field === "shepherd_id")?.value || "all";
+  const outsideSelectedGovernor = filters.find((f) => f.field === "governor_id")?.value || "all";
+  const outsideSelectedPresident = filters.find((f) => f.field === "president_id")?.value || "all";
   const outsideSelectedSatus = filters.find((f) => f.field === "status")?.value || "all";
   const outsideSelectedOnlinePayment = filters.find((f) => f.field === "online_payment")?.value || "all";
   const outsideSelectedActiveRecurringRemission = filters.find((f) => f.field === "g20_active_recurring_remission")?.value || "all";
@@ -402,9 +429,14 @@ export const DynamicFilter = ({
   }, [
     // filterData,
     refreshData,
+    page,
+    pageSize,
     name_Code_Value,
     outsideSelectedDivision,
     outsideSelectedChapter,
+    outsideSelectedShepherd,
+    outsideSelectedGovernor,
+    outsideSelectedPresident,
     outsideSelectedSatus,
     outsideSelectedOnlinePayment,
     outsideSelectedActiveRecurringRemission,
@@ -424,55 +456,199 @@ export const DynamicFilter = ({
         <div className="hidden lg:block ">
           {expandable && (
             <div className="flex gap-2 items-center">
-              <Select
-                value={getFilterValue("division_id") as string}
-                onValueChange={(value) => {
-                  updateEqualsFilter("division_id", value);
+              {!opsPermission ? (
+                <>
+                  <Select
+                    value={getFilterValue("division_id") as string}
+                    onValueChange={(value) => {
+                      updateEqualsFilter("division_id", value);
 
-                  const chapterIndex = watch(`filters`).findIndex((filter) => filter.field === "chapter_id");
-                  if (chapterIndex > -1) {
-                    const associatedChapters = ChapterOptions.filter((c) => c.filt === value);
-                    const nextChapter = associatedChapters.length > 1 ? allChaptersOption.value : associatedChapters[0]?.value || "";
-                    setValue(`filters.${chapterIndex}.value`, nextChapter, {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    });
+                      const chapterIndex = watch(`filters`).findIndex((filter) => filter.field === "chapter_id");
+                      if (chapterIndex > -1) {
+                        const associatedChapters = ChapterOptions.filter((c) => c.filt === value);
+                        const nextChapter = associatedChapters.length > 1 ? allChaptersOption.value : associatedChapters[0]?.value || "";
+                        setValue(`filters.${chapterIndex}.value`, nextChapter, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        });
+                      }
+
+                      const currentShepherd = String(getFilterValue("shepherd_id") || "all");
+                      const validShepherds = ShepherdOptions.filter((shepherd) => (value === "all" ? true : shepherd.division_id === value));
+                      if (currentShepherd !== "all" && !validShepherds.some((shepherd) => shepherd.value === currentShepherd)) {
+                        updateEqualsFilter("shepherd_id", "all");
+                      }
+
+                      const currentGovernor = String(getFilterValue("governor_id") || "all");
+                      const validGovernors = getFilteredGovernors(currentShepherd, value);
+                      if (currentGovernor !== "all" && !validGovernors.some((governor) => governor.value === currentGovernor)) {
+                        updateEqualsFilter("governor_id", "all");
+                      }
+
+                      const currentPresident = String(getFilterValue("president_id") || "all");
+                      const validPresidents = getFilteredPresidents({ shepherdId: currentShepherd, governorId: currentGovernor, divisionId: value });
+                      if (currentPresident !== "all" && !validPresidents.some((president) => president.value === currentPresident)) {
+                        updateEqualsFilter("president_id", "all");
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-[140px] shad-select-trigger">
+                      <SelectValue placeholder="Select Division" />
+                    </SelectTrigger>
+                    <SelectContent className="shad-select-content">
+                      {DivisionOptions.map((division) => (
+                        <SelectItem key={division.value || "all"} value={division.value}>
+                          {division.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    onValueChange={(value) => {
+                      updateEqualsFilter("chapter_id", value);
+                    }}
+                    value={getFilterValue("chapter_id") as string}
+                  >
+                    <SelectTrigger className="w-[140px] shad-select-trigger">
+                      <SelectValue placeholder="Select Chapter" />
+                    </SelectTrigger>
+                    <SelectContent className="shad-select-content">
+                      {[
+                        outsideSelectedDivision !== "all" && ChapterOptions.filter((chapter) => chapter.filt === outsideSelectedDivision).length > 1
+                          ? [allChaptersOption, ...ChapterOptions.filter((chapter) => chapter.filt === outsideSelectedDivision)]
+                          : ChapterOptions.filter((chapter) => (outsideSelectedDivision === "all" ? true : chapter.filt === outsideSelectedDivision)),
+                      ]
+                        .flat()
+                        .map((chapter) => (
+                          <SelectItem key={chapter.value || "all"} value={chapter.value}>
+                            {chapter.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              ) : (
+                ""
+              )}
+
+              {opsPermission ? (
+                <>
+                  <Select
+                    value={getFilterValue("shepherd_id") as string}
+                    onValueChange={(value) => {
+                      updateEqualsFilter("shepherd_id", value);
+
+                      const availableGovernors = getFilteredGovernors(value, String(getFilterValue("division_id") || "all"));
+                      const currentGovernor = String(getFilterValue("governor_id") || "all");
+                      if (currentGovernor !== "all" && !availableGovernors.some((governor) => governor.value === currentGovernor)) {
+                        updateEqualsFilter("governor_id", "all");
+                      }
+
+                      const availablePresidents = getFilteredPresidents({
+                        shepherdId: value,
+                        governorId:
+                          currentGovernor !== "all" && availableGovernors.some((governor) => governor.value === currentGovernor) ? currentGovernor : "all",
+                        divisionId: String(getFilterValue("division_id") || "all"),
+                      });
+                      const currentPresident = String(getFilterValue("president_id") || "all");
+                      if (currentPresident !== "all" && !availablePresidents.some((president) => president.value === currentPresident)) {
+                        updateEqualsFilter("president_id", "all");
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-[140px] shad-select-trigger">
+                      <SelectValue placeholder="Shepherd" />
+                    </SelectTrigger>
+                    <SelectContent className="shad-select-content">
+                      {[
+                        allRoleOption,
+                        ...ShepherdOptions.filter((shepherd) => (outsideSelectedDivision === "all" ? true : shepherd.division_id === outsideSelectedDivision)),
+                      ].map((shepherd) => (
+                        <SelectItem key={`shepherd-${shepherd.value}`} value={shepherd.value}>
+                          {shepherd.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={getFilterValue("governor_id") as string}
+                    onValueChange={(value) => {
+                      updateEqualsFilter("governor_id", value);
+
+                      if (value !== "all" && String(getFilterValue("shepherd_id") || "all") === "all") {
+                        const selectedGovernor = GovernorOptions.find((governor) => governor.value === value);
+                        if (selectedGovernor?.shepherd_id) {
+                          updateEqualsFilter("shepherd_id", selectedGovernor.shepherd_id);
+                        }
+                      }
+
+                      const availablePresidents = getFilteredPresidents({
+                        shepherdId:
+                          value !== "all" && String(getFilterValue("shepherd_id") || "all") === "all"
+                            ? GovernorOptions.find((governor) => governor.value === value)?.shepherd_id || "all"
+                            : String(getFilterValue("shepherd_id") || "all"),
+                        governorId: value,
+                        divisionId: String(getFilterValue("division_id") || "all"),
+                      });
+                      const currentPresident = String(getFilterValue("president_id") || "all");
+                      if (currentPresident !== "all" && !availablePresidents.some((president) => president.value === currentPresident)) {
+                        updateEqualsFilter("president_id", "all");
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-[140px] shad-select-trigger">
+                      <SelectValue placeholder="Governor" />
+                    </SelectTrigger>
+                    <SelectContent className="shad-select-content">
+                      {[allRoleOption, ...getFilteredGovernors(String(outsideSelectedShepherd), String(outsideSelectedDivision))].map((governor) => (
+                        <SelectItem key={`governor-${governor.value}`} value={governor.value}>
+                          {governor.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              ) : (
+                ""
+              )}
+              <Select
+                value={getFilterValue("president_id") as string}
+                onValueChange={(value) => {
+                  updateEqualsFilter("president_id", value);
+
+                  if (value !== "all") {
+                    const selectedPresident = PresidentOptions.find((president) => president.value === value);
+
+                    if (selectedPresident) {
+                      if (String(getFilterValue("governor_id") || "all") === "all" && selectedPresident.governor_id) {
+                        updateEqualsFilter("governor_id", selectedPresident.governor_id);
+                      }
+
+                      if (String(getFilterValue("shepherd_id") || "all") === "all" && selectedPresident.shepherd_id) {
+                        updateEqualsFilter("shepherd_id", selectedPresident.shepherd_id);
+                      }
+                    }
                   }
                 }}
               >
                 <SelectTrigger className="w-[140px] shad-select-trigger">
-                  <SelectValue placeholder="Select Division" />
-                </SelectTrigger>
-                <SelectContent className="shad-select-content">
-                  {DivisionOptions.map((division) => (
-                    <SelectItem key={division.value || "all"} value={division.value}>
-                      {division.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select
-                onValueChange={(value) => {
-                  updateEqualsFilter("chapter_id", value);
-                }}
-                value={getFilterValue("chapter_id") as string}
-              >
-                <SelectTrigger className="w-[140px] shad-select-trigger">
-                  <SelectValue placeholder="Select Chapter" />
+                  <SelectValue placeholder="President" />
                 </SelectTrigger>
                 <SelectContent className="shad-select-content">
                   {[
-                    outsideSelectedDivision !== "all" && ChapterOptions.filter((chapter) => chapter.filt === outsideSelectedDivision).length > 1
-                      ? [allChaptersOption, ...ChapterOptions.filter((chapter) => chapter.filt === outsideSelectedDivision)]
-                      : ChapterOptions.filter((chapter) => (outsideSelectedDivision === "all" ? true : chapter.filt === outsideSelectedDivision)),
-                  ]
-                    .flat()
-                    .map((chapter) => (
-                      <SelectItem key={chapter.value || "all"} value={chapter.value}>
-                        {chapter.name}
-                      </SelectItem>
-                    ))}
+                    allRoleOption,
+                    ...getFilteredPresidents({
+                      shepherdId: String(outsideSelectedShepherd),
+                      governorId: String(outsideSelectedGovernor),
+                      divisionId: String(outsideSelectedDivision),
+                    }),
+                  ].map((president) => (
+                    <SelectItem key={`president-${president.value}`} value={president.value}>
+                      {president.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
@@ -545,7 +721,7 @@ export const DynamicFilter = ({
 
         {showSearch && (
           <Input
-            placeholder="Seach partner by name or code"
+            placeholder="Search honourable name or code"
             value={getFilterValue("name_code") as string}
             onChange={(e) => updateContainsFilter("name_code", e.target.value)}
             className="w-[200px] dark:border-GGP-lightGold"
@@ -657,6 +833,8 @@ export const DynamicFilter = ({
                 const fieldOptions = watch("filters").map((filter) => filter.field as string);
                 const selectedField = watch(`filters.${indexToUse}.field`);
                 const selectedDivision = watch(`filters`).find((filter) => filter.field === "division_id")?.value || "all";
+                const selectedShepherd = watch(`filters`).find((filter) => filter.field === "shepherd_id")?.value || "all";
+                const selectedGovernor = watch(`filters`).find((filter) => filter.field === "governor_id")?.value || "all";
                 const isEqualsOperator = watch(`filters.${indexToUse}.operator`) === "Equals";
 
                 return (
@@ -666,7 +844,21 @@ export const DynamicFilter = ({
                       control={control}
                       name={`filters.${indexToUse}.field`}
                       render={({ field }) => (
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            const nextOperator = (value === "name_code" ? "Contains" : "Equals") as fieldOperatorType;
+                            setValue(`filters.${indexToUse}.operator`, nextOperator, {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            });
+                            setValue(`filters.${indexToUse}.value`, "", {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            });
+                          }}
+                          defaultValue={field.value}
+                        >
                           <SelectTrigger className="w-[176px] h-12">
                             <SelectValue placeholder="Select Field" />
                           </SelectTrigger>
@@ -892,7 +1084,7 @@ export const DynamicFilter = ({
                                 <SelectValue placeholder={`Select the G20 category`} />
                               </SelectTrigger>
                               <SelectContent className="shad-select-content">
-                                {G20Categories.map((category) => (
+                                {g20CategoryOptions.map((category) => (
                                   <SelectItem key={category.value || category.name} value={String(category.value)}>
                                     <div className="flex items-center cursor-pointer gap-2 pl-4">{category.name}</div>
                                   </SelectItem>
@@ -966,6 +1158,115 @@ export const DynamicFilter = ({
                             </Select>
                           );
                         }}
+                      />
+                    ) : selectedField === "shepherd_id" ? (
+                      <Controller
+                        control={control}
+                        name={`filters.${indexToUse}.value`}
+                        render={({ field }) => (
+                          <Select onValueChange={field.onChange} value={field.value as string}>
+                            <SelectTrigger className="w-[240px] shad-select-trigger">
+                              <SelectValue placeholder="Select Shepherd" />
+                            </SelectTrigger>
+                            <SelectContent className="shad-select-content">
+                              {ShepherdOptions.filter((shepherd) => (selectedDivision === "all" ? true : shepherd.division_id === selectedDivision)).map(
+                                (shepherd) => (
+                                  <SelectItem key={shepherd.value} value={shepherd.value}>
+                                    {shepherd.name}
+                                  </SelectItem>
+                                ),
+                              )}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                    ) : selectedField === "governor_id" ? (
+                      <Controller
+                        control={control}
+                        name={`filters.${indexToUse}.value`}
+                        render={({ field }) => (
+                          <Select
+                            onValueChange={(value) => {
+                              field.onChange(value);
+
+                              const selectedGovernor = GovernorOptions.find((governor) => governor.value === value);
+                              const shepherdIndex = watch(`filters`).findIndex((filter) => filter.field === "shepherd_id");
+                              if (shepherdIndex > -1) {
+                                const currentShepherd = watch(`filters.${shepherdIndex}.value`);
+                                if ((!currentShepherd || currentShepherd === "all") && selectedGovernor?.shepherd_id) {
+                                  setValue(`filters.${shepherdIndex}.value`, selectedGovernor.shepherd_id, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                  });
+                                }
+                              }
+                            }}
+                            value={field.value as string}
+                          >
+                            <SelectTrigger className="w-[240px] shad-select-trigger">
+                              <SelectValue placeholder="Select Governor" />
+                            </SelectTrigger>
+                            <SelectContent className="shad-select-content">
+                              {getFilteredGovernors(String(selectedShepherd), String(selectedDivision)).map((governor) => (
+                                <SelectItem key={governor.value} value={governor.value}>
+                                  {governor.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                    ) : selectedField === "president_id" ? (
+                      <Controller
+                        control={control}
+                        name={`filters.${indexToUse}.value`}
+                        render={({ field }) => (
+                          <Select
+                            onValueChange={(value) => {
+                              field.onChange(value);
+
+                              const selectedPresident = PresidentOptions.find((president) => president.value === value);
+                              const shepherdIndex = watch(`filters`).findIndex((filter) => filter.field === "shepherd_id");
+                              const governorIndex = watch(`filters`).findIndex((filter) => filter.field === "governor_id");
+
+                              if (governorIndex > -1) {
+                                const currentGovernor = watch(`filters.${governorIndex}.value`);
+                                if ((!currentGovernor || currentGovernor === "all") && selectedPresident?.governor_id) {
+                                  setValue(`filters.${governorIndex}.value`, selectedPresident.governor_id, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                  });
+                                }
+                              }
+
+                              if (shepherdIndex > -1) {
+                                const currentShepherd = watch(`filters.${shepherdIndex}.value`);
+                                if ((!currentShepherd || currentShepherd === "all") && selectedPresident?.shepherd_id) {
+                                  setValue(`filters.${shepherdIndex}.value`, selectedPresident.shepherd_id, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                  });
+                                }
+                              }
+                            }}
+                            value={field.value as string}
+                          >
+                            <SelectTrigger className="w-[240px] shad-select-trigger">
+                              <SelectValue placeholder="Select President" />
+                            </SelectTrigger>
+                            <SelectContent className="shad-select-content">
+                              {getFilteredPresidents({
+                                shepherdId: String(selectedShepherd),
+                                governorId: String(selectedGovernor),
+                                divisionId: String(selectedDivision),
+                              }).map((president) => (
+                                <SelectItem key={president.value} value={president.value}>
+                                  {president.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
                       />
                     ) : selectedField === "preferred_remission_day" ? (
                       <Controller

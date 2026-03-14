@@ -4,18 +4,19 @@ import { GhostButton } from "../customIcons";
 import SectionShell from "./sectionShell";
 import { CheckCircle } from "lucide-react";
 import { OfflineBankDetails } from "./offlinePaymentDetails";
+import { useAppSelector } from "@/redux/hooks";
+import { getResolvedG20Categories } from "@/lib/g20Categories";
 
 type Category = { title: string; amount: string; subtitle?: string };
 
-const categories: Category[] = [
-  { title: "Category 1 - Bronze Honorary Member", amount: "NGN 1 million to NGN 2 million per year", subtitle: "Entry level" },
-  { title: "Category 2 - Silver Honorary Member", amount: "Above NGN 2 million to NGN 5 million per year" },
-  { title: "Category 3 - Gold Honorary Member", amount: "Above NGN 5 million to NGN 10 million per year" },
-  { title: "Category 4 - Diamond Honorary Member", amount: "Above NGN 10 million to NGN 25 million per year" },
-  { title: "Category 5 - Platinum Honorary Member", amount: "Above NGN 25 million per year", subtitle: "Highest level" },
-];
-
 const Category = () => {
+  const { locationCurrency, fallbackCurrency } = useAppSelector((state) => state.app);
+  const categories: Category[] = getResolvedG20Categories({ locationCurrency, fallbackCurrency }).map((category, index) => ({
+    title: `Category ${index + 1} - ${category.rank} Honorary Member`,
+    amount: `${category.amount} per year`,
+    subtitle: index === 0 ? "Entry level" : index === 4 ? "Highest level" : undefined,
+  }));
+
   return (
     <SectionShell
       id="categories"
@@ -33,8 +34,8 @@ const Category = () => {
                   <CheckCircle />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#f0cf86] sm:text-md">{c.title}</p>
-                  <p className="mt-1 text-sm text-[#d6e2f8] sm:text-md">
+                  <p className="text-md font-semibold text-[#f0cf86] sm:text-lg">{c.title}</p>
+                  <p className="mt-1 text-sm text-[#d6e2f8] sm:text-lg">
                     {c.amount} {c.subtitle ? <span className="text-[#aebcda]">({c.subtitle})</span> : null}
                   </p>
                 </div>
@@ -44,7 +45,7 @@ const Category = () => {
 
           <p className="mt-7 text-sm text-[#d6e2f8] sm:text-md">Top G20 partners will serve as executives of the House of Greats for the upcoming year.</p>
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <div className="mt-7 grid grid-cols-2 sm:flex gap-3 sm:flex-row sm:flex-wrap">
             <OfflineBankDetails showBg="gold" fullWidthOnMobile />
             <GhostButton href="/login" showArrow fullWidthOnMobile>
               Sign up
@@ -53,7 +54,7 @@ const Category = () => {
         </div>
 
         <div className="relative overflow-hidden rounded-3xl border border-[#2e3a55] bg-[#111c31]">
-          <img src={ProphetPortrait} alt="Leader portrait" className="h-[280px] w-full object-cover sm:h-[420px] lg:max-h-[560px]" />
+          <img src={ProphetPortrait} alt="Leader portrait" className=" w-full object-cover sm:max-h-[600px]" />
           <div className="absolute inset-0 bg-[#0b1120]/30" />
         </div>
       </div>

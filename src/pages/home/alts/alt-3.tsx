@@ -200,7 +200,7 @@ export default function G20LandingAlt3() {
         <div className="mx-auto grid max-w-[1320px] grid-cols-1 gap-6 px-4 py-10 sm:grid-cols-3 sm:px-8">
           <div>
             <p className="text-lg font-semibold text-[#ffe3b4]">Contact</p>
-            <p className="text-[#dce5ff]">info@globalgospelpartnership.org</p>
+            <p className="text-[#dce5ff]">info@g20partnership.org</p>
           </div>
           <div>
             <p className="text-lg font-semibold text-[#ffe3b4]">Address</p>

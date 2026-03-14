@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { filterFieldsLabels, OperatorSymbols } from "./filterOptions";
 import { useTheme } from "../themeProvider/theme-provider";
 import { CapitaliseText } from "@/lib/textUtils";
+import { useAppSelector } from "@/redux/hooks";
+import { getG20CategoryLabel } from "@/lib/g20Categories";
 
 type DateRange = { from?: Date; to?: Date };
 type FilterValue = string | { from?: string; to?: string } | DateRange;
@@ -81,6 +83,7 @@ const ordinalRange = ({ from, to }: { from: string; to: string }): string => {
 
 export const FilterPills: React.FC<Props> = ({ filters }) => {
   const { theme } = useTheme();
+  const appState = useAppSelector((state) => state.app);
   if (!filters?.length) return null;
 
   return (
@@ -92,6 +95,10 @@ export const FilterPills: React.FC<Props> = ({ filters }) => {
 
           const isChapter = f.field === "chapter_id";
           const isDivision = f.field === "division_id";
+          const isShepherd = f.field === "shepherd_id";
+          const isGovernor = f.field === "governor_id";
+          const isPresident = f.field === "president_id";
+          const isG20Category = f.field === "g20_category";
           const isPreferredRemissionDay = f.field === "preferred_remission_day";
           const isEquals = op === "=";
 
@@ -119,7 +126,18 @@ export const FilterPills: React.FC<Props> = ({ filters }) => {
                 ? findChapterDetails(valueText).chapterName
                 : isDivision
                   ? findDivisionDetails(valueText).divisionName
-                  : valueText;
+                  : isShepherd
+                    ? (appState.shepherdEntities || []).find((shepherd) => shepherd.id === valueText)?.name || valueText
+                    : isGovernor
+                      ? (appState.governorEntities || []).find((governor) => governor.id === valueText)?.name || valueText
+                      : isPresident
+                        ? (appState.presidentEntities || []).find((president) => president.id === valueText)?.name || valueText
+                        : isG20Category
+                          ? getG20CategoryLabel(valueText, {
+                              locationCurrency: appState.locationCurrency,
+                              fallbackCurrency: appState.fallbackCurrency,
+                            })
+                          : valueText;
 
           return (
             <Badge

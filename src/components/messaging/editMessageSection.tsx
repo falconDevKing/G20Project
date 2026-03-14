@@ -49,11 +49,11 @@ const EditMessageSection = ({
   const permission_type = useAppSelector((state) => state.auth.userDetails.permission_type);
   const [_, setPage] = useState<number>(1);
   return (
-    <div className="p-1 pr-3 border-r-4 dark:border-GGP-darkGold space-y-3 bg-white dark:bg-transparent">
+    <div className="p-1 pr-3 border-r-4 dark:border-GGP-darkGold space-y-3 ">
       {/* Filter by Chapter */}
 
       <div className="flex justify-between items-center">
-        <div className="font-semibold text-lg sm:text-2xl dark:text-GGP-darkGold">Select Users</div>
+        <div className="font-semibold text-lg sm:text-2xl dark:text-GGP-darkGold">Select Honourables</div>
         {/* <div className="block font-semibold mb-1">Filters</div> */}
         <DynamicFilter
           name={"Filter Users"}
@@ -75,7 +75,6 @@ const EditMessageSection = ({
       {/* Select Users */}
       <div>
         <div className="flex justify-end items-center py-2 gap-2">
-
           <Button variant={"destructive"} onClick={clearSelection} className="text-sm underline">
             Clear All Selection
           </Button>
@@ -83,8 +82,6 @@ const EditMessageSection = ({
           <Button variant={"custom"} onClick={selectAllUsersFunction} className="text-sm tunderline">
             Select All Users ({tableDataCount})
           </Button>
-
-
         </div>
         <Popover>
           <PopoverTrigger asChild className=" h-12">
@@ -108,7 +105,7 @@ const EditMessageSection = ({
                   return (
                     <CommandItem key={user.id} onSelect={() => toggleUser(user)} className="flex items-center justify-between">
                       <span>
-                        {user.first_name || ''} {user.last_name || ''} – {user.email}
+                        {user.first_name || ""} {user.last_name || ""} – {user.email}
                       </span>
                       {isSelected && <Check className="w-4 h-4 text-green-600" />}
                     </CommandItem>
@@ -119,7 +116,7 @@ const EditMessageSection = ({
           </PopoverContent>
         </Popover>
 
-        <p className="italic text-xs  text-muted-foreground mt-2">N.B: list showing top 10 users. Narrow filter to see specific details</p>
+        <p className="italic text-xs  text-muted-foreground mt-2">N.B: list showing top 10 honourables. Narrow filter to see specific details</p>
       </div>
 
       <div>

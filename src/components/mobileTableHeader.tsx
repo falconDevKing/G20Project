@@ -31,20 +31,34 @@ const MobileTableHeader = ({ tableType, isDivision = false }: MobileTableCardPro
             </div>
 
             <div className="flex justify-between items-end p-0.5 py-1 capitalize">
-              <div>GGP Code</div>
+              <div>Honourable Code</div>
               <div>Phone Number</div>
             </div>
 
             <div className="flex justify-between items-end p-0.5 py-1 capitalize">
-              <div>GGP Category</div>
+              <div>G20 Category</div>
               <div>Status</div>
             </div>
             <div className="flex justify-between items-end p-0.5 capitalize">
-              <div>Division Name</div>
-              <div>Chapter Name</div>
+              <div>Governor Name</div>
+              <div>House</div>
             </div>
             <div className="flex justify-between items-end p-0.5 py-1">
               <div>Actions</div>
+            </div>
+          </div>
+        </div>
+      ) : tableType === "assignment" ? (
+        <div>
+          <div className="rounded-lg p-2 shadow-md m-1 min-w-[300px]">
+            <div className="flex justify-between items-end p-0.5">
+              <div className="text-sm font-bold">Name</div>
+              <div>Email</div>
+            </div>
+
+            <div className="flex justify-between items-end p-0.5 py-1 capitalize">
+              <div>Division</div>
+              <div>Chapter</div>
             </div>
           </div>
         </div>
@@ -57,8 +71,8 @@ const MobileTableHeader = ({ tableType, isDivision = false }: MobileTableCardPro
             </div>
 
             <div className="flex justify-between items-end p-0.5 capitalize">
-              <div>Division Name</div>
-              <div>Chapter Name</div>
+              <div>Governor Name</div>
+              <div>House</div>
             </div>
 
             <div className="flex justify-between items-end p-0.5 capitalize">
@@ -69,6 +83,22 @@ const MobileTableHeader = ({ tableType, isDivision = false }: MobileTableCardPro
             <div className="flex justify-between items-end p-0.5 py-1 capitalize">
               <div>G20 Category</div>
               <div>Actions</div>
+            </div>
+          </div>
+        </div>
+      ) : tableType === "proposedSchedule" ? (
+        <div>
+          <div className="rounded-lg p-2 shadow-md m-1 min-w-[300px]">
+            <div className="flex justify-between items-end p-0.5">
+              <div>Proposed Date</div>
+              <div>Status</div>
+            </div>
+            <div className="flex justify-between p-0.5">
+              <div>Scheduled Year</div>
+              <div>Line</div>
+            </div>
+            <div className="flex justify-between p-0.5">
+              <div>Proposed Amount</div>
             </div>
           </div>
         </div>
@@ -93,7 +123,7 @@ const MobileTableHeader = ({ tableType, isDivision = false }: MobileTableCardPro
           <div className="rounded-lg p-2 shadow-md m-1 min-w-[300px]">
             <div className="flex justify-between items-end p-0.5">
               <div>Payment Date</div>
-              <div>User Name</div>
+              <div>Honourable</div>
             </div>
             <div className="flex justify-between  p-0.5">
               <div>Remission Period</div>
