@@ -22,9 +22,9 @@ import { OfflineBankDetails } from "./offlinePaymentDetails";
 const heroImages = [
   HeroBackground,
   HeroBackgroundOne,
-  HeroBackgroundTwo,
-  HeroBackgroundThree,
   HeroBackgroundFour,
+  HeroBackgroundThree,
+  HeroBackgroundTwo,
   HeroBackgroundFive,
   HeroBackgroundSix,
   HeroBackgroundSeven,
@@ -42,7 +42,8 @@ const Hero = () => {
 
   useEffect(() => {
     const imageRotationInterval = window.setInterval(() => {
-      setActiveImageIndex(() => Math.floor(Math.random() * heroImages.length));
+      // setActiveImageIndex(() => Math.floor(Math.random() * heroImages.length));
+      setActiveImageIndex((currentIndex) => (currentIndex + 1) % heroImages.length);
       setCrestImageIndex((currentIndex) => (currentIndex + 1) % crestImages.length);
     }, 5000);
 
