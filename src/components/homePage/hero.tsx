@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useAppSelector } from "@/redux/hooks";
+import { getBronzeMinimumValue } from "@/lib/g20Categories";
 
 import G20Crest from "@/assets/heroImages/G20_logo.png";
 import HOGCrest from "@/assets/heroImages/HOG_logo.png";
@@ -37,8 +39,10 @@ const heroImages = [
 const crestImages = [G20Crest, HOGCrest, MMWCrest];
 
 const Hero = () => {
+  const { locationCurrency, fallbackCurrency } = useAppSelector((state) => state.app);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [crestImageIndex, setCrestImageIndex] = useState(0);
+  const bronzeMinimumValue = getBronzeMinimumValue({ locationCurrency, fallbackCurrency });
 
   useEffect(() => {
     const imageRotationInterval = window.setInterval(() => {
@@ -87,7 +91,7 @@ const Hero = () => {
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <div className="rounded-full border border-[#3c4863] bg-[#1a2945] px-4 py-2 text-sm text-[#d8e2f7]">
-                Minimum annual commitment: <span className="font-semibold text-[#f0cf86]">NGN 1,000,000</span>
+                Minimum annual commitment: <span className="font-semibold text-[#f0cf86]">{bronzeMinimumValue}</span>
               </div>
               <div className="rounded-full border border-[#3c4863] bg-[#1a2945] px-4 py-2 text-sm text-[#d8e2f7]">Conviction-led Partnership</div>
             </div>

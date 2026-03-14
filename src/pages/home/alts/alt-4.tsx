@@ -1,21 +1,11 @@
 import { useState } from "react";
 import { CheckCircle } from "lucide-react";
+import { useAppSelector } from "@/redux/hooks";
+import { getBronzeMinimumValue, getResolvedG20Categories } from "@/lib/g20Categories";
 import G20Logo from "@/assets/generalAppAssets/G20_logo.png";
 import AboutImage from "@/assets/generalAppAssets/G20_Table.jpg";
 import ProphetImage from "@/assets/generalAppAssets/prophet.png";
 import RequirementsImage from "@/assets/generalAppAssets/requirements.png";
-
-const requirements = [
-  "Be a born again child of God with a clear testimony of salvation.",
-  "Be a lover of Jesus Christ and his church on earth.",
-  "Demonstrate love and passion for the growth and expansion of the ministry.",
-  "Have joy and willingness in giving whenever opportunities arise.",
-  "Carry a genuine burden for souls and for the spread of the Gospel.",
-  "Love the vision and ministry of Prophet Isaiah Macwealth.",
-  "Commit to sowing at least NGN 1,000,000 annually toward the ministry's mission.",
-  "Maintain a life that is faithful, responsible, consistent, truthful, and pure.",
-  "Have credible income sources to sustain the commitment.",
-];
 
 const benefits = [
   "Fulfilling the Kingdom mandate",
@@ -26,31 +16,38 @@ const benefits = [
   "Recognition and awards",
 ];
 
-const categories = [
-  "Category 1 - Bronze Honorary Member: NGN 1 million to NGN 2 million per year",
-  "Category 2 - Silver Honorary Member: Above NGN 2 million to NGN 5 million per year",
-  "Category 3 - Gold Honorary Member: Above NGN 5 million to NGN 10 million per year",
-  "Category 4 - Diamond Honorary Member: Above NGN 10 million to NGN 25 million per year",
-  "Category 5 - Platinum Honorary Member: Above NGN 25 million per year",
-];
-
-const faq = [
-  {
-    q: "What is the difference between GGP and G20?",
-    a: "GGP is monthly partnership. G20 is a higher-tier annual partnership for major Gospel projects.",
-  },
-  {
-    q: "Who can become a G20 partner?",
-    a: "Men and women aligned with the mandate who can commit at least NGN 1,000,000 annually.",
-  },
-  {
-    q: "Can I partner from outside Nigeria?",
-    a: "Yes. International partners can join and remit in equivalent local currency through available options.",
-  },
-];
-
 export default function G20LandingAlt4() {
+  const { locationCurrency, fallbackCurrency } = useAppSelector((state) => state.app);
   const [openFaq, setOpenFaq] = useState(0);
+  const bronzeMinimumValue = getBronzeMinimumValue({ locationCurrency, fallbackCurrency });
+  const requirements = [
+    "Be a born again child of God with a clear testimony of salvation.",
+    "Be a lover of Jesus Christ and his church on earth.",
+    "Demonstrate love and passion for the growth and expansion of the ministry.",
+    "Have joy and willingness in giving whenever opportunities arise.",
+    "Carry a genuine burden for souls and for the spread of the Gospel.",
+    "Love the vision and ministry of Prophet Isaiah Macwealth.",
+    `Commit to sowing at least ${bronzeMinimumValue} annually toward the ministry's mission.`,
+    "Maintain a life that is faithful, responsible, consistent, truthful, and pure.",
+    "Have credible income sources to sustain the commitment.",
+  ];
+  const categories = getResolvedG20Categories({ locationCurrency, fallbackCurrency }).map(
+    (category, index) => `Category ${index + 1} - ${category.rank} Honorary Member: ${category.amount} per year`,
+  );
+  const faq = [
+    {
+      q: "What is the difference between GGP and G20?",
+      a: "GGP is monthly partnership. G20 is a higher-tier annual partnership for major Gospel projects.",
+    },
+    {
+      q: "Who can become a G20 partner?",
+      a: `Men and women aligned with the mandate who can commit at least ${bronzeMinimumValue} annually.`,
+    },
+    {
+      q: "Can I partner from outside Nigeria?",
+      a: "Yes. International partners can join and remit in equivalent local currency through available options.",
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#16171d] text-white">

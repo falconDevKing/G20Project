@@ -93,9 +93,7 @@ type ResolveG20CurrencyArgs = {
   fallbackCurrency?: string | null;
 };
 
-const isSupportedCurrency = (currency?: string | null): currency is G20CurrencyCode => {
-  return !!currency && currency in G20_CATEGORIES_BY_CURRENCY;
-};
+const isSupportedCurrency = (currency?: string | null): currency is G20CurrencyCode => !!currency && currency in G20_CATEGORIES_BY_CURRENCY;
 
 export const resolveG20Currency = ({ chapterId, locationCurrency, fallbackCurrency }: ResolveG20CurrencyArgs = {}): G20CurrencyCode => {
   const chapterCurrency = chapterId ? findChapterDetails(chapterId).currency : "";
@@ -130,4 +128,14 @@ export const getG20CategoryAmount = (rank?: string | null, args: ResolveG20Curre
   if (!rank) return "";
 
   return getResolvedG20Categories(args).find((category) => category.rank === rank)?.amount || "";
+};
+
+export const getBronzeCategory = (args: ResolveG20CurrencyArgs = {}): G20CategoryEntry => {
+  return getResolvedG20Categories(args).find((category) => category.rank === "Bronze") || getResolvedG20Categories(args)[0];
+};
+
+export const getBronzeMinimumValue = (args: ResolveG20CurrencyArgs = {}): string => {
+  const bronzeAmount = getBronzeCategory(args)?.amount || "";
+  const [minimumValue] = bronzeAmount.split(" - ");
+  return minimumValue || bronzeAmount;
 };
