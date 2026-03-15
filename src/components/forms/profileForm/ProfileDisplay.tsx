@@ -147,7 +147,7 @@ export const ProfileDisplay = ({
             </div>
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
             <ProfileInfoItem label="G20 Category" value={g20CategoryLabel || "Not selected"} />
             <ProfileInfoItem label="G20 Amount" value={userProfile.g20_amount || 0} />
             <ProfileInfoItem label="Motivation" value={userProfile.motivation || "Not provided"} className="md:col-span-2 xl:col-span-2" />
@@ -165,9 +165,11 @@ export const ProfileDisplay = ({
             </p>
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-6 grid gap-4 md:grid-cols-2 ">
             <ProfileInfoItem label="Division" value={divisionName || "Not assigned"} />
             <ProfileInfoItem label="Chapter" value={chapterName || "Not assigned"} />
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <ProfileInfoItem label="Shepherd" value={shepherdName || "Not assigned"} />
             <ProfileInfoItem label="Governor" value={governorName || "Not assigned"} />
             <ProfileInfoItem label="President" value={presidentName || "Not assigned"} />

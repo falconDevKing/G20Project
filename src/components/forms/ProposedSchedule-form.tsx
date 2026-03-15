@@ -7,8 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppSelector } from "@/redux/hooks";
 import type { PartnerRowType } from "@/supabase/modifiedSupabaseTypes";
 import { proposedScheduleSchema } from "@/lib/schemas";
-import { ErrorHandler, SuccessHandler } from "@/lib/toastHandlers";
+import { ErrorHandler, InfoHandler, SuccessHandler } from "@/lib/toastHandlers";
 import { saveProposedSchedule, generateScheduleAmounts, getNextOct30Window } from "@/services/proposedSchedule";
+import { sendPostScheduleWelcomeNotifications } from "@/services/postScheduleNotifications";
 
 import { CardWrapper } from "../Card-wapper";
 import { Button } from "../ui/button";
@@ -105,13 +106,22 @@ export const ProposedScheduleForm = () => {
 
       setIsPending(true);
 
-      await saveProposedSchedule({
+      const savedRows = await saveProposedSchedule({
         user: currentUser,
         scheduleYear,
         rows: values.rows,
       });
 
+      const notificationResult = await sendPostScheduleWelcomeNotifications({
+        user: currentUser,
+        rows: savedRows,
+        hideDefaultPassword: true,
+      });
+
       SuccessHandler("Proposed payment schedule saved successfully.");
+      if (!notificationResult.success) {
+        InfoHandler("Schedule saved successfully, but we could not send all welcome notifications.");
+      }
       navigate("/dashboard");
     } catch (error: any) {
       console.log("proposed schedule error", error);

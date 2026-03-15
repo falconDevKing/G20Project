@@ -42,7 +42,7 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
 
     if (allowResend) {
       const { data, error } = await resend.emails.send({
-        from: `"GGP Office" <${from || senderEmail}>`,
+        from: `"G20 Office" <${from || senderEmail}>`,
         to,
         subject,
         html: body,
@@ -57,7 +57,7 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
     }
 
     const command = new SendEmailCommand({
-      Source: `"GGP Office" <${from || senderEmail}>`,
+      Source: `"G20 Office" <${from || senderEmail}>`,
       Destination: { ToAddresses: to, CcAddresses: cc, BccAddresses: bcc },
       Message: {
         Subject: { Data: subject },

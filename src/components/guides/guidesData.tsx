@@ -113,7 +113,7 @@ export const guides: Guide[] = [
         <h2>Overview</h2>
         <p>
           Online remissions allow you to submit your giving directly through the app and complete payment using a secure payment provider. Once completed, you
-          will receive an email confirmation from the GGP office.
+          will receive an email confirmation from the G20 office.
         </p>
 
         <h2>How to make an online remission</h2>
@@ -143,7 +143,7 @@ export const guides: Guide[] = [
             You may be redirected to an external payment provider to process the payment. Please wait for the payment to complete before closing the page or
             navigating elsewhere.
           </li>
-          <li>After successful payment, allow some time to receive an email confirmation from the GGP office.</li>
+          <li>After successful payment, allow some time to receive an email confirmation from the G20 office.</li>
         </ul>
 
         <h2>Need help?</h2>
@@ -204,7 +204,7 @@ export const guides: Guide[] = [
 
         <h2>After payment confirmation</h2>
         <p>
-          Once your payment is submitted, please remain on the page briefly and allow time for an email confirmation from the GGP office confirming that your
+          Once your payment is submitted, please remain on the page briefly and allow time for an email confirmation from the G20 office confirming that your
           payment has been received and successfully processed.
         </p>
 

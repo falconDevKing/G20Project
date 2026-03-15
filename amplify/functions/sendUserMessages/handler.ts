@@ -186,7 +186,7 @@ export const handler = async (event: any) => {
       const mailBody = SendUserMessagesMailTemplateWrapper(personalisedBody, mailSubject);
 
       return {
-        from: `"GGP Office" <${SENDER_MAIL}>`,
+        from: `"G20 Office" <${SENDER_MAIL}>`,
         to: [email],
         subject: mailSubject,
         html: mailBody,

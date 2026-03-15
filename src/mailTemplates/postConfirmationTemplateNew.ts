@@ -1,4 +1,70 @@
-const PostConfirmationTemplate = function (name: string, code: string, hideDefaultPassword: boolean) {
+import type { ProposedPaymentScheduleRowType } from "@/supabase/modifiedSupabaseTypes";
+
+const formatAmount = (amount: number, currency?: string | null) => {
+  const normalizedCurrency = String(currency || "")
+    .trim()
+    .toUpperCase();
+
+  if (normalizedCurrency) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: normalizedCurrency,
+      maximumFractionDigits: 0,
+    }).format(Number(amount || 0));
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 0,
+  }).format(Number(amount || 0));
+};
+
+const formatScheduleDate = (date: string) => {
+  if (!date) {
+    return "-";
+  }
+
+  const parsedDate = new Date(date);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return date;
+  }
+
+  return parsedDate.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const PostConfirmationTemplate = function (
+  name: string,
+  code: string,
+  hideDefaultPassword: boolean,
+  totalAmount = 0,
+  scheduleRows: ProposedPaymentScheduleRowType[] = [],
+) {
+  void hideDefaultPassword;
+  const scheduleCurrency = scheduleRows.find((row) => row.currency)?.currency || null;
+
+  const scheduleMarkup = scheduleRows.length
+    ? scheduleRows
+        .map(
+          (row, index) => `
+            <tr>
+              <td style="padding: 12px; border: 1px solid #E6D3A4; font-size: 16px; color: #253858;">${index + 1}</td>
+              <td style="padding: 12px; border: 1px solid #E6D3A4; font-size: 16px; color: #253858;">${formatAmount(Number(row.proposed_amount || 0), row.currency)}</td>
+              <td style="padding: 12px; border: 1px solid #E6D3A4; font-size: 16px; color: #253858;">${formatScheduleDate(row.proposed_date || "")}</td>
+            </tr>
+          `,
+        )
+        .join("")
+    : `
+        <tr>
+          <td colspan="3" style="padding: 12px; border: 1px solid #E6D3A4; font-size: 16px; color: #253858; text-align: center;">
+            No proposed schedule was provided.
+          </td>
+        </tr>
+      `;
+
   return `<html lang="en">
 
 <head>
@@ -29,16 +95,16 @@ const PostConfirmationTemplate = function (name: string, code: string, hideDefau
         padding: 16px 24px !important;
       }
 
-      .banner-text>p {
+      .banner-text > p {
         font-size: 20px !important;
       }
 
       .button,
-      .button>a {
+      .button > a {
         width: 100% !important;
       }
 
-      td>a {
+      td > a {
         font-size: 14px !important;
       }
 
@@ -80,24 +146,24 @@ const PostConfirmationTemplate = function (name: string, code: string, hideDefau
     <tr>
       <td>
         <p style="font-weight: 700; font-size: 28px; line-height: 28px; color: #84693C; text-align: center; padding-top: 24px;">
-          <span style="font-weight: 700; font-size: 2rem;">Welcome to GGP! You’re Officially a GGP Partner
+          <span style="font-weight: 700; font-size: 2rem;">Welcome to GGP! You're Officially a GGP Partner
         </p>
       </td>
     </tr>
     <tr>
       <td style="padding: 40px; line-height: 26px; font-size: 20px; color: #253858; font-style: normal; font-weight: 400">
           <p>Hi ${name},</p>
-          <p>Welcome to Global Gospel Partnership!</p>
+          <p>Welcome to G20 Partnership!</p>
           <p>
-            Your email has been successfully verified, and we’re honored to officially welcome you into this life-transforming journey of Partnering with the
+            Your email has been successfully verified, and we're honored to officially welcome you into this life-transforming journey of Partnering with the
             Prophet of God to take the Gospel to the nations of the earth.
           </p>
           <p>
-            As you walk with us, remember… your monthly partnership carries deep purpose. It’s more than a giving; it’s a prophetic step toward changing lives
+            As you walk with us, remember your partnership carries deep purpose. It's more than a giving; it's a prophetic step toward changing lives
             and expanding the Kingdom of God across the globe.
           </p>
 
-          <p>🔑 Below is your personal GGP Code:</p>
+          <p>Below is your unique Code, and details of your partnership for your reference:</p>
           <div class="button" style="width: 70%; margin: auto">
             <div
               style="
@@ -121,37 +187,33 @@ const PostConfirmationTemplate = function (name: string, code: string, hideDefau
             </div>
           </div>
 
-          <p>Please keep this handy, it helps us serve you better and ensures smoother engagement with the G20 Team. With it you can access your profile and remission history</p>
 
-          ${
-            hideDefaultPassword
-              ? ""
-              : `<p>🔑 For your first login, you can login with your email or GGP Code and the default password shared below. Kindly do well to change it once you have accessed the platform from your profile page.</p>
-          <div class="button" style="width: 70%; margin: auto">
-            <div
-              style="
-                background-color: #cc9e35;
-                border: none;
-                border-radius: 8px;
-                padding: 12px 16px;
-                font-size: 16px;
-                font-weight: 300;
-                margin-top: 20px;
-                cursor: pointer;
-                color: #fff;
-                text-decoration: none;
-                box-sizing: border-box;
-                width: 100%;
-                display: inline-block;
-                text-align: center;
-              "
-            >
-              Password-123
-            </div>
-          </div>`
-          }
+          <div style="margin-top: 28px; padding: 20px; border: 1px solid #E6D3A4; border-radius: 12px; background: #FCF9EF;">
+            <p style="margin: 0 0 12px; font-weight: 700; font-size: 22px; color: #84693C;">Your G20 Commitment</p>
+            <p style="margin: 0; font-size: 18px; color: #253858;">
+              Total G20 Amount: <span style="font-weight: 700;">${formatAmount(totalAmount, scheduleCurrency)}</span>
+            </p>
+          </div>
 
-          <p>Thank you for saying “yes” to the call. We’re grateful to walk this path alongside you.</p>
+          <div style="margin-top: 28px;">
+            <p style="margin: 0 0 12px; font-weight: 700; font-size: 22px; color: #84693C;">Your Proposed Schedule</p>
+            <table role="presentation" style="width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden;">
+              <thead>
+                <tr style="background: #F3E8C6;">
+                  <th style="padding: 12px; border: 1px solid #E6D3A4; text-align: left; font-size: 16px; color: #253858;">Line</th>
+                  <th style="padding: 12px; border: 1px solid #E6D3A4; text-align: left; font-size: 16px; color: #253858;">Amount</th>
+                  <th style="padding: 12px; border: 1px solid #E6D3A4; text-align: left; font-size: 16px; color: #253858;">Proposed Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${scheduleMarkup}
+              </tbody>
+            </table>
+          </div>
+
+          <p>Please keep the handy, as it helps us serve you better and ensures smoother engagement with the G20 Team.</p>
+
+          <p>Thank you for saying "YES" to the call. We're grateful to walk this path alongside you.</p>
         </td>
     </tr>
 

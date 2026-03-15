@@ -28,7 +28,18 @@ type EditProfileDialogProps = {
   g20CategoryOptions: SelectOptions[];
 };
 
-export const EditProfileDialog = ({ open, setOpen, form, isPending, onSubmit, userId, trigger, DivisionOptions, ChapterOptions, g20CategoryOptions }: EditProfileDialogProps) => {
+export const EditProfileDialog = ({
+  open,
+  setOpen,
+  form,
+  isPending,
+  onSubmit,
+  userId,
+  trigger,
+  DivisionOptions,
+  ChapterOptions,
+  g20CategoryOptions,
+}: EditProfileDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
@@ -208,7 +219,7 @@ export const EditProfileDialog = ({ open, setOpen, form, isPending, onSubmit, us
                       <FormItem>
                         <FormControl>
                           <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
-                            <SelectTrigger className="w-28 h-12 dark:border-white" allowDark={false} enforceWhite>
+                            <SelectTrigger className="w-28 h-12 dark:border-white" enforceWhite>
                               <SelectValue placeholder="Month" />
                             </SelectTrigger>
                             <SelectContent className="shad-select-content">
@@ -231,7 +242,7 @@ export const EditProfileDialog = ({ open, setOpen, form, isPending, onSubmit, us
                       <FormItem>
                         <FormControl>
                           <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                            <SelectTrigger className="w-20 h-12 dark:border-white" allowDark={false} enforceWhite>
+                            <SelectTrigger className="w-20 h-12 dark:border-white" enforceWhite>
                               <SelectValue placeholder="Day" />
                             </SelectTrigger>
                             <SelectContent className="shad-select-content">
@@ -259,7 +270,13 @@ export const EditProfileDialog = ({ open, setOpen, form, isPending, onSubmit, us
                   <FormItem>
                     <FormLabel className="text-gray-700/90 dark:text-gray-300/90 font-normal text-base">Motivation</FormLabel>
                     <FormControl>
-                      <Input disabled={isPending} type="text" placeholder="Your conviction about giving" className="focus-visible:ring-0 focus-visible:ring-offset-0" {...field} />
+                      <Input
+                        disabled={isPending}
+                        type="text"
+                        placeholder="Your conviction about giving"
+                        className="focus-visible:ring-0 focus-visible:ring-offset-0"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -278,7 +295,13 @@ export const EditProfileDialog = ({ open, setOpen, form, isPending, onSubmit, us
                       <span className="text-red-500 text-base">*</span>
                     </div>
                     <FormControl>
-                      <Input disabled={isPending} type="text" placeholder="E.g Apt 5, East drive, London" className="focus-visible:ring-0 focus-visible:ring-offset-0" {...field} />
+                      <Input
+                        disabled={isPending}
+                        type="text"
+                        placeholder="E.g Apt 5, East drive, London"
+                        className="focus-visible:ring-0 focus-visible:ring-offset-0"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -300,7 +323,7 @@ export const EditProfileDialog = ({ open, setOpen, form, isPending, onSubmit, us
                       <FormItem>
                         <FormControl>
                           <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
-                            <SelectTrigger className="w-28 h-12 dark:border-white" allowDark={false} enforceWhite>
+                            <SelectTrigger className="w-28 h-12 dark:border-white" enforceWhite>
                               <SelectValue placeholder="Birth Month" />
                             </SelectTrigger>
                             <SelectContent className="shad-select-content">
@@ -326,7 +349,7 @@ export const EditProfileDialog = ({ open, setOpen, form, isPending, onSubmit, us
                       <FormItem>
                         <FormControl>
                           <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                            <SelectTrigger className="w-20 h-12 dark:border-white" allowDark={false} enforceWhite>
+                            <SelectTrigger className="w-20 h-12 dark:border-white" enforceWhite>
                               <SelectValue placeholder="Birth Day" />
                             </SelectTrigger>
                             <SelectContent className="shad-select-content">

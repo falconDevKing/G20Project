@@ -10,7 +10,7 @@ interface SendDefaultPasswordMessageParams {
 export const sendDefaultPaswordMessage = async ({ to }: SendDefaultPasswordMessageParams) => {
   try {
     if (restrictWhatsapp) {
-      return;
+      return { success: true };
     }
 
     await sendWhatsapp({
@@ -19,8 +19,10 @@ export const sendDefaultPaswordMessage = async ({ to }: SendDefaultPasswordMessa
       from: `whatsapp:${from}`,
       to: `whatsapp:${to}`,
     });
+    return { success: true };
   } catch (err) {
     console.log("error sendDefaultPaswordMessage", err);
+    return { success: false, error: err instanceof Error ? err.message : "Failed to send default password WhatsApp message." };
   }
 };
 
@@ -33,7 +35,7 @@ interface SendWelcomeMessageParams {
 export const sendWelcomeMessage = async ({ to, name, ggp_code }: SendWelcomeMessageParams) => {
   try {
     if (restrictWhatsapp) {
-      return;
+      return { success: true };
     }
 
     await sendWhatsapp({
@@ -42,8 +44,10 @@ export const sendWelcomeMessage = async ({ to, name, ggp_code }: SendWelcomeMess
       from: `whatsapp:${from}`,
       to: `whatsapp:${to}`,
     });
+    return { success: true };
   } catch (err) {
     console.log("error sendWelcomeMessage", err);
+    return { success: false, error: err instanceof Error ? err.message : "Failed to send welcome WhatsApp message." };
   }
 };
 

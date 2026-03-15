@@ -20,12 +20,9 @@ import { useAppSelector } from "@/redux/hooks";
 import { initialiseOptions, monthsOfTheYearOptions, RemissionDayOptions } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
 import { SuccessHandler, ErrorHandler, InfoHandler } from "@/lib/toastHandlers";
-import PostConfirmationTemplate from "@/mailTemplates/postConfirmationTemplateNew";
-import { sendEmail } from "@/services/sendMail";
 import { Checkbox } from "../ui/checkbox";
 import Logo from "../../assets/G20_logo.png";
 import dayjs from "dayjs";
-import { sendWelcomeMessage } from "@/services/twilioMessaging";
 import { AuthInput } from "../ui/authInput";
 import { AuthTextArea } from "../ui/textArea";
 import { getG20CategoryOptions } from "@/lib/g20Categories";
@@ -176,14 +173,6 @@ export const RegisterForm = () => {
 
         if (unique_code) {
           await createUser(userData);
-
-          const recipientMails = [email];
-          const mailSubject = "Welcome to GGP! You’re Officially a GGP Partner.";
-          const mailBody = PostConfirmationTemplate(first_name, unique_code, true);
-
-          await sendEmail({ to: recipientMails, mailSubject, mailBody });
-
-          await sendWelcomeMessage({ to: phone_number, name: first_name, ggp_code: unique_code });
         }
 
         let loggedInUser = await getLoggedInUser(email.replace(/\s+/g, ""));
@@ -487,7 +476,7 @@ export const RegisterForm = () => {
                         <FormItem className="w-full flex-1">
                           <FormControl>
                             <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                              <SelectTrigger className="w-full h-12" allowDark={false} enforceWhite>
+                              <SelectTrigger className="w-full h-12" enforceWhite>
                                 <SelectValue placeholder="Birth Day" />
                               </SelectTrigger>
                               <SelectContent className="shad-select-content">
@@ -849,3 +838,4 @@ export const RegisterForm = () => {
     </CardWrapper>
   );
 };
+

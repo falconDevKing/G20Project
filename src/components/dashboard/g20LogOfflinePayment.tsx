@@ -108,12 +108,12 @@ export const G20LogOfflinePayment = ({ onSaved }: G20LogOfflinePaymentProps) => 
       <DialogTrigger asChild>
         <Button size="lg" variant="custom" className="w-full md:w-auto">
           <Plus className="w-4 h-4 mr-2" />
-          Log Offline Remission
+          Upload Offline Payment Details
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-xl">
-        <h2 className="text-xl font-semibold mb-4">Log Offline Remission</h2>
+        <h2 className="text-xl font-semibold mb-4">Offline Payment Details</h2>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

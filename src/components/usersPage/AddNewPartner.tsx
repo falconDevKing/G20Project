@@ -30,11 +30,9 @@ import { Countries } from "../../constants/index";
 import { createUniqueCode, createUser, vetUser } from "@/services/auth";
 import { signUp } from "aws-amplify/auth";
 import { v4 as uuidV4 } from "uuid";
-import PostConfirmationTemplate from "@/mailTemplates/postConfirmationTemplateNew";
-import { sendEmail } from "@/services/sendMail";
 import { fetchUsersByEntity } from "@/services/appData";
 import dayjs from "dayjs";
-import { sendWelcomeMessage, sendDefaultPaswordMessage } from "@/services/twilioMessaging";
+import { sendDefaultPaswordMessage } from "@/services/twilioMessaging";
 import { getG20CategoryOptions } from "@/lib/g20Categories";
 
 type EditUserProps = {
@@ -81,8 +79,23 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
     try {
-      const { first_name, last_name, phone_number, email, division_id, chapter_id, president_id, permission_type, g20_category, g20_amount, address, gender, nationality, birth_day, birth_month } =
-        values;
+      const {
+        first_name,
+        last_name,
+        phone_number,
+        email,
+        division_id,
+        chapter_id,
+        president_id,
+        permission_type,
+        g20_category,
+        g20_amount,
+        address,
+        gender,
+        nationality,
+        birth_day,
+        birth_month,
+      } = values;
 
       setIsPending(true);
 
@@ -150,14 +163,6 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
 
       if (unique_code) {
         await createUser(userData);
-
-        const recipientMails = [email];
-        const mailSubject = "Welcome to House of Greats! You’re Officially a G20 Partner.";
-        const mailBody = PostConfirmationTemplate(first_name, unique_code, false);
-
-        await sendEmail({ to: recipientMails, mailSubject, mailBody });
-
-        await sendWelcomeMessage({ to: phone_number, name: first_name, ggp_code: unique_code });
 
         await sendDefaultPaswordMessage({ to: phone_number });
       }
@@ -451,7 +456,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                         <FormItem className="w-full flex-1">
                           <FormControl>
                             <Select defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
-                              <SelectTrigger className=" w-full h-12 dark:border-white" allowDark={false} enforceWhite>
+                              <SelectTrigger className=" w-full h-12 dark:border-white" enforceWhite>
                                 <SelectValue placeholder="Birth Month" />
                               </SelectTrigger>
                               <SelectContent className="shad-select-content">
@@ -477,7 +482,7 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
                         <FormItem className="w-full flex-1">
                           <FormControl>
                             <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                              <SelectTrigger className="w-full h-12 dark:border-white" allowDark={false} enforceWhite>
+                              <SelectTrigger className="w-full h-12 dark:border-white" enforceWhite>
                                 <SelectValue placeholder="Birth Day" />
                               </SelectTrigger>
                               <SelectContent className="shad-select-content">
@@ -631,3 +636,4 @@ export default function AddNewPartner({ open, setOpen, permission_type }: EditUs
     </section>
   );
 }
+

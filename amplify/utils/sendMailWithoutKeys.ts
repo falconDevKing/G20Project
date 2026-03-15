@@ -40,7 +40,7 @@ export const sendMailWithoutKeys = async ({
       }
 
       const { data, error } = await resend.emails.send({
-        from: `"GGP Office" <${SENDER_MAIL}>`,
+        from: `"G20 Office" <${SENDER_MAIL}>`,
         subject: mailSubject,
         html: mailBody,
         ...resendDestinationData,
@@ -65,7 +65,7 @@ export const sendMailWithoutKeys = async ({
     }
 
     const senderParams = {
-      Source: `"GGP Office" <${SENDER_MAIL}>`,
+      Source: `"G20 Office" <${SENDER_MAIL}>`,
       Destination: DestinationData,
       Message: {
         Subject: { Data: mailSubject },

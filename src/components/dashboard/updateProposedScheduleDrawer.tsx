@@ -34,10 +34,10 @@ const isPendingFutureOrDue = (row: ProposedPaymentScheduleRowType, _now: dayjs.D
 
 export const UpdateProposedScheduleDrawer = ({ open, setOpen, user, onSaved }: UpdateProposedScheduleDrawerProps) => {
   const [isPending, setIsPending] = useState(false);
-  const [skipNextGeneration, setSkipNextGeneration] = useState(false);
   const [amountPaid, setAmountPaid] = useState(0);
   const [remainingAmount, setRemainingAmount] = useState(Number(user?.g20_amount || 0));
   const [remainingPendingRows, setRemainingPendingRows] = useState<ProposedPaymentScheduleRowType[]>([]);
+  const [canRegenerateBreakdown, setCanRegenerateBreakdown] = useState(false);
 
   const { maxDate, scheduleYear } = useMemo(() => getNextOct30Window(), []);
   const g20Amount = Number(user?.g20_amount || 0);
@@ -57,6 +57,9 @@ export const UpdateProposedScheduleDrawer = ({ open, setOpen, user, onSaved }: U
   });
 
   const breakdownCount = form.watch("breakdown_count");
+  const watchedRows = form.watch("rows");
+  const proposedAmountSum = watchedRows.reduce((sum, row) => sum + Number(row?.proposed_amount || 0), 0);
+  //  useMemo(() => watchedRows.reduce((sum, row) => sum + Number(row?.proposed_amount || 0), 0), [watchedRows]);
 
   useEffect(() => {
     const loadScheduleRows = async () => {
@@ -78,16 +81,25 @@ export const UpdateProposedScheduleDrawer = ({ open, setOpen, user, onSaved }: U
         setRemainingPendingRows(pendingRows);
 
         const defaultCount = pendingRows.length > 0 ? pendingRows.length : 1;
-        const generatedAmounts = generateScheduleAmounts(computedRemaining, defaultCount);
-
-        setSkipNextGeneration(true);
         form.setValue("g20_amount", computedRemaining);
         form.setValue("breakdown_count", defaultCount);
+        setCanRegenerateBreakdown(false);
 
+        if (pendingRows.length > 0) {
+          replace(
+            pendingRows.map((row) => ({
+              proposed_amount: Number(row.proposed_amount || 0),
+              proposed_date: row.proposed_date || "",
+            })),
+          );
+          return;
+        }
+
+        const generatedAmounts = generateScheduleAmounts(computedRemaining, defaultCount);
         replace(
-          generatedAmounts.map((amount, index) => ({
+          generatedAmounts.map((amount) => ({
             proposed_amount: amount,
-            proposed_date: pendingRows[index]?.proposed_date || "",
+            proposed_date: "",
           })),
         );
       } catch (error: any) {
@@ -101,11 +113,11 @@ export const UpdateProposedScheduleDrawer = ({ open, setOpen, user, onSaved }: U
 
   useEffect(() => {
     if (!open) {
+      setCanRegenerateBreakdown(false);
       return;
     }
 
-    if (skipNextGeneration) {
-      setSkipNextGeneration(false);
+    if (!canRegenerateBreakdown) {
       return;
     }
 
@@ -119,7 +131,7 @@ export const UpdateProposedScheduleDrawer = ({ open, setOpen, user, onSaved }: U
         proposed_date: existingRows[index]?.proposed_date || remainingPendingRows[index]?.proposed_date || "",
       })),
     );
-  }, [breakdownCount, form, open, remainingAmount, remainingPendingRows, replace, skipNextGeneration]);
+  }, [breakdownCount, canRegenerateBreakdown, form, open, remainingAmount, remainingPendingRows, replace]);
 
   const onSubmit = async (values: z.infer<typeof proposedScheduleSchema>) => {
     try {
@@ -201,7 +213,13 @@ export const UpdateProposedScheduleDrawer = ({ open, setOpen, user, onSaved }: U
                     <FormItem>
                       <FormLabel className="text-[#1E1E1E] dark:text-gray-100">Breakdown Remaining Into</FormLabel>
                       <FormControl>
-                        <Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}>
+                        <Select
+                          value={String(field.value)}
+                          onValueChange={(value) => {
+                            setCanRegenerateBreakdown(true);
+                            field.onChange(Number(value));
+                          }}
+                        >
                           <SelectTrigger className="h-12">
                             <SelectValue placeholder="Select count" />
                           </SelectTrigger>
@@ -265,6 +283,14 @@ export const UpdateProposedScheduleDrawer = ({ open, setOpen, user, onSaved }: U
               <Button type="submit" className="w-full" variant="custom" disabled={isPending}>
                 {isPending ? "Saving.." : "Save Schedule"}
               </Button>
+
+              {remainingAmount === proposedAmountSum ? (
+                ""
+              ) : (
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  Proposed Amount sum ({proposedAmountSum}) not equals to remaining amount ({remainingAmount})
+                </p>
+              )}
             </form>
           </Form>
         </div>
